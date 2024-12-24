@@ -2130,6 +2130,34 @@ class ChatWidget {
   }
 }
 
+function loadScript(url) {
+    return new Promise((resolve, reject) => {
+      // Check if marked is already loaded
+      if (window.marked) {
+        resolve();
+        return;
+      }
+
+      const script = document.createElement('script');
+      script.src = url;
+      script.onload = resolve;
+      script.onerror = () => reject(new Error(`Failed to load script: ${url}`));
+      document.head.appendChild(script);
+    });
+  }
+
+  // Load marked.js before initializing the widget
+  loadScript('https://cdn.jsdelivr.net/npm/marked/marked.min.js')
+    .then(() => {
+      // Initialize your widget here
+    document.addEventListener("DOMContentLoaded", () => {
+      window.chatWidget = new ChatWidget();
+    });
+  })
+  .catch((error) => {
+    console.error("Error loading marked.js:", error);
+  });
+
 // Initialize the widget after DOM is loaded
 document.addEventListener("DOMContentLoaded", () => {
   window.chatWidget = new ChatWidget();
