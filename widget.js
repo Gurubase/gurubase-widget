@@ -948,22 +948,56 @@ function darkenColor(color, percent) {
 
 // Widget class to handle all functionality
 class ChatWidget {
+
+  async fetchDefaultValues() {
+    try {
+      const response = await fetch(this.guruUrl, {
+        headers: {
+          Authorization: this.widgetId,
+          origin: window.location.href
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch default values');
+      }
+
+      const data = await response.json();
+      
+      // Only set values that weren't specified in config
+      this.mainColor = this.mainColor || data.colors.base_color;
+      this.logoUrl = this.logoUrl || data.icon_url;
+      this.name = this.name || data.name;
+
+    } catch (error) {
+      console.error('Error fetching default values:', error);
+      // Fallback to hardcoded defaults if fetch fails
+      this.mainColor = this.mainColor || "#0F9500";
+      this.logoUrl = this.logoUrl || "";
+      this.name = this.name || "Anteon";
+    }
+  }  
+
   constructor() {
     console.log("ChatWidget initialized");
 
     const config = window.WIDGET_CONFIG || {};
     const defaultBaseUrl = "http://localhost:8018";
     this.widgetId = config.widgetId || "";
-    this.askUrl = (config.apiUrl || defaultBaseUrl) + "/widget/ask/";
-    this.bingeUrl = (config.apiUrl || defaultBaseUrl) + "/widget/binge/";
+    this.baseUrl = config.apiUrl || defaultBaseUrl;
+    this.askUrl = this.baseUrl + "/widget/ask/";
+    this.bingeUrl = this.baseUrl + "/widget/binge/";
+    this.guruUrl = this.baseUrl + "/widget/guru/";
     this.buttonText = config.buttonText || "Ask AI";
     this.margins = config.margins || { bottom: "20px", right: "20px" };
     this.isFirstQuestion = true;
     this.currentBingeId = null;
     this.previousQuestionSlug = null;
-    this.mainColor = config.mainColor || "#0F9500";
-    this.logoUrl = config.logoUrl || "";
-    this.name = config.name || "Anteon";
+
+    this.mainColor = config.mainColor || null;
+    this.logoUrl = config.logoUrl || null;
+    this.name = config.name || null;
+
 
     if (!this.widgetId) {
       console.error("Widget Error: Widget ID is required");
@@ -1928,12 +1962,17 @@ class ChatWidget {
     document.body.appendChild(widgetContainer);
   }
 
-  init() {
+  async init() {
     // Bind methods first
     this.toggleChat = this.toggleChat.bind(this);
     this.submitQuestion = this.submitQuestion.bind(this);
     this.handleKeyPress = this.handleKeyPress.bind(this);
     this.askQuestion = this.askQuestion.bind(this);
+
+
+    if (!this.mainColor || !this.logoUrl || !this.name) {
+      await this.fetchDefaultValues();
+    }    
 
     // Set primary color CSS variable
     document.documentElement.style.setProperty("--primary", this.mainColor);
