@@ -1,0 +1,51 @@
+<!doctype html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+      .editor-container {
+        max-width: 800px;
+        margin: 40px auto;
+        padding: 20px;
+      }
+
+      .editor {
+        width: 100%;
+        min-height: 300px;
+        padding: 16px;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        font-family: ui-monospace, monospace;
+        font-size: 14px;
+        line-height: 1.6;
+        resize: vertical;
+        outline: none;
+        transition: border-color 0.2s;
+      }
+
+      .editor:focus {
+        border-color: #4284f3;
+        box-shadow: 0 0 0 2px rgba(66, 132, 243, 0.1);
+      }
+    </style>
+  </head>
+  <body>
+    <div>
+      Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+      Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+      Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+      Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+      Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+      Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+    </div>
+
+    <div class="editor-container">
+      <textarea
+        class="editor"
+        placeholder="Write your code or text here..."
+        spellcheck="false"></textarea>
+    </div>
+
+  </body>
+</html>
