@@ -27,21 +27,15 @@ A lightweight, customizable chat widget that can be easily integrated into any w
 Add the widget to your website by including these scripts in your HTML:
 
 ```html
-<!-- Gurubase Widget Config -->
-<script>
-    window.WIDGET_CONFIG = {
-    widgetId: "your-widget-id",
-    apiUrl: "http://localhost:8018",
-    buttonText: "Ask AI",
-    margins: { bottom: "20px", right: "20px" },
-    mainColor: "#F5A51D",
-    logoUrl: "https://avatars.githubusercontent.com/u/75415501?s=200&v=4",
-    name: "Anteon"
-    };
-</script>
-
 <!-- Gurubase Widget -->
-<script src="/path/to/widget.js"></script>
+<script src="/path/to/widget.js" 
+    data-widget-id="FhdIYUJfuAs3g_Zmm_U6UarG6GJFSVSUzf4NHYltu1g"
+    data-text="Ask AI"
+    data-margins='{"bottom": "20px", "right": "20px"}'
+    data-bg-color="#F5A51D"
+    data-icon-url="https://avatars.githubusercontent.com/u/75415501?s=200&v=4"
+    data-name="Anteon">
+</script>
 ```
 
 ## Usage
@@ -51,16 +45,23 @@ Add the widget to your website by including these scripts in your HTML:
 | Option | Type | Description | Default |
 |--------|------|-------------|---------|
 | widgetId | string | Your widget ID (Click [here](https://gurubase.io) to get one) | Required |
-| apiUrl | string | Endpoint URL for the chat service | Required |
 | buttonText | string | Text displayed on the chat button | "Ask AI" |
 | margins | object | Button positioning margins | { bottom: "20px", right: "20px" } |
-| mainColor | string | Primary color for the widget | "#F5A51D" |
-| logoUrl | string | URL to your company logo | Required |
-| name | string | Your company/product name | Required |
+| mainColor | string | Primary color for the widget | Fetched from the backend |
+| logoUrl | string | URL to your company logo | Fetched from the backend |
+| name | string | Your company/product name | Fetched from the backend |
 
 ## Customization
 
 ### Styling
+
+The widget automatically fetches the following configuration options from the backend:
+
+- `mainColor`
+- `logoUrl`
+- `name` 
+
+> You can override these values by passing them as given in the Installation section.
 
 The widget can be customized through the following configuration options:
 
@@ -72,13 +73,7 @@ The widget can be customized through the following configuration options:
 
 #### Examples
 
-![alt text](image.png)
-
-![alt text](image-1.png)
-
-![alt text](image-2.png)
-
-![alt text](image-3.png)
+# TODO: Add screenshots
 
 ## License
 MIT License - see the LICENSE file for details.
