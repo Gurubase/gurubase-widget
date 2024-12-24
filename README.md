@@ -75,6 +75,24 @@ The widget can be customized through the following configuration options:
 
 # TODO: Add screenshots
 
+## Demos
+
+Currently there are two demos:
+
+- [React App](examples/react_app/index.html)
+    
+    You can view this by the following commands
+    ```bash
+    cd examples/react_app
+    npm install
+    npm run dev
+    ```
+- [Pure JS](examples/pure_js/index.html)
+    
+    You can view this simply by opening the file in your browser.
+
+## License
+MIT License - see the LICENSE file for details.
 ## License
 MIT License - see the LICENSE file for details.
 
