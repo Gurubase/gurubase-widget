@@ -984,12 +984,12 @@ class ChatWidget {
     const scriptTag = document.querySelector('script[src*="widget.js"]');
     
     // Default values
-    const defaultBaseUrl = "http://localhost:8018";
+    const defaultBaseUrl = "https://kubernetesguru-backend-api.getanteon.com";
     
     if (scriptTag) {
         // Read attributes from script tag
         this.widgetId = scriptTag.getAttribute('data-widget-id') || "";
-        this.baseUrl = scriptTag.getAttribute('data-api-url') || defaultBaseUrl;
+        this.baseUrl = defaultBaseUrl;
         this.buttonText = scriptTag.getAttribute('data-text') || "Ask AI";
         this.mainColor = scriptTag.getAttribute('data-bg-color') || null;
         this.logoUrl = scriptTag.getAttribute('data-icon-url') || null;
