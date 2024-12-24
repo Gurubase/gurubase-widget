@@ -738,10 +738,10 @@ const injectStyles = () => {
     }
 
     .empty-state h2 {
-      color: #18181B;
-      font-size: 24px;
+      color: #191919;
+      font-size: 16px;
       font-weight: 600;
-      margin: 0 0 12px 0;
+      margin: 0 0 12px 4px;
     }
 
     .empty-state p {
@@ -749,7 +749,6 @@ const injectStyles = () => {
       font-size: 14px;
       line-height: 20px;
       margin: 0;
-      max-width: 320px;
     }
 
     .user-message {
@@ -1087,8 +1086,8 @@ class ChatWidget {
     return `
       <div class='empty-state'>
         <div class='sparkles'>${this.getLargeSparkle()}</div>
-        <h2>Ask anything or write with ${this.name}</h2>
-        <p>Use ${this.name} to write for you, or answer questions about tasks and docs in your Workspace</p>
+        <h2>Ask anything about ${this.name}</h2>
+        <p>${this.name} Guru uses the latest data in the documentation to answer your questions.</p>
       </div>
     `;
   }
@@ -1920,7 +1919,7 @@ class ChatWidget {
           <div class="anteon-header">
             <div class="logo">
               ${this.getLogo()}
-              ${this.name} - Ask AI Website Widget
+              ${this.name} Guru - Ask anything about ${this.name}
             </div>
             <button 
               class="header-button"
@@ -1965,7 +1964,7 @@ class ChatWidget {
             <div class="footer-info">
               <div class="anteon-powered">powered by ${GURUBASE_LOGO}</div>
               <a href="https://gurubase.io/" class="visit-link" target="_blank">
-                Visit <span class="guru-text">Guru</span>base for a better experience
+                Ask on <span class="guru-text">Guru</span>base for a better UX
                 <span>
                   <svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path fill-rule="evenodd" clip-rule="evenodd" d="M3 1.5C2.72386 1.5 2.5 1.27614 2.5 1C2.5 0.723858 2.72386 0.5 3 0.5H9C9.27614 0.5 9.5 0.723858 9.5 1V7C9.5 7.27614 9.27614 7.5 9 7.5C8.72386 7.5 8.5 7.27614 8.5 7V2.20711L1.35355 9.35355C1.15829 9.54882 0.841709 9.54882 0.646447 9.35355C0.451184 9.15829 0.451184 8.84171 0.646447 8.64645L7.79289 1.5H3Z" fill="#6D6D6D"/>
