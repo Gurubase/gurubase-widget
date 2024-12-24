@@ -981,23 +981,45 @@ class ChatWidget {
   constructor() {
     console.log("ChatWidget initialized");
 
-    const config = window.WIDGET_CONFIG || {};
+    // Find the widget script tag
+    const scriptTag = document.querySelector('script[src*="widget.js"]');
+    
+    // Default values
     const defaultBaseUrl = "http://localhost:8018";
-    this.widgetId = config.widgetId || "";
-    this.baseUrl = config.apiUrl || defaultBaseUrl;
+    
+    if (scriptTag) {
+        // Read attributes from script tag
+        this.widgetId = scriptTag.getAttribute('data-widget-id') || "";
+        this.baseUrl = scriptTag.getAttribute('data-api-url') || defaultBaseUrl;
+        this.buttonText = scriptTag.getAttribute('data-text') || "Ask AI";
+        this.mainColor = scriptTag.getAttribute('data-bg-color') || null;
+        this.logoUrl = scriptTag.getAttribute('data-icon-url') || null;
+        this.name = scriptTag.getAttribute('data-name') || null;
+        
+        // Parse margins from JSON string
+        try {
+            this.margins = JSON.parse(scriptTag.getAttribute('data-margins')) || 
+                          { bottom: "20px", right: "20px" };
+        } catch {
+            this.margins = { bottom: "20px", right: "20px" };
+        }
+    } else {
+        // Fallback values if script tag not found
+        this.widgetId = "";
+        this.baseUrl = defaultBaseUrl;
+        this.buttonText = "Ask AI";
+        this.margins = { bottom: "20px", right: "20px" };
+        this.mainColor = null;
+        this.logoUrl = null;
+        this.name = null;
+    }
+
     this.askUrl = this.baseUrl + "/widget/ask/";
     this.bingeUrl = this.baseUrl + "/widget/binge/";
     this.guruUrl = this.baseUrl + "/widget/guru/";
-    this.buttonText = config.buttonText || "Ask AI";
-    this.margins = config.margins || { bottom: "20px", right: "20px" };
     this.isFirstQuestion = true;
     this.currentBingeId = null;
     this.previousQuestionSlug = null;
-
-    this.mainColor = config.mainColor || null;
-    this.logoUrl = config.logoUrl || null;
-    this.name = config.name || null;
-
 
     if (!this.widgetId) {
       console.error("Widget Error: Widget ID is required");
