@@ -291,7 +291,7 @@ const injectStyles = () => {
       .loading-dots span {
         width: 4px;
         height: 4px;
-        background-color: var(--primary);
+        background-color: #191919;
         border-radius: 50%;
         animation: bounce 1.4s infinite ease-in-out;
         opacity: 0.6;
