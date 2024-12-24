@@ -1252,6 +1252,17 @@ class ChatWidget {
     return { bg: "#DC2626", text: "#DC2626" }; // red-600
   }
 
+  getBotLogo() {
+    return `<div class="bot-logo">
+        <div class="logo-container">
+          ${this.getLogo(16, 16)}
+          <div class="sparkle-badge" style="background-color: ${this.mainColor};">
+            ${this.getSmallSparkle()}
+          </div>
+        </div>
+      </div>`;
+  }
+
   createTrustScore(score) {
     const trustScore = score ?? 0;
     const { bg, text } = this.getScoreColors(trustScore);
@@ -1328,14 +1339,7 @@ class ChatWidget {
     const isFirstMessage = !messagesContainer.querySelector(".message");
     loadingMessage.innerHTML = `
       ${!isFirstMessage ? '<div class="message-divider"></div>' : ""}
-      <div class="bot-logo">
-        <div class="logo-container">
-          ${this.getLogo(16, 16)}
-          <div class="sparkle-badge" style="background-color: ${this.mainColor};">
-            ${this.getSmallSparkle()}
-          </div>
-        </div>
-      </div>
+      ${this.getBotLogo()}
       <div class="message-content">
         <div class="loading-stage" id="context-stage">
           <div class="loading-dots">
@@ -1510,14 +1514,7 @@ class ChatWidget {
       botMessage.innerHTML = `
         ${!isFirstMessage ? '<div class="message-divider"></div>' : ""}
         <div class="message-wrapper">
-          <div class="bot-logo">
-            <div class="logo-container">
-            ${this.getLogo(16, 16)}
-              <div class="sparkle-badge" style="background-color: ${this.mainColor};">
-                ${this.getSmallSparkle()}
-              </div>
-            </div>
-          </div>
+          ${this.getBotLogo()}
           <div class="message-content">
             <div id="bot-response" class="markdown-content"></div>
           </div>
@@ -1802,13 +1799,7 @@ class ChatWidget {
       const errorMessage = document.createElement("div");
       errorMessage.className = "message";
       errorMessage.innerHTML = `
-      <div class="bot-logo">
-        <div class="logo-container">
-          ${this.getLogo(16, 16)}
-          <div class="sparkle-badge" style="background-color: ${this.mainColor};">
-            ${this.getSmallSparkle()}
-          </div>
-        </div>
+      ${this.getBotLogo()}
       </div>
       ${!isFirstMessage ? '<div class="message-divider"></div>' : ""}
       <div class="message-content">
