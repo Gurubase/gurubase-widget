@@ -9,7 +9,8 @@ const GURUBASE_LOGO = `<svg width="55" height="10" viewBox="0 0 55 10" fill="non
 // Widget class to handle all functionality
 class ChatWidget {
 
-  injectStyles = () => {
+  injectStyles = (hljsTheme) => {
+    console.log(hljsTheme);
     const styleElement = document.createElement("style");
     styleElement.textContent = `
         :root {
@@ -19,14 +20,29 @@ class ChatWidget {
           --chat-button-hover-bg: #f3f4f6; /* Default hover color */
           --chat-button-active-bg: #e5e7eb; /* Default active color */
         }
-  
+
+        .search-bar:-webkit-autofill,
+        .search-bar:-webkit-autofill:hover,
+        .search-bar:-webkit-autofill:focus {
+          -webkit-text-fill-color: #191919;
+          caret-color: #191919;
+          -webkit-box-shadow: 0 0 0px 1000px #E7F0FE inset;
+          transition: background-color 5000s ease-in-out 0s;
+        }
+
+        /* Insert highlight.js theme */
+        ${hljsTheme}
+
         .chat-widget {
-          font-family:
+          font-family: 
+            'Inter',
             system-ui,
             -apple-system,
             sans-serif;
   
           font-size: 14px;
+          background-color: #000;
+          color: #191919;
         }
   
         .chat-button {
@@ -118,14 +134,16 @@ class ChatWidget {
           flex: 1;
           padding: 8px 12px;
           border: 1px solid #e5e7eb;
-          border-radius: 6px;
+          border-radius: 12px;
           font-size: 14px;
+          color: #191919;
         }
   
         .chat-messages {
           flex: 1;
           overflow-y: auto;
           padding: 32px 20px;
+          background-color: #FFF;
         }
   
         .message {
@@ -575,6 +593,7 @@ class ChatWidget {
         gap: 12px;
         border-top: 1px solid #F3F4F6;
         transition: padding-bottom 0.2s ease;
+        background-color: #FFF;
       }
   
       .footer-info {
@@ -640,7 +659,7 @@ class ChatWidget {
         height: 56px;
         border: 1px solid #e5e7eb;
         border-radius: 12px;
-        background: white;
+        background: #FDFDFD;
         transition: border-color 0.2s;
       }
   
@@ -746,7 +765,7 @@ class ChatWidget {
         color: #191919;
         font-size: 16px;
         font-weight: 600;
-        margin: 0 0 12px 4px;
+        margin: 0 0 4px 0px;
       }
   
       .empty-state p {
@@ -938,7 +957,8 @@ class ChatWidget {
       }
     `;
   
-    document.head.appendChild(styleElement);
+    // document.head.appendChild(styleElement);
+    this.shadow.appendChild(styleElement);
   };
   
   darkenColor(color, percent) {
@@ -1030,7 +1050,6 @@ class ChatWidget {
     }
 
     this.processCodeBlocks = this.processCodeBlocks.bind(this);
-    this.init();
 
     // Bind all methods that will be used as event handlers
     this.toggleChat = this.toggleChat.bind(this);
@@ -1061,6 +1080,12 @@ class ChatWidget {
 
     `;
     document.head.appendChild(customStyles);
+
+    this.container = document.createElement('div');
+    this.container.id = 'chat-widget-container';
+    this.shadow = this.container.attachShadow({ mode: 'open' });
+  
+    this.init();
   }
 
   getLogo(maxWidth = 24, maxHeight = 24) {
@@ -1151,6 +1176,7 @@ class ChatWidget {
   processCodeBlocks(container) {
     // Find all pre elements that were created from markdown
     const preElements = container.querySelectorAll("pre");
+    console.log(preElements);
 
     preElements.forEach((pre, index) => {
       // Create wrapper for positioning copy button
@@ -1231,9 +1257,8 @@ class ChatWidget {
 
   toggleChat() {
     console.log("Toggle chat clicked");
-    const chatWindow = document.getElementById("chatWindow");
+    const chatWindow = this.shadow.getElementById("chatWindow");
     const wrapper = document.getElementById("page-content-wrapper");
-    const body = document.body;
     const isMobile = window.innerWidth <= 768;
 
     if (chatWindow) {
@@ -1241,8 +1266,8 @@ class ChatWidget {
       setTimeout(() => {
         const isOpening = !chatWindow.classList.contains("open");
         chatWindow.classList.toggle("open");
-        body.classList.toggle("widget-open");
-
+        document.body.classList.toggle("widget-open"); // Use document.body instead of shadow DOM body
+        
         if (!isOpening) {
           // Closing
           // Reset widths when closing
@@ -1273,11 +1298,11 @@ class ChatWidget {
   }
 
   validateAndSubmit() {
-    const questionInput = document.getElementById("questionInput");
+    const questionInput = this.shadow.getElementById("questionInput");
     const question = questionInput.value.trim();
-    let errorElement = document.querySelector(".search-error");
-    const footer = document.querySelector(".anteon-footer");
-    const inputContainer = document.querySelector(".chat-input-container");
+    let errorElement = this.shadow.querySelector(".search-error");
+    const footer = this.shadow.querySelector(".anteon-footer");
+    const inputContainer = this.shadow.querySelector(".chat-input-container");
 
     // Create error element if it doesn't exist
     if (!errorElement) {
@@ -1373,13 +1398,14 @@ class ChatWidget {
   // ... rest of the methods (askQuestion, submitQuestion) remain the same
   // Just remove the function keyword and add them as class methods
   async submitQuestion() {
-    const questionInput = document.getElementById("questionInput");
+    console.log("submitQuestion");
+    const questionInput = this.shadow.getElementById("questionInput");
     const question = questionInput.value.trim();
 
     if (!question) return;
 
     // Remove empty state if it exists
-    const emptyState = document.querySelector(".empty-state");
+    const emptyState = this.shadow.querySelector(".empty-state");
     if (emptyState) {
       emptyState.remove();
     }
@@ -1390,7 +1416,7 @@ class ChatWidget {
     // Trigger input event to update submit button color
     questionInput.dispatchEvent(new Event("input"));
 
-    const messagesContainer = document.querySelector(".chat-messages");
+    const messagesContainer = this.shadow.querySelector(".chat-messages");
     const loadingMessage = document.createElement("div");
     loadingMessage.className = "message";
 
@@ -1877,7 +1903,7 @@ class ChatWidget {
     }
 
     // Add this after adding a new message to chat-messages
-    const clearButton = document.querySelector(".clear-button");
+    const clearButton = this.shadow.querySelector(".clear-button");
     if (clearButton) {
       clearButton.style.display = "flex";
     }
@@ -1892,7 +1918,7 @@ class ChatWidget {
 
   // Modify existing askQuestion function to only handle display
   askQuestion(question) {
-    const messagesContainer = document.querySelector(".chat-messages");
+    const messagesContainer = this.shadow.querySelector(".chat-messages");
     const isFirstMessage = !messagesContainer.querySelector(".message");
 
     // Add user message
@@ -1948,7 +1974,7 @@ class ChatWidget {
                   type="text"
                   id="questionInput"
                   class="search-bar"
-                  placeholder="Ask a question..."
+                  placeholder="Ask anything about ${this.name}..."
                   aria-label="Ask a question"
                 />
               ${this.getSubmitButton()}
@@ -1984,7 +2010,8 @@ class ChatWidget {
     // Create a container for the widget and inject it into the body
     const widgetContainer = document.createElement("div");
     widgetContainer.innerHTML = widgetHTML;
-    document.body.appendChild(widgetContainer);
+    // document.body.appendChild(widgetContainer);
+    this.shadow.appendChild(widgetContainer);
   }
 
   async init() {
@@ -2008,11 +2035,13 @@ class ChatWidget {
     document.documentElement.style.setProperty("--primary", this.mainColor);
 
     // Then inject HTML and styles
+    const hljsTheme = await this.loadHljsTheme('atom-one-light'); // or any other theme name
     this.injectHTML();
-    this.injectStyles();
+    this.injectStyles(hljsTheme);
+    document.body.appendChild(this.container);
 
     // Add event listeners
-    const chatButton = document.querySelector(".chat-button");
+    const chatButton = this.shadow.querySelector(".chat-button");
     chatButton.style.cssText = `
     bottom: ${this.margins.bottom};
     right: ${this.margins.right};
@@ -2029,8 +2058,8 @@ class ChatWidget {
       this.darkenColor(this.mainColor, 0.2)
     );
 
-    const questionInput = document.getElementById("questionInput");
-    const submitButton = document.querySelector(".chat-footer button");
+    const questionInput = this.shadow.getElementById("questionInput");
+    const submitButton = this.shadow.querySelector(".chat-footer button");
 
     console.log("Chat button found:", chatButton); // Debug log
 
@@ -2051,7 +2080,7 @@ class ChatWidget {
     // document.addEventListener("mousedown", this.handleClickOutside);
 
     // Add drag resize listener
-    const resizeHandle = document.querySelector(".resize-handle");
+    const resizeHandle = this.shadow.querySelector(".resize-handle");
     if (resizeHandle) {
       resizeHandle.addEventListener("mousedown", (e) => {
         // Call handleDragStart with the correct 'this' context
@@ -2093,6 +2122,17 @@ class ChatWidget {
     }
   }
 
+  async loadHljsTheme(themeName) {
+    try {
+      const response = await fetch(`https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/${themeName}.min.css`);
+      const css = await response.text();
+      return css;
+    } catch (error) {
+      console.error('Failed to load highlight.js theme:', error);
+      return ''; // Return empty string if theme loading fails
+    }
+  }  
+
   // Clean up when widget is destroyed
   destroy() {
     document.removeEventListener("mousedown", this.handleClickOutside);
@@ -2103,7 +2143,7 @@ class ChatWidget {
   handleDragStart(e) {
     console.log("Drag start");
     const handle = e.target;
-    const chatWindow = document.getElementById("chatWindow");
+    const chatWindow = this.shadow.getElementById("chatWindow");
 
     if (!handle.classList.contains("resize-handle")) return;
 
@@ -2127,7 +2167,7 @@ class ChatWidget {
     if (!this.isDragging) return;
 
     console.log("Dragging...");
-    const chatWindow = document.getElementById("chatWindow");
+    const chatWindow = this.shadow.getElementById("chatWindow");
     const wrapper = document.getElementById("page-content-wrapper");
     const deltaX = this.startX - e.clientX;
     const newWidth = Math.min(Math.max(this.startWidth + deltaX, 400), 800);
@@ -2158,7 +2198,7 @@ class ChatWidget {
   }
 
   handleClearHistory() {
-    const messagesContainer = document.querySelector(".chat-messages");
+    const messagesContainer = this.shadow.querySelector(".chat-messages");
     // Get fresh templates with current mainColor
     messagesContainer.innerHTML = this.getEmptyState();
     this.isFirstQuestion = true;
@@ -2166,30 +2206,30 @@ class ChatWidget {
     this.previousQuestionSlug = null;
 
     // Hide the edit button
-    const editButton = document.querySelector(".edit-button");
+    const editButton = this.shadow.querySelector(".edit-button");
     if (editButton) {
       editButton.style.display = "none";
     }
 
     // Hide the clear button
-    const clearButton = document.querySelector(".clear-button");
+    const clearButton = this.shadow.querySelector(".clear-button");
     if (clearButton) {
       clearButton.style.display = "none";
     }
   }
 
   initInputListeners() {
-    const questionInput = document.getElementById("questionInput");
-    const submitButton = document.querySelector(".submit-button");
-    const footer = document.querySelector(".anteon-footer");
-    const inputContainer = document.querySelector(".chat-input-container");
+    const questionInput = this.shadow.getElementById("questionInput");
+    const submitButton = this.shadow.querySelector(".submit-button");
+    const footer = this.shadow.querySelector(".anteon-footer");
+    const inputContainer = this.shadow.querySelector(".chat-input-container");
 
     questionInput.addEventListener("input", () => {
       const length = questionInput.value.trim().length;
       submitButton.classList.toggle("active", length >= 10);
 
       // Hide error message when typing
-      const errorElement = document.querySelector(".search-error");
+      const errorElement = this.shadow.querySelector(".search-error");
       if (errorElement) {
         errorElement.style.display = "none";
         footer.style.paddingBottom = "0"; // Reset footer padding
@@ -2247,7 +2287,7 @@ function loadScript(url) {
 
 // Function to set initial width as a CSS variable
 function setInitialButtonWidth() {
-  const chatButton = document.querySelector(".chat-button");
+  const chatButton = this.shadow.querySelector(".chat-button");
   if (chatButton) {
     const initialWidth = chatButton.offsetWidth + 20;
     document.documentElement.style.setProperty(
