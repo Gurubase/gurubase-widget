@@ -30,12 +30,12 @@ function App() {
         Click on the Vite and React logos to learn more
       </p>
       <GurubaseWidget 
-        widgetId="FhdIYUJfuAs3g_Zmm_U6UarG6GJFSVSUzf4NHYltu1g" 
+        widgetId="AhdIYUJfuAs3g_Zmm_U6UarG6GJFSVSUzf4NHYltu1g"
         text="Ask AI"
         margins={{ bottom: "20px", right: "20px" }}
-        bgColor="#F5A51D"
-        iconUrl="https://avatars.githubusercontent.com/u/75415501?s=200&v=4"
-        name="Anteon"
+        // bgColor="#F5A51D"
+        // iconUrl="https://avatars.githubusercontent.com/u/75415501?s=200&v=4"
+        // name="Anteon"
       />
     </>
   )
