@@ -17,12 +17,12 @@ function GurubaseWidget({
     }
 
     // Load marked.js first
-    const markedScript = document.createElement('script');
-    markedScript.src = 'https://cdn.jsdelivr.net/npm/marked/marked.min.js';
-    markedScript.async = true;
+    // const markedScript = document.createElement('script');
+    // markedScript.src = 'https://cdn.jsdelivr.net/npm/marked/marked.min.js';
+    // markedScript.async = true;
 
     // Load widget script after marked.js
-    markedScript.onload = () => {
+    // markedScript.onload = () => {
       const script = document.createElement('script');
       script.src = 'widget.js';
       script.async = true;
@@ -46,13 +46,13 @@ function GurubaseWidget({
       }
 
       document.body.appendChild(script);
-    };
+    // };
 
-    document.body.appendChild(markedScript);
+    // document.body.appendChild(markedScript);
 
     // Cleanup when component unmounts
     return () => {
-      document.body.removeChild(markedScript);
+    //   document.body.removeChild(markedScript);
       const widgetScript = document.querySelector('script[src="/widget.js"]');
       if (widgetScript) {
         document.body.removeChild(widgetScript);
