@@ -24,6 +24,8 @@ A lightweight, customizable chat widget that can be easily integrated into any w
 
 ## Installation
 
+### Pure Javascript
+
 Add the widget to your website by including these scripts in your HTML:
 
 ```html
@@ -36,6 +38,73 @@ Add the widget to your website by including these scripts in your HTML:
     data-icon-url="https://avatars.githubusercontent.com/u/75415501?s=200&v=4"
     data-name="Anteon">
 </script>
+```
+
+### React
+
+1. Add the widget.js in your project. 
+2. Create this component:
+
+```jsx
+"use client";
+
+import { useEffect } from 'react';
+
+function GurubaseWidget({
+  widgetId,
+  text = "Ask AI",
+  margins = { bottom: "20px", right: "20px" },
+  bgColor = null,
+  iconUrl = null,
+  name = null
+}) {
+  useEffect(() => {
+    // Check if the widget is already initialized
+    if (window.chatWidget) {
+      return;
+    }
+
+    const script = document.createElement('script');
+    script.src = '/path/to/widget.js';
+    script.async = true;
+
+    // Set data attributes
+    script.setAttribute('data-widget-id', widgetId);
+    if (text) {
+    script.setAttribute('data-text', text);
+    }
+    if (margins) {
+    script.setAttribute('data-margins', JSON.stringify(margins));
+    }
+    if (bgColor) {
+    script.setAttribute('data-bg-color', bgColor);
+    }
+    if (iconUrl) {
+    script.setAttribute('data-icon-url', iconUrl);
+    }
+    if (name) {
+    script.setAttribute('data-name', name);
+    }
+
+    document.body.appendChild(script);
+
+    // Cleanup when component unmounts
+    return () => {
+      const widgetScript = document.querySelector('script[src="/widget.js"]');
+      if (widgetScript) {
+        document.body.removeChild(widgetScript);
+      }
+      const widgetContainer = document.querySelector('.chat-widget');
+      if (widgetContainer) {
+        widgetContainer.remove();
+      }
+    };
+  }, [widgetId, text, margins, bgColor, iconUrl, name]);
+
+  return null;
+}
+
+export default GurubaseWidget;
 ```
 
 ## Usage
