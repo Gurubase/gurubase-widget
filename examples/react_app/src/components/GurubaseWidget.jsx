@@ -8,7 +8,8 @@ function GurubaseWidget({
   margins = { bottom: "20px", right: "20px" },
   bgColor = null,
   iconUrl = null,
-  name = null
+  name = null,
+  lightMode = true
 }) {
   useEffect(() => {
     // Check if widget is already initialized
@@ -43,6 +44,9 @@ function GurubaseWidget({
       }
       if (name) {
         script.setAttribute('data-name', name);
+      }
+      if (lightMode) {
+        script.setAttribute('data-light-mode', lightMode);
       }
 
       document.body.appendChild(script);

@@ -4,15 +4,62 @@ const GURUBASE_LOGO = `<svg width="55" height="10" viewBox="0 0 55 10" fill="non
 </svg>
 `;
 
+const GURUBASE_LOGO_DARK = `<svg width="55" height="10" viewBox="0 0 55 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M9.012 4.656V5.232C9.012 6.384 8.632 7.328 7.872 8.064C7.112 8.792 6.12 9.156 4.896 9.156C3.6 9.156 2.528 8.736 1.68 7.896C0.84 7.056 0.42 6.024 0.42 4.8C0.42 3.584 0.84 2.556 1.68 1.716C2.528 0.867999 3.576 0.443999 4.824 0.443999C5.608 0.443999 6.324 0.623999 6.972 0.983999C7.62 1.344 8.124 1.828 8.484 2.436L7.296 3.12C7.072 2.72 6.74 2.4 6.3 2.16C5.86 1.912 5.368 1.788 4.824 1.788C3.944 1.788 3.22 2.076 2.652 2.652C2.084 3.228 1.8 3.948 1.8 4.812C1.8 5.676 2.084 6.392 2.652 6.96C3.228 7.528 3.98 7.812 4.908 7.812C5.652 7.812 6.256 7.64 6.72 7.296C7.192 6.944 7.492 6.476 7.62 5.892H4.812V4.656H9.012ZM14.3039 3H15.5999V9H14.3039V8.232C13.9119 8.848 13.2919 9.156 12.4439 9.156C11.7559 9.156 11.1999 8.936 10.7759 8.496C10.3519 8.056 10.1399 7.452 10.1399 6.684V3H11.4359V6.552C11.4359 7 11.5559 7.344 11.7959 7.584C12.0359 7.824 12.3639 7.944 12.7799 7.944C13.2359 7.944 13.6039 7.804 13.8839 7.524C14.1639 7.236 14.3039 6.8 14.3039 6.216V3ZM18.4114 4.008C18.7394 3.264 19.3554 2.892 20.2594 2.892V4.296C19.7634 4.264 19.3314 4.384 18.9634 4.656C18.5954 4.92 18.4114 5.36 18.4114 5.976V9H17.1154V3H18.4114V4.008ZM25.2609 3H26.5569V9H25.2609V8.232C24.8689 8.848 24.2489 9.156 23.4009 9.156C22.7129 9.156 22.1569 8.936 21.7329 8.496C21.3089 8.056 21.0969 7.452 21.0969 6.684V3H22.3929V6.552C22.3929 7 22.5129 7.344 22.7529 7.584C22.9929 7.824 23.3209 7.944 23.7369 7.944C24.1929 7.944 24.5609 7.804 24.8409 7.524C25.1209 7.236 25.2609 6.8 25.2609 6.216V3Z" fill="#FF0000"/>
+<path d="M31.4684 2.844C32.2924 2.844 32.9964 3.148 33.5804 3.756C34.1644 4.364 34.4564 5.112 34.4564 6C34.4564 6.88 34.1644 7.628 33.5804 8.244C32.9964 8.852 32.2924 9.156 31.4684 9.156C30.5564 9.156 29.8564 8.816 29.3684 8.136V9H28.0724V0.599999H29.3684V3.852C29.8564 3.18 30.5564 2.844 31.4684 2.844ZM29.9084 7.38C30.2684 7.74 30.7204 7.92 31.2644 7.92C31.8084 7.92 32.2604 7.74 32.6204 7.38C32.9804 7.012 33.1604 6.552 33.1604 6C33.1604 5.448 32.9804 4.992 32.6204 4.632C32.2604 4.264 31.8084 4.08 31.2644 4.08C30.7204 4.08 30.2684 4.264 29.9084 4.632C29.5484 4.992 29.3684 5.448 29.3684 6C29.3684 6.552 29.5484 7.012 29.9084 7.38ZM40.383 3H41.679V9H40.383V8.136C39.895 8.816 39.195 9.156 38.283 9.156C37.459 9.156 36.755 8.852 36.171 8.244C35.587 7.628 35.295 6.88 35.295 6C35.295 5.112 35.587 4.364 36.171 3.756C36.755 3.148 37.459 2.844 38.283 2.844C39.195 2.844 39.895 3.18 40.383 3.852V3ZM37.131 7.38C37.491 7.74 37.943 7.92 38.487 7.92C39.031 7.92 39.483 7.74 39.843 7.38C40.203 7.012 40.383 6.552 40.383 6C40.383 5.448 40.203 4.992 39.843 4.632C39.483 4.264 39.031 4.08 38.487 4.08C37.943 4.08 37.491 4.264 37.131 4.632C36.771 4.992 36.591 5.448 36.591 6C36.591 6.552 36.771 7.012 37.131 7.38ZM44.3184 4.656C44.3184 4.856 44.4264 5.016 44.6424 5.136C44.8664 5.248 45.1344 5.348 45.4464 5.436C45.7664 5.516 46.0864 5.612 46.4064 5.724C46.7264 5.836 46.9944 6.028 47.2104 6.3C47.4344 6.564 47.5464 6.9 47.5464 7.308C47.5464 7.884 47.3224 8.336 46.8744 8.664C46.4344 8.992 45.8784 9.156 45.2064 9.156C44.6144 9.156 44.1064 9.032 43.6824 8.784C43.2584 8.536 42.9504 8.192 42.7584 7.752L43.8744 7.104C44.0824 7.68 44.5264 7.968 45.2064 7.968C45.8864 7.968 46.2264 7.744 46.2264 7.296C46.2264 7.104 46.1144 6.948 45.8904 6.828C45.6744 6.708 45.4064 6.608 45.0864 6.528C44.7744 6.44 44.4584 6.34 44.1384 6.228C43.8184 6.116 43.5464 5.932 43.3224 5.676C43.1064 5.412 42.9984 5.08 42.9984 4.68C42.9984 4.128 43.2064 3.684 43.6224 3.348C44.0464 3.012 44.5704 2.844 45.1944 2.844C45.6904 2.844 46.1304 2.956 46.5144 3.18C46.9064 3.396 47.2064 3.7 47.4144 4.092L46.3224 4.704C46.1144 4.248 45.7384 4.02 45.1944 4.02C44.9464 4.02 44.7384 4.076 44.5704 4.188C44.4024 4.292 44.3184 4.448 44.3184 4.656ZM49.5533 6.552C49.6493 7.008 49.8693 7.36 50.2133 7.608C50.5573 7.848 50.9773 7.968 51.4733 7.968C52.1613 7.968 52.6773 7.72 53.0213 7.224L54.0893 7.848C53.4973 8.72 52.6213 9.156 51.4613 9.156C50.4853 9.156 49.6973 8.86 49.0973 8.268C48.4973 7.668 48.1973 6.912 48.1973 6C48.1973 5.104 48.4933 4.356 49.0853 3.756C49.6773 3.148 50.4373 2.844 51.3653 2.844C52.2453 2.844 52.9653 3.152 53.5253 3.768C54.0933 4.384 54.3773 5.132 54.3773 6.012C54.3773 6.148 54.3613 6.328 54.3293 6.552H49.5533ZM49.5413 5.496H53.0693C52.9813 5.008 52.7773 4.64 52.4573 4.392C52.1453 4.144 51.7773 4.02 51.3533 4.02C50.8733 4.02 50.4733 4.152 50.1533 4.416C49.8333 4.68 49.6293 5.04 49.5413 5.496Z" fill="white"/>
+</svg>`
+
 
 
 // Widget class to handle all functionality
 class ChatWidget {
 
   injectStyles = (hljsTheme) => {
+    console.log('lightMode', this.lightMode);
     console.log(hljsTheme);
     const styleElement = document.createElement("style");
     styleElement.textContent = `
+      /* Base theme colors */
+      :host {
+        --bg-primary: ${this.lightMode ? 'white' : '#141526'};
+        --text-primary: ${this.lightMode ? '#1F2937' : 'white'};
+        --bg-secondary: ${this.lightMode ? '#F9FAFB' : '#2D2F33'};
+        --border-color: ${this.lightMode ? '#E5E7EB' : '#242629'};
+        --header-bg: ${this.lightMode ? '#FAFAFA' : '#141526'};
+        --search-bar-bg: ${this.lightMode ? 'white' : '#0C0D17'};
+        --button-passive-bg: ${this.lightMode ? '#BABFC8' : '#191919'};
+        --button-passive-svg-color: ${this.lightMode ? 'white' : '#6D6D6D'};
+        --text-accent-color: ${this.lightMode ? '#6D6D6D' : '#A1A1A1'};
+      }
+
+      .user-message .message-content {
+        background-color: var(--bg-secondary);
+      }
+
+      #questionInput {
+        color: var(--text-primary);
+        background-color: var(--search-bar-bg);
+      }
+
+      #questionInput::placeholder {
+        color: ${this.lightMode ? '#6B7280' : '#9CA3AF'};
+      }
+
+      .message-divider {
+        border-top: 1px solid var(--border-color);
+      }
+
+      /* Adjust code block styling for dark mode */
+      pre {
+        background-color: ${this.lightMode ? '#F9FAFB' : '#2D2F33'} !important;
+      }
+
+      /* Adjust copy button styling */
+      pre button {
+        background-color: var(--bg-primary) !important;
+        border-color: var(--border-color) !important;
+      } 
+
         :root {
           --primary: #4f46e5;
           --background: #ffffff;
@@ -24,9 +71,9 @@ class ChatWidget {
         .search-bar:-webkit-autofill,
         .search-bar:-webkit-autofill:hover,
         .search-bar:-webkit-autofill:focus {
-          -webkit-text-fill-color: #191919;
-          caret-color: #191919;
-          -webkit-box-shadow: 0 0 0px 1000px #E7F0FE inset;
+          -webkit-text-fill-color: ${this.lightMode ? "#191919" : "#ffffff"};
+          caret-color: ${this.lightMode ? "#191919" : "#ffffff"};
+          -webkit-box-shadow: 0 0 0px 1000px ${this.lightMode ? "#E7F0FE" : "#0C0D17"} inset;
           transition: background-color 5000s ease-in-out 0s;
         }
 
@@ -79,6 +126,7 @@ class ChatWidget {
   
         .chat-button:active {
           background-color: var(--chat-button-active-bg);
+          text-color: #191919;
         }
   
         .chat-window {
@@ -96,6 +144,7 @@ class ChatWidget {
           overflow: hidden;
           transition: right 0.3s ease;
           border-radius: 0;
+          background-color: var(--bg-primary);
         }
   
         .chat-window.open {
@@ -109,17 +158,12 @@ class ChatWidget {
           justify-content: space-between;
           padding: 16px;
           border-bottom: 1px solid #F3F4F6;
-          background-color: #FAFAFA;
-        }
-  
-        .header-buttons {
-          display: flex;
-          gap: 8px;
+          background-color: var(--header-bg);
         }
   
         .header-button {
           padding: 8px;
-          background-color: #FAFAFA;
+          background-color: var(--header-bg);
           border: 0px solid #e5e7eb;
           border-radius: 4px;
           cursor: pointer;
@@ -128,6 +172,8 @@ class ChatWidget {
           align-items: center;
           justify-content: center;
           transition: all 0.2s;
+          display: flex;
+          gap: 8px;
         }
   
         .search-bar {
@@ -143,12 +189,13 @@ class ChatWidget {
           flex: 1;
           overflow-y: auto;
           padding: 32px 20px;
-          background-color: #FFF;
+          background-color: var(--bg-primary);
         }
   
         .message {
           padding: 40px 0;
           position: relative;
+          color: var(--text-primary);
         }
   
         .first-message {
@@ -190,6 +237,7 @@ class ChatWidget {
           overflow-wrap: break-word;
           word-wrap: break-word;
           word-break: break-word;
+          background-color: var(--bg-primary);
         }
   
         .example-questions {
@@ -576,7 +624,9 @@ class ChatWidget {
         justify-content: space-between;
         padding: 16px;
         border-bottom: 1px solid #e5e7eb;
-        background-color: #fafafa;
+        background-color: var(--header-bg);
+        color: var(--text-primary);
+        border-bottom: 1px solid var(--border-color);
       }
   
       .logo {
@@ -591,9 +641,8 @@ class ChatWidget {
         display: flex;
         flex-direction: column;
         gap: 12px;
-        border-top: 1px solid #F3F4F6;
         transition: padding-bottom 0.2s ease;
-        background-color: #FFF;
+        background-color: var(--bg-primary);
       }
   
       .footer-info {
@@ -603,13 +652,13 @@ class ChatWidget {
         padding-left: 20px;
         padding-right: 20px;
         padding-bottom: 20px;
-        color: #6B7280;
+        color: var(--text-accent-color);
         font-size: 13px;
       }
   
       .visit-link {
         text-decoration: none; /* Remove underline by default */
-        color: #6D6D6D; /* Default text color */
+        color: var(--text-accent-color) /* Default text color */
         align-items: center;
         gap: 4px;
         transition: color 0.2s;
@@ -620,7 +669,7 @@ class ChatWidget {
       .visit-link:hover {
         text-decoration: underline; /* Underline the whole link on hover */
         text-decoration-skip-ink: none; /* Ensure underline does not skip spaces */
-        color: #191919;
+        color: {this.lightMode ? "#191919" : "#ffffff"};
       }
   
       .visit-link:hover .guru-text {
@@ -649,6 +698,8 @@ class ChatWidget {
         padding: 20px;
         padding-bottom: 0px;
         transition: padding-bottom 0.2s ease;
+        background-color: var(--bg-primary);
+        border-top: 1px solid var(--border-color);        
       }
   
       .search-wrapper {
@@ -657,10 +708,11 @@ class ChatWidget {
         display: flex;
         align-items: center;
         height: 56px;
-        border: 1px solid #e5e7eb;
+        border: 1px solid var(--border-color);
         border-radius: 12px;
         background: #FDFDFD;
         transition: border-color 0.2s;
+        background-color: var(--border-color);
       }
   
       .search-wrapper:focus-within {
@@ -700,14 +752,15 @@ class ChatWidget {
         padding: 0;
         border-radius: 12px;
         border: none;
-        color: white;
+        color: var(--button-passive-svg-color);
         cursor: pointer;
         transition: all 0.2s;
-        background-color: #BABFC8;
+        background-color: var(--button-passive-bg);
       }
   
       .submit-button.active {
         background-color: var(--primary);
+        color: white;
       }
   
       .submit-button:hover {
@@ -730,15 +783,12 @@ class ChatWidget {
         padding: 0 16px;
         justify-content: center;
         align-items: center;
-        border: 1px solid #E5E7EB;
+        border: 1px solid var(--border-color);
         border-radius: 8px;
-        background: white;
+        background: var(--search-bar-bg);
         cursor: pointer;
         transition: all 0.2s;
-      }
-  
-      .clear-button:hover {
-        background: #F9FAFB;
+        color: var(--text-primary);
       }
   
       /* Show edit button when empty state is not present */
@@ -754,6 +804,7 @@ class ChatWidget {
         text-align: center;
         height: 100%;
         padding: 0 24px;
+        color: var(--text-primary);
       }
   
       .sparkles {
@@ -766,6 +817,7 @@ class ChatWidget {
         font-size: 16px;
         font-weight: 600;
         margin: 0 0 4px 0px;
+        color: var(--text-primary);
       }
   
       .empty-state p {
@@ -1018,6 +1070,7 @@ class ChatWidget {
         this.mainColor = scriptTag.getAttribute('data-bg-color') || null;
         this.logoUrl = scriptTag.getAttribute('data-icon-url') || null;
         this.name = scriptTag.getAttribute('data-name') || null;
+        this.lightMode = scriptTag.getAttribute('data-light-mode') === 'true' || false;
         
         // Parse margins from JSON string
         try {
@@ -1129,7 +1182,7 @@ class ChatWidget {
         aria-label="Send message"
       >
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path fill-rule="evenodd" clip-rule="evenodd" d="M9 6.75C8.58579 6.75 8.25 6.41421 8.25 6C8.25 5.58579 8.58579 5.25 9 5.25H18C18.4142 5.25 18.75 5.58579 18.75 6V15C18.75 15.4142 18.4142 15.75 18 15.75C17.5858 15.75 17.25 15.4142 17.25 15V7.81066L6.53033 18.5303C6.23744 18.8232 5.76256 18.8232 5.46967 18.5303C5.17678 18.2374 5.17678 17.7626 5.46967 17.4697L16.1893 6.75H9Z" fill="white"/>
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M9 6.75C8.58579 6.75 8.25 6.41421 8.25 6C8.25 5.58579 8.58579 5.25 9 5.25H18C18.4142 5.25 18.75 5.58579 18.75 6V15C18.75 15.4142 18.4142 15.75 18 15.75C17.5858 15.75 17.25 15.4142 17.25 15V7.81066L6.53033 18.5303C6.23744 18.8232 5.76256 18.8232 5.46967 18.5303C5.17678 18.2374 5.17678 17.7626 5.46967 17.4697L16.1893 6.75H9Z" fill="currentColor"/>
         </svg>
       </button>
     `;
@@ -1916,6 +1969,14 @@ class ChatWidget {
     }
   }
 
+  getGurubaseLogo() {
+    if (this.lightMode) {
+      return GURUBASE_LOGO;
+    } else {
+      return GURUBASE_LOGO_DARK;
+    }
+  }
+
   // Modify existing askQuestion function to only handle display
   askQuestion(question) {
     const messagesContainer = this.shadow.querySelector(".chat-messages");
@@ -1986,13 +2047,13 @@ class ChatWidget {
                 style="display: none;"
               >
                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path fill-rule="evenodd" clip-rule="evenodd" d="M9.95202 1.04297L11.2498 1.04297C11.595 1.04297 11.8748 1.32279 11.8748 1.66797C11.8748 2.01315 11.595 2.29297 11.2498 2.29297H9.99984C8.01798 2.29297 6.59447 2.2943 5.51115 2.43994C4.44582 2.58318 3.80355 2.85559 3.32883 3.3303C2.85412 3.80501 2.58171 4.44728 2.43848 5.51262C2.29283 6.59593 2.2915 8.01945 2.2915 10.0013C2.2915 11.9832 2.29283 13.4067 2.43848 14.49C2.58171 15.5553 2.85412 16.1976 3.32883 16.6723C3.80355 17.147 4.44582 17.4194 5.51115 17.5627C6.59447 17.7083 8.01798 17.7096 9.99984 17.7096C11.9817 17.7096 13.4052 17.7083 14.4885 17.5627C15.5539 17.4194 16.1961 17.147 16.6708 16.6723C17.1456 16.1976 17.418 15.5553 17.5612 14.49C17.7068 13.4067 17.7082 11.9832 17.7082 10.0013V8.7513C17.7082 8.40612 17.988 8.1263 18.3332 8.1263C18.6783 8.1263 18.9582 8.40612 18.9582 8.7513V10.0491C18.9582 11.9728 18.9582 13.4803 18.8 14.6565C18.6382 15.8605 18.3004 16.8105 17.5547 17.5562C16.809 18.3019 15.859 18.6396 14.6551 18.8015C13.4788 18.9597 11.9713 18.9596 10.0476 18.9596H9.95203C8.02836 18.9596 6.52083 18.9597 5.34459 18.8015C4.14065 18.6396 3.19063 18.3019 2.44495 17.5562C1.69928 16.8105 1.36149 15.8605 1.19963 14.6565C1.04148 13.4803 1.04149 11.9728 1.0415 10.0491V9.95349C1.04149 8.02983 1.04148 6.5223 1.19963 5.34606C1.36149 4.14211 1.69928 3.19209 2.44495 2.44642C3.19063 1.70074 4.14065 1.36296 5.34459 1.20109C6.52083 1.04295 8.02836 1.04296 9.95202 1.04297ZM13.9753 1.8979C15.1152 0.757993 16.9633 0.757993 18.1032 1.8979C19.2431 3.0378 19.2431 4.88595 18.1032 6.02586L12.5632 11.5659C12.2538 11.8754 12.0599 12.0692 11.8437 12.2379C11.5889 12.4366 11.3133 12.607 11.0216 12.746C10.774 12.864 10.514 12.9506 10.0988 13.089L7.67839 13.8958C7.23152 14.0448 6.73884 13.9285 6.40576 13.5954C6.07269 13.2623 5.95638 12.7696 6.10534 12.3228L6.91214 9.90233C7.05049 9.48718 7.13716 9.22713 7.25517 8.97951C7.39416 8.68787 7.56451 8.41223 7.76321 8.15748C7.93191 7.94119 8.12575 7.74738 8.43521 7.43797L13.9753 1.8979ZM17.2194 2.78178C16.5676 2.13003 15.5109 2.13003 14.8592 2.78178L14.5453 3.09563C14.5642 3.17552 14.5907 3.27069 14.6275 3.37686C14.747 3.72107 14.9729 4.1744 15.3998 4.6013C15.8267 5.0282 16.2801 5.25419 16.6243 5.37361C16.7304 5.41044 16.8256 5.43691 16.9055 5.45583L17.2194 5.14198C17.8711 4.49023 17.8711 3.43353 17.2194 2.78178ZM15.9208 6.44054C15.4908 6.25563 14.99 5.95919 14.516 5.48518C14.042 5.01117 13.7455 4.51032 13.5606 4.08035L9.34776 8.29318C9.00067 8.64028 8.86454 8.77793 8.74885 8.92626C8.60599 9.10942 8.48351 9.3076 8.38357 9.51729C8.30264 9.6871 8.2404 9.87041 8.08517 10.3361L7.72526 11.4158L8.58531 12.2759L9.66505 11.916C10.1307 11.7607 10.314 11.6985 10.4839 11.6176C10.6935 11.5176 10.8917 11.3952 11.0749 11.2523C11.2232 11.1366 11.3609 11.0005 11.708 10.6534L15.9208 6.44054Z" fill="#6D6D6D"/>
+  <path fill-rule="evenodd" clip-rule="evenodd" d="M9.95202 1.04297L11.2498 1.04297C11.595 1.04297 11.8748 1.32279 11.8748 1.66797C11.8748 2.01315 11.595 2.29297 11.2498 2.29297H9.99984C8.01798 2.29297 6.59447 2.2943 5.51115 2.43994C4.44582 2.58318 3.80355 2.85559 3.32883 3.3303C2.85412 3.80501 2.58171 4.44728 2.43848 5.51262C2.29283 6.59593 2.2915 8.01945 2.2915 10.0013C2.2915 11.9832 2.29283 13.4067 2.43848 14.49C2.58171 15.5553 2.85412 16.1976 3.32883 16.6723C3.80355 17.147 4.44582 17.4194 5.51115 17.5627C6.59447 17.7083 8.01798 17.7096 9.99984 17.7096C11.9817 17.7096 13.4052 17.7083 14.4885 17.5627C15.5539 17.4194 16.1961 17.147 16.6708 16.6723C17.1456 16.1976 17.418 15.5553 17.5612 14.49C17.7068 13.4067 17.7082 11.9832 17.7082 10.0013V8.7513C17.7082 8.40612 17.988 8.1263 18.3332 8.1263C18.6783 8.1263 18.9582 8.40612 18.9582 8.7513V10.0491C18.9582 11.9728 18.9582 13.4803 18.8 14.6565C18.6382 15.8605 18.3004 16.8105 17.5547 17.5562C16.809 18.3019 15.859 18.6396 14.6551 18.8015C13.4788 18.9597 11.9713 18.9596 10.0476 18.9596H9.95203C8.02836 18.9596 6.52083 18.9597 5.34459 18.8015C4.14065 18.6396 3.19063 18.3019 2.44495 17.5562C1.69928 16.8105 1.36149 15.8605 1.19963 14.6565C1.04148 13.4803 1.04149 11.9728 1.0415 10.0491V9.95349C1.04149 8.02983 1.04148 6.5223 1.19963 5.34606C1.36149 4.14211 1.69928 3.19209 2.44495 2.44642C3.19063 1.70074 4.14065 1.36296 5.34459 1.20109C6.52083 1.04295 8.02836 1.04296 9.95202 1.04297ZM13.9753 1.8979C15.1152 0.757993 16.9633 0.757993 18.1032 1.8979C19.2431 3.0378 19.2431 4.88595 18.1032 6.02586L12.5632 11.5659C12.2538 11.8754 12.0599 12.0692 11.8437 12.2379C11.5889 12.4366 11.3133 12.607 11.0216 12.746C10.774 12.864 10.514 12.9506 10.0988 13.089L7.67839 13.8958C7.23152 14.0448 6.73884 13.9285 6.40576 13.5954C6.07269 13.2623 5.95638 12.7696 6.10534 12.3228L6.91214 9.90233C7.05049 9.48718 7.13716 9.22713 7.25517 8.97951C7.39416 8.68787 7.56451 8.41223 7.76321 8.15748C7.93191 7.94119 8.12575 7.74738 8.43521 7.43797L13.9753 1.8979ZM17.2194 2.78178C16.5676 2.13003 15.5109 2.13003 14.8592 2.78178L14.5453 3.09563C14.5642 3.17552 14.5907 3.27069 14.6275 3.37686C14.747 3.72107 14.9729 4.1744 15.3998 4.6013C15.8267 5.0282 16.2801 5.25419 16.6243 5.37361C16.7304 5.41044 16.8256 5.43691 16.9055 5.45583L17.2194 5.14198C17.8711 4.49023 17.8711 3.43353 17.2194 2.78178ZM15.9208 6.44054C15.4908 6.25563 14.99 5.95919 14.516 5.48518C14.042 5.01117 13.7455 4.51032 13.5606 4.08035L9.34776 8.29318C9.00067 8.64028 8.86454 8.77793 8.74885 8.92626C8.60599 9.10942 8.48351 9.3076 8.38357 9.51729C8.30264 9.6871 8.2404 9.87041 8.08517 10.3361L7.72526 11.4158L8.58531 12.2759L9.66505 11.916C10.1307 11.7607 10.314 11.6985 10.4839 11.6176C10.6935 11.5176 10.8917 11.3952 11.0749 11.2523C11.2232 11.1366 11.3609 11.0005 11.708 10.6534L15.9208 6.44054Z" fill="currentColor"/>
                 </svg>
               </button>
 
             </div>
             <div class="footer-info">
-              <div class="anteon-powered">powered by ${GURUBASE_LOGO}</div>
+              <div class="anteon-powered">powered by ${this.getGurubaseLogo()}</div>
               <a href="https://gurubase.io/" class="visit-link" target="_blank">
                 Ask on <span class="guru-text">Guru</span>base for a better UX
                 <span>
