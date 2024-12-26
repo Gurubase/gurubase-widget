@@ -363,7 +363,7 @@ class ChatWidget {
         .loading-dots span {
           width: 4px;
           height: 4px;
-          background-color: #191919;
+          background-color: var(--text-primary);
           border-radius: 50%;
           animation: bounce 1.4s infinite ease-in-out;
           opacity: 0.6;
