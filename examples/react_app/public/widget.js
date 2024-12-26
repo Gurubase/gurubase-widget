@@ -32,6 +32,7 @@ class ChatWidget {
         --text-accent-color: ${this.lightMode ? '#6D6D6D' : '#A1A1A1'};
         --text-reference-color: ${this.lightMode ? '#0000ED' : '#000'};
         --response-button-color: ${this.lightMode ? '#6D6D6D' : 'white'};
+        --error-red-color: ${this.lightMode ? '#DC2626' : '#F00'};
       }
 
       #questionInput {
@@ -915,7 +916,7 @@ class ChatWidget {
         position: absolute;
         top: calc(100% + 12px);
         left: 0;
-        color: #DC2626;
+        color: var(--error-red-color);
         font-size: 12px;
         display: none;
       }
@@ -1934,7 +1935,7 @@ class ChatWidget {
               <path fill-rule="evenodd" clip-rule="evenodd" d="M3.31171 7.76149C6.23007 2.58716 7.68925 0 10 0C12.3107 0 13.7699 2.58716 16.6883 7.76149L17.0519 8.40626C19.4771 12.7061 20.6897 14.856 19.5937 16.428C18.4978 18 15.7864 18 10.3637 18H9.63634C4.21356 18 1.50217 18 0.406257 16.428C-0.689658 14.856 0.522912 12.7061 2.94805 8.40627L3.31171 7.76149ZM10 4.25C10.4142 4.25 10.75 4.58579 10.75 5V10C10.75 10.4142 10.4142 10.75 10 10.75C9.58579 10.75 9.25 10.4142 9.25 10V5C9.25 4.58579 9.58579 4.25 10 4.25ZM10 14C10.5523 14 11 13.5523 11 13C11 12.4477 10.5523 12 10 12C9.44771 12 9 12.4477 9 13C9 13.5523 9.44771 14 10 14Z" fill="#F8AA1C"/>
             </svg>
           </div>
-          <p style="color: #1F2937; margin: 0;">${error.message}</p>
+          <p style="margin: 0;">${error.message}</p>
         </div>
       </div>
       `;
