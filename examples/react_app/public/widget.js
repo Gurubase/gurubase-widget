@@ -2434,7 +2434,6 @@ function createResponseButtons(botResponseElement, textToCopy) {
   const buttonContainer = document.createElement("div");
   buttonContainer.className = "response-buttons";
   buttonContainer.style.display = "flex";
-  buttonContainer.style.margin = "0 30px";
   buttonContainer.style.gap = "12px";
   buttonContainer.style.marginTop = "8px"; // Optional: to separate from the response
 
