@@ -653,6 +653,8 @@ class ChatWidget {
         gap: 8px;
         font-size: 14px;
         font-weight: 500;
+        width: 100%;
+        text-overflow: ellipsis;
       }
   
       .anteon-footer {
@@ -2001,9 +2003,11 @@ class ChatWidget {
         <div id="chatWindow" class="chat-window">
           <div class="resize-handle"></div>
           <div class="anteon-header">
-            <div class="logo">
+            <div class="logo" style="display: flex; align-items: center; gap: 8px; width: 100%; text-overflow: ellipsis;">
               ${this.getLogo()}
-              ${this.name} Guru - Ask anything about ${this.name}
+              <span style="min-width: 0; overflow: hidden; text-overflow: ellipsis;">
+                ${this.name} Guru - Ask anything about ${this.name}
+              </span>
             </div>
             <button 
               class="header-button"
