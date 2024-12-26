@@ -247,6 +247,29 @@ class ChatWidget {
           flex-wrap: wrap;
           margin-top: 12px;
         }
+
+        .code-block-copy-button {
+          position: absolute; 
+          top: 8px; 
+          right: 8px; 
+          padding: 6px; 
+          border: 1px solid var(--border-color); 
+          border-radius: 4px; 
+          cursor: pointer;
+          color: var(--text-primary);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: all 0.2s;
+          z-index: 1000;        
+          background-color: var(--bg-primary);
+          color: var(--text-primary);
+          border: 1px solid var(--border-color);
+          border-radius: 4px;
+          padding: 4px 8px;
+          font-size: 12px;
+          cursor: pointer;
+        }
   
         .example-question {
           background: #f3f4f6;
@@ -1236,6 +1259,7 @@ class ChatWidget {
       // Add copy button
       const buttonHtml = `
         <button 
+        class="code-block-copy-button"
           onclick="(function() {
               // Add click effect
               this.style.transform = 'scale(0.95)';
@@ -1260,28 +1284,9 @@ class ChatWidget {
                               <path d='M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1'></path>
                           </svg>
                       \`;
-                      this.style.background = 'white';
-                      this.style.borderColor = '#e5e7eb';
-                      this.style.color = '#6b7280';
                   }, 2000);
               });
           }).call(this)"
-          style="position: absolute; 
-                 top: 8px; 
-                 right: 8px; 
-                 padding: 6px; 
-                 background: white; 
-                 border: 1px solid #e5e7eb; 
-                 border-radius: 4px; 
-                 cursor: pointer;
-                 color: #6b7280;
-                 display: flex;
-                 align-items: center;
-                 justify-content: center;
-                 transition: all 0.2s;
-                 z-index: 1000;"
-          onmouseover="this.style.background = '#f3f4f6'; this.style.borderColor = '#d1d5db'; this.style.color = '#374151';"
-          onmouseout="this.style.background = 'white'; this.style.borderColor = '#e5e7eb'; this.style.color = '#6b7280';"
           onmousedown="event.preventDefault()"
       >
           <svg width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'>
