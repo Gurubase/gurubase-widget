@@ -112,6 +112,20 @@ function GurubaseWidget({
 export default GurubaseWidget;
 ```
 
+3. Use the component in your app.
+
+```jsx
+<GurubaseWidget 
+  widgetId="b_GSd67b_KVColq6d0YFygTkTkT-aaAOhonhP4JsWgP5k"
+  text="Ask AI"
+  margins={{ bottom: "20px", right: "20px" }}
+  lightMode={false}
+  bgColor="#F5A51D"
+  iconUrl="https://avatars.githubusercontent.com/u/75415501?s=200&v=4"
+  name="Anteon"
+/>
+```
+
 ## Usage
 
 ### Configuration Options
@@ -167,8 +181,6 @@ Currently there are two demos:
     
     You can view this simply by opening the file in your browser.
 
-## License
-MIT License - see the LICENSE file for details.
 ## License
 MIT License - see the LICENSE file for details.
 
