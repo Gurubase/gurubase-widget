@@ -207,12 +207,15 @@ class ChatWidget {
         }
   
         .message-divider {
+          width: 100%;
+          height: 1px;
+          background-color: var(--border-color);
+          margin: 8px 0;
           position: absolute;
           top: -10px;
           left: 0;
           right: 0;
           height: 1px;
-          background: #E5E7EB;
           margin: 0;
           transform: translateY(-50%);
         }
@@ -828,13 +831,6 @@ class ChatWidget {
         padding: 8px 12px;
         border-radius: 12px;
         display: inline-block;
-      }
-  
-      .message-divider {
-        width: 100%;
-        height: 1px;
-        background-color: #e5e7eb;
-        margin: 8px 0;
       }
   
       .bot-message {
