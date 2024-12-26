@@ -36,7 +36,8 @@ Add the widget to your website by including these scripts in your HTML:
     data-margins='{"bottom": "20px", "right": "20px"}'
     data-bg-color="#F5A51D"
     data-icon-url="https://avatars.githubusercontent.com/u/75415501?s=200&v=4"
-    data-name="Anteon">
+    data-name="Anteon"
+    data-light-mode="true">
 </script>
 ```
 
@@ -56,7 +57,8 @@ function GurubaseWidget({
   margins = { bottom: "20px", right: "20px" },
   bgColor = null,
   iconUrl = null,
-  name = null
+  name = null,
+  lightMode = true
 }) {
   useEffect(() => {
     // Check if the widget is already initialized
@@ -85,6 +87,9 @@ function GurubaseWidget({
     if (name) {
     script.setAttribute('data-name', name);
     }
+    if (lightMode) {
+    script.setAttribute('data-light-mode', lightMode);
+    }
 
     document.body.appendChild(script);
 
@@ -99,7 +104,7 @@ function GurubaseWidget({
         widgetContainer.remove();
       }
     };
-  }, [widgetId, text, margins, bgColor, iconUrl, name]);
+  }, [widgetId, text, margins, bgColor, iconUrl, name, lightMode]);
 
   return null;
 }
@@ -119,6 +124,7 @@ export default GurubaseWidget;
 | mainColor | string | Primary color for the widget | Fetched from the backend |
 | logoUrl | string | URL to your company logo | Fetched from the backend |
 | name | string | Your company/product name | Fetched from the backend |
+| lightMode | boolean | Whether to use light mode | true |
 
 ## Customization
 
@@ -139,6 +145,7 @@ The widget can be customized through the following configuration options:
 - `name`: Change the name displayed in the widget.
 - `buttonText`: Change the text displayed on the chat button.
 - `margins`: Change the margins of the chat button.
+- `lightMode`: Change the mode of the widget.
 
 #### Examples
 
