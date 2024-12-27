@@ -2159,6 +2159,7 @@ class ChatWidget {
       }
     }
 
+    wrapper.style.width = "100%";
     document.body.insertBefore(wrapper, document.body.firstChild);
 
     // Remove Speed Highlight CSS import
@@ -2179,6 +2180,8 @@ class ChatWidget {
         "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js";
       document.head.appendChild(highlightScript);
     }
+
+
   }
 
   async loadHljsTheme(themeName) {
