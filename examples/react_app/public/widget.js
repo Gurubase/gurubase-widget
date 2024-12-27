@@ -1078,7 +1078,7 @@ class ChatWidget {
     if (scriptTag) {
         // Read attributes from script tag
         this.widgetId = scriptTag.getAttribute('data-widget-id') || "";
-        this.baseUrl = defaultBaseUrl;
+        this.baseUrl = scriptTag.getAttribute('data-baseUrl') || defaultBaseUrl;
         this.buttonText = scriptTag.getAttribute('data-text') || "Ask AI";
         this.mainColor = scriptTag.getAttribute('data-bg-color') || null;
         this.logoUrl = scriptTag.getAttribute('data-icon-url') || null;
