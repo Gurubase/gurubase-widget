@@ -1072,8 +1072,7 @@ class ChatWidget {
     const scriptTag = document.querySelector('script[src*="widget.js"]');
     
     // Default values
-    // const defaultBaseUrl = "https://kubernetesguru-backend-api.getanteon.com";
-    const defaultBaseUrl = "http://localhost:8018";
+    const defaultBaseUrl = "https://kubernetesguru-backend-api.getanteon.com";
     
     if (scriptTag) {
         // Read attributes from script tag
