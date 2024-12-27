@@ -37,7 +37,8 @@ Add the widget to your website by including these scripts in your HTML:
     data-bg-color="#F5A51D"
     data-icon-url="https://avatars.githubusercontent.com/u/75415501?s=200&v=4"
     data-name="Anteon"
-    data-light-mode="true">
+    data-light-mode="true"
+    id="guru-widget-id">
 </script>
 ```
 
@@ -90,6 +91,8 @@ function GurubaseWidget({
     if (lightMode) {
     script.setAttribute('data-light-mode', lightMode);
     }
+
+    script.setAttribute('id', 'guru-widget-id');
 
     document.body.appendChild(script);
 

@@ -1069,7 +1069,7 @@ class ChatWidget {
     console.log("ChatWidget initialized");
 
     // Find the widget script tag
-    const scriptTag = document.querySelector('script[src*="widget.js"]');
+    const scriptTag = document.querySelector('script#guru-widget-id');
     
     // Default values
     const defaultBaseUrl = "https://kubernetesguru-backend-api.getanteon.com";

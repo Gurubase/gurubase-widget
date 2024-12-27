@@ -49,6 +49,8 @@ function GurubaseWidget({
         script.setAttribute('data-light-mode', lightMode);
       }
 
+      script.setAttribute('id', 'guru-widget-id');
+
       document.body.appendChild(script);
     // };
 
