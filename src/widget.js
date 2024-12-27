@@ -1109,10 +1109,10 @@ class ChatWidget {
     this.currentBingeId = null;
     this.previousQuestionSlug = null;
 
-    if (!this.widgetId) {
-      console.error("Widget Error: Widget ID is required");
-      return;
-    }
+    // if (!this.widgetId) {
+    //   console.error("Widget Error: Widget ID is required");
+    //   return;
+    // }
 
     this.processCodeBlocks = this.processCodeBlocks.bind(this);
 
