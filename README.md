@@ -135,13 +135,13 @@ export default GurubaseWidget;
 
 | Option | Type | Description | Default |
 |--------|------|-------------|---------|
-| widgetId | string | Your widget ID (Click [here](https://gurubase.io) to get one) | Required |
-| buttonText | string | Text displayed on the chat button | "Ask AI" |
-| margins | object | Button positioning margins | { bottom: "20px", right: "20px" } |
-| mainColor | string | Primary color for the widget | Fetched from the backend |
-| logoUrl | string | URL to your company logo | Fetched from the backend |
-| name | string | Your company/product name | Fetched from the backend |
-| lightMode | boolean | Whether to use light mode | true |
+| data-widget-id | string | Your widget ID (Click [here](https://gurubase.io) to get one) | Required |
+| data-text | string | Text displayed on the chat button | "Ask AI" |
+| data-margins | object | Button positioning margins | { bottom: "20px", right: "20px" } |
+| data-bg-color | string | Primary color for the widget | Fetched from the backend |
+| data-icon-url | string | URL to your company logo | Fetched from the backend |
+| data-name | string | Your company/product name | Fetched from the backend |
+| data-light-mode | boolean | Whether to use light mode | true |
 
 ## Customization
 
@@ -149,20 +149,20 @@ export default GurubaseWidget;
 
 The widget automatically fetches the following configuration options from the backend:
 
-- `mainColor`
-- `logoUrl`
-- `name` 
+- `data-bg-color`
+- `data-icon-url`
+- `data-name` 
 
 > You can override these values by passing them as given in the Installation section.
 
 The widget can be customized through the following configuration options:
 
-- `mainColor`: Change the primary color of the widget.
-- `logoUrl`: Change the logo displayed in the widget.
-- `name`: Change the name displayed in the widget.
-- `buttonText`: Change the text displayed on the chat button.
-- `margins`: Change the margins of the chat button.
-- `lightMode`: Change the mode of the widget.
+- `data-bg-color`: Change the primary color of the widget.
+- `data-icon-url`: Change the logo displayed in the widget.
+- `data-name`: Change the name displayed in the widget.
+- `data-text`: Change the text displayed on the chat button.
+- `data-margins`: Change the margins of the chat button.
+- `data-light-mode`: Change the mode of the widget.
 
 #### Examples
 
