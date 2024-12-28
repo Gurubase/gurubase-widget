@@ -699,7 +699,12 @@ class ChatWidget {
         color: var(--text-accent-color);
         font-size: 13px;
       }
-  
+
+      .powered-by {
+        text-decoration: none; /* Remove underline by default */
+        color: var(--text-accent-color) /* Default text color */
+      }
+
       .visit-link {
         text-decoration: none; /* Remove underline by default */
         color: var(--text-accent-color) /* Default text color */
@@ -2128,7 +2133,7 @@ class ChatWidget {
 
             </div>
             <div class="footer-info">
-              <a href="https://gurubase.io" target="_blank">
+              <a href="https://gurubase.io" target="_blank" class="powered-by">
                 <div class="anteon-powered">powered by ${this.getGurubaseLogo()}</div>
               </a>
               <a href="https://gurubase.io/g/${this.guruSlug}" target="_blank" class="visit-link">
