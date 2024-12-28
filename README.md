@@ -24,7 +24,8 @@ The only thing you need to do is to add the widget.js to your website as follows
 </script>
 ```
 
-⚠️ **Important**: The value of the `id` attribute should be `"guru-widget-id"`, don't change it.
+> [!IMPORTANT]
+> The value of the `id` attribute should be `"guru-widget-id"`, don't change it.
 
 `src`, `data-widget-id`, `id` are required. You can modify the rest of the attributes to customize the widget by using the below options.
 
