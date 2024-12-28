@@ -2121,17 +2121,39 @@ class ChatWidget {
 
     // Add event listener to prevent scroll propagation
     const chatMessages = this.shadow.querySelector('.chat-messages');
+    
+    // Prevent scroll propagation for both mouse wheel and touch events
     chatMessages.addEventListener('wheel', (event) => {
       const { scrollTop, scrollHeight, clientHeight } = chatMessages;
-      const threshold = 1; // Add small threshold for bottom detection
+      const threshold = 1;
       
-      // Check if scroll has reached the top or bottom
       if (
-        (scrollTop <= 0 && event.deltaY < 0) || // At top and scrolling up
-        (Math.abs(scrollHeight - scrollTop - clientHeight) <= threshold && event.deltaY > 0) // At bottom and scrolling down
+        (scrollTop <= 0 && event.deltaY < 0) || 
+        (Math.abs(scrollHeight - scrollTop - clientHeight) <= threshold && event.deltaY > 0)
       ) {
         event.preventDefault();
-        event.stopPropagation(); // Add this to ensure the event doesn't bubble up
+        event.stopPropagation();
+      }
+    }, { passive: false });
+
+    // Add touch event handlers for mobile
+    chatMessages.addEventListener('touchstart', (event) => {
+      this.touchStartY = event.touches[0].pageY;
+      this.scrollTop = chatMessages.scrollTop;
+    }, { passive: false });
+
+    chatMessages.addEventListener('touchmove', (event) => {
+      const touchY = event.touches[0].pageY;
+      const touchDelta = this.touchStartY - touchY;
+      const { scrollTop, scrollHeight, clientHeight } = chatMessages;
+      
+      // Prevent scrolling when at the boundaries
+      if (
+        (scrollTop <= 0 && touchDelta < 0) || // At top and scrolling up
+        (Math.abs(scrollHeight - scrollTop - clientHeight) <= 1 && touchDelta > 0) // At bottom and scrolling down
+      ) {
+        event.preventDefault();
+        event.stopPropagation();
       }
     }, { passive: false });
   }
