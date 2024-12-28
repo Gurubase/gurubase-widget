@@ -35,6 +35,30 @@ class ChatWidget {
         --error-red-color: ${this.lightMode ? '#DC2626' : '#F00'};
       }
 
+    .chat-widget {
+      /* Add these properties */
+      position: fixed;
+      z-index: 9999;
+      pointer-events: none; /* Allow clicks to pass through the container */
+    }
+
+    /* Make sure interactive elements within the widget can still receive clicks */
+    .chat-button,
+    .chat-window,
+    .chat-window * {
+      pointer-events: auto;
+    }
+
+    /* Update chat window styles */
+    .chat-window {
+      position: fixed;
+      top: 0;
+      right: -400px;
+      width: 400px;
+      height: 100vh;
+      z-index: 9999; /* Match container z-index */
+    }      
+
       #questionInput {
         color: var(--text-primary);
         background-color: var(--search-bar-bg);
@@ -2149,6 +2173,9 @@ class ChatWidget {
     // Wrap page content
     const wrapper = document.createElement("div");
     wrapper.id = "page-content-wrapper";
+
+    wrapper.style.position = "relative"; // Add this
+    wrapper.style.zIndex = "1"; // Add this to ensure it stays below the widget    
 
     // Move all body children into wrapper except chat widget
     while (document.body.firstChild) {
