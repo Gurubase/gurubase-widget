@@ -1,0 +1,11 @@
+{
+    "name": "gurubase-widget",
+    "version": "1.0.0",
+    "scripts": {
+      "build": "node build.js"
+    },
+    "devDependencies": {
+      "terser": "^5.29.1",
+      "fs-extra": "^11.2.0"
+    }
+  }
