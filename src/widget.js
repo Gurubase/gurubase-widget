@@ -57,9 +57,6 @@ class ChatWidget {
       color: var(--text-reference-color);
     }
 
-    a:hover {
-      color: var(--text-reference-color);
-    }    
 
     /* Make sure interactive elements within the widget can still receive clicks */
     .chat-button,
