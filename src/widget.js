@@ -1079,6 +1079,7 @@ class ChatWidget {
       this.mainColor = this.mainColor || data.colors.base_color;
       this.logoUrl = this.logoUrl || data.icon_url;
       this.name = this.name || data.name;
+      this.guruSlug = data.slug || ""; // Add guru slug
 
     } catch (error) {
       console.error('Error fetching default values:', error);
@@ -1086,6 +1087,7 @@ class ChatWidget {
       this.mainColor = this.mainColor || "#0F9500";
       this.logoUrl = this.logoUrl || "";
       this.name = this.name || "";
+      this.guruSlug = "";
     }
   }  
 
@@ -2095,7 +2097,7 @@ class ChatWidget {
             </div>
             <div class="footer-info">
               <div class="anteon-powered">powered by ${this.getGurubaseLogo()}</div>
-              <a href="https://gurubase.io/" class="visit-link" target="_blank">
+              <a href="https://gurubase.io/g/${this.guruSlug}" target="_blank" class="visit-link" target="_blank">
                 Ask on <span class="guru-text">Guru</span>base for a better UX
                 <span>
                   <svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
