@@ -2454,11 +2454,6 @@ function loadScript(url) {
 //   window.chatWidget = new ChatWidget();
 // });
 
-
-
-// Call the function after the DOM is fully loaded
-document.addEventListener("DOMContentLoaded", setInitialButtonWidth);
-
 // Function to create buttons
 function createResponseButtons(botResponseElement, textToCopy) {
   function createButton(icon, text, onClick, type) {
