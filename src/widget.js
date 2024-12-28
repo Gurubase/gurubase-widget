@@ -1001,6 +1001,12 @@ class ChatWidget {
         height: 20px;
         color: #10B981;
       }
+
+      .error-cross {
+        width: 20px;
+        height: 20px;
+        color: red;
+      }
   
       .stage-status-container.show {
         display: flex;
