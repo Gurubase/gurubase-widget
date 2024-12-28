@@ -221,7 +221,7 @@ class ChatWidget {
           padding: 8px 12px;
           border: 1px solid #e5e7eb;
           border-radius: 12px;
-          font-size: 14px;
+          font-size: 16px;
           color: #191919;
         }
   
@@ -779,7 +779,7 @@ class ChatWidget {
         height: 100%;
         padding: 0 60px 0 40px; /* Right padding for button */
         border: none;
-        font-size: 14px;
+        font-size: 16px;
         background: transparent;
       }
   
