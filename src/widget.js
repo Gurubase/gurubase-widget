@@ -15,8 +15,6 @@ const GURUBASE_LOGO_DARK = `<svg width="55" height="10" viewBox="0 0 55 10" fill
 class ChatWidget {
 
   injectStyles = (hljsTheme) => {
-    console.log('lightMode', this.lightMode);
-    console.log(hljsTheme);
     const styleElement = document.createElement("style");
     styleElement.textContent = `
       /* Base theme colors */
@@ -1062,7 +1060,6 @@ class ChatWidget {
   }  
 
   async fetchDefaultValues() {
-    console.log("fetchDefaultValues", this.widgetId);
     try {
       const response = await fetch(this.guruUrl, {
         headers: {
@@ -1076,7 +1073,6 @@ class ChatWidget {
       }
 
       const data = await response.json();
-      console.log("data", data);
       // Only set values that weren't specified in config
       this.mainColor = this.mainColor || data.colors.base_color;
       this.logoUrl = this.logoUrl || data.icon_url;
@@ -1094,8 +1090,6 @@ class ChatWidget {
   }  
 
   constructor() {
-    console.log("ChatWidget initialized");
-
     // Find the widget script tag
     const scriptTag = document.querySelector('script#guru-widget-id');
     
@@ -1319,7 +1313,6 @@ class ChatWidget {
   processCodeBlocks(container) {
     // Find all pre elements that were created from markdown
     const preElements = container.querySelectorAll("pre");
-    console.log(preElements);
 
     preElements.forEach((pre, index) => {
       // Create wrapper for positioning copy button
@@ -1381,7 +1374,6 @@ class ChatWidget {
   }
 
   toggleChat() {
-    console.log("Toggle chat clicked");
     const chatWindow = this.shadow.getElementById("chatWindow");
     const wrapper = document.getElementById("page-content-wrapper");
     const isMobile = window.innerWidth <= 768;
@@ -1523,7 +1515,6 @@ class ChatWidget {
   // ... rest of the methods (askQuestion, submitQuestion) remain the same
   // Just remove the function keyword and add them as class methods
   async submitQuestion() {
-    console.log("submitQuestion");
     const questionInput = this.shadow.getElementById("questionInput");
     const question = questionInput.value.trim();
 
@@ -1617,15 +1608,12 @@ class ChatWidget {
     }
 
     // After first question is answered, create binge for future questions
-    console.log("isFirstQuestion", this.isFirstQuestion);
-    console.log("currentBingeId", this.currentBingeId);
 
     try {
       if (
         !this.isFirstQuestion &&
         (this.currentBingeId === null || this.currentBingeId === undefined)
       ) {
-        console.log("Creating binge");
         try {
           const bingeResponse = await fetch(this.bingeUrl, {
             method: "POST",
@@ -1640,15 +1628,9 @@ class ChatWidget {
             })
           });
 
-          console.log("bingeResponse", bingeResponse);
-
           if (bingeResponse.ok) {
             const bingeData = await bingeResponse.json();
             this.currentBingeId = bingeData.id;
-            console.log(
-              "Binge created for follow-up questions:",
-              this.currentBingeId
-            );
           } else {
             throw new Error("Error creating binge");
           }
@@ -1682,7 +1664,7 @@ class ChatWidget {
             errorMessage = errorData.error;
           }
         } catch (error) {
-          console.log("error", error);
+          console.error("error", error);
         }
         throw new Error(errorMessage);
       }
@@ -1885,7 +1867,6 @@ class ChatWidget {
         data = await response.json();
 
         if (!response.ok) {
-          console.log("data", data);
           throw new Error(
             data.error || "An error occurred while processing your request."
           );
@@ -1902,11 +1883,8 @@ class ChatWidget {
           // Strip the h1 header if present
           let displayContent = data.content;
           if (displayContent.startsWith("# ")) {
-            console.log("Display content starts with #");
             const headerEndIndex = displayContent.indexOf("\n");
-            console.log("Header end index:", headerEndIndex);
             if (headerEndIndex !== -1) {
-              console.log("Slicing display content from ", headerEndIndex + 2);
               displayContent = displayContent.slice(headerEndIndex + 2);
               displayContent = displayContent.trim();
             }
@@ -1988,20 +1966,14 @@ class ChatWidget {
 
       // Add buttons to the bot response
       const buttons = createResponseButtons(botResponseElement, finalResponse);
-      console.log("buttons", buttons);
       botResponseElement.appendChild(buttons);
 
       messagesContainer.scrollTop = messagesContainer.scrollHeight;
       this.isFirstQuestion = false;
-      console.log("isFirstQuestion", this.isFirstQuestion);
 
       // Store the slug from the response for the next question
       if (data?.slug) {
         this.previousQuestionSlug = data.slug;
-        console.log(
-          "Stored slug for next question:",
-          this.previousQuestionSlug
-        );
       }
     } catch (error) {
       console.error("Error:", error, "Error message:", error.message);
@@ -2209,7 +2181,6 @@ class ChatWidget {
   }
 
   async init() {
-    console.log("init");
     // Bind methods first
     this.toggleChat = this.toggleChat.bind(this);
     this.submitQuestion = this.submitQuestion.bind(this);
@@ -2221,7 +2192,6 @@ class ChatWidget {
     const nameExists = this.name && this.name !== null && this.name !== undefined && this.name !== "undefined";
 
     if (!colorExists || !logoExists || !nameExists) {
-      console.log("fetching default values");
       await this.fetchDefaultValues();
     }    
 
@@ -2255,8 +2225,6 @@ class ChatWidget {
 
     const questionInput = this.shadow.getElementById("questionInput");
     const submitButton = this.shadow.querySelector(".chat-footer button");
-
-    console.log("Chat button found:", chatButton); // Debug log
 
     if (chatButton) {
       chatButton.addEventListener("click", this.toggleChat);
@@ -2342,7 +2310,6 @@ class ChatWidget {
   }
 
   handleDragStart(e) {
-    console.log("Drag start");
     const handle = e.target;
     const chatWindow = this.shadow.getElementById("chatWindow");
 
@@ -2367,7 +2334,6 @@ class ChatWidget {
   handleDrag(e) {
     if (!this.isDragging) return;
 
-    console.log("Dragging...");
     const chatWindow = this.shadow.getElementById("chatWindow");
     const wrapper = document.getElementById("page-content-wrapper");
     const deltaX = this.startX - e.clientX;
@@ -2382,7 +2348,6 @@ class ChatWidget {
   }
 
   handleDragEnd(e) {
-    console.log("Drag end");
     this.isDragging = false;
     const handle = document.querySelector(".resize-handle");
     handle?.classList.remove("dragging");
@@ -2465,19 +2430,16 @@ function loadScript(url) {
   // Load marked.js before initializing the widget
   loadScript('https://cdn.jsdelivr.net/npm/marked/marked.min.js')
     .then(() => {
-      console.log("marked.js loaded");
       // Check if DOMContentLoaded has already fired
       if (document.readyState === 'loading') {
         // If still loading, add event listener
         document.addEventListener("DOMContentLoaded", () => {
-          console.log("DOMContentLoaded");
           if (!window.chatWidget) {
             window.chatWidget = new ChatWidget();
           }
         });
       } else {
         // If already loaded, initialize immediately
-        console.log("DOM already loaded");
         if (!window.chatWidget) {
           window.chatWidget = new ChatWidget();
         }
@@ -2492,17 +2454,7 @@ function loadScript(url) {
 //   window.chatWidget = new ChatWidget();
 // });
 
-// Function to set initial width as a CSS variable
-function setInitialButtonWidth() {
-  const chatButton = this.shadow.querySelector(".chat-button");
-  if (chatButton) {
-    const initialWidth = chatButton.offsetWidth + 20;
-    document.documentElement.style.setProperty(
-      "--initial-width",
-      `${initialWidth}px`
-    );
-  }
-}
+
 
 // Call the function after the DOM is fully loaded
 document.addEventListener("DOMContentLoaded", setInitialButtonWidth);
@@ -2576,13 +2528,13 @@ function createResponseButtons(botResponseElement, textToCopy) {
   }
 
   function onClickLike() {
+    // TODO: Implement like functionality
     // Mock API request
-    console.log("Liked!");
   }
 
   function onClickDislike() {
+    // TODO: Implement dislike functionality
     // Mock API request
-    console.log("Disliked!");
   }
 
   const buttonContainer = document.createElement("div");
