@@ -2128,7 +2128,9 @@ class ChatWidget {
 
             </div>
             <div class="footer-info">
-              <div class="anteon-powered">powered by ${this.getGurubaseLogo()}</div>
+              <a href="https://gurubase.io" target="_blank">
+                <div class="anteon-powered">powered by ${this.getGurubaseLogo()}</div>
+              </a>
               <a href="https://gurubase.io/g/${this.guruSlug}" target="_blank" class="visit-link" target="_blank">
                 Ask on <span class="guru-text">Guru</span>base for a better UX
                 <span>
