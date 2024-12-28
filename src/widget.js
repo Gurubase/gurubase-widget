@@ -1559,6 +1559,7 @@ class ChatWidget {
         .classList.remove("hidden");
 
       evaluationStage.style.display = "flex";
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
 
     // After first question is answered, create binge for future questions
@@ -1687,6 +1688,8 @@ class ChatWidget {
         let accumulatedResponse = "";
         let headerFound = false;
         let bufferedContent = "";
+        const messagesContainer = this.shadow.querySelector(".chat-messages");
+        let wasAtBottom = this.isUserAtBottom(messagesContainer); // Track initial scroll position
 
         while (true) {
           const { done, value } = await reader.read();
@@ -1809,7 +1812,14 @@ class ChatWidget {
           if (headerFound) {
             botResponseElement.innerHTML = marked.parse(bufferedContent);
             this.processCodeBlocks(botResponseElement);
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            
+            // Update wasAtBottom based on current position
+            wasAtBottom = this.isUserAtBottom(messagesContainer);
+
+            // Only auto-scroll if user was at bottom
+            if (wasAtBottom) {
+              messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
           }
         }
       } else {
@@ -2324,6 +2334,12 @@ class ChatWidget {
         inputContainer.style.paddingBottom = "0"; // Reset input container padding
       }
     });
+  }
+
+  // Add this helper function at the class level
+  isUserAtBottom(container) {
+    const threshold = 70; // pixels from bottom to consider "at bottom"
+    return container.scrollHeight - container.scrollTop - container.clientHeight < threshold;
   }
 }
 
