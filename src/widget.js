@@ -1104,20 +1104,70 @@ class ChatWidget {
     
     if (scriptTag) {
         // Read attributes from script tag
-        this.widgetId = scriptTag.getAttribute('data-widget-id') || "";
-        this.baseUrl = scriptTag.getAttribute('data-baseUrl') || defaultBaseUrl;
-        this.buttonText = scriptTag.getAttribute('data-text') || "Ask AI";
-        this.mainColor = scriptTag.getAttribute('data-bg-color') || null;
-        this.logoUrl = scriptTag.getAttribute('data-icon-url') || null;
-        this.name = scriptTag.getAttribute('data-name') || null;
-        this.lightMode = scriptTag.getAttribute('data-light-mode').toLowerCase() === 'true' || false;
-        
-        // Parse margins from JSON string
+        const widgetId = scriptTag.getAttribute('data-widget-id');
+        if (!widgetId || widgetId.trim() === "") {
+            throw new Error("Widget ID is required");
+        }
+        this.widgetId = widgetId;
+
+        // Validate and set base URL
         try {
-            this.margins = JSON.parse(scriptTag.getAttribute('data-margins')) || 
-                          { bottom: "20px", right: "20px" };
+            const baseUrl = scriptTag.getAttribute('data-baseUrl');
+            new URL(baseUrl); // Test if valid URL
+            this.baseUrl = baseUrl;
+        } catch {
+            this.baseUrl = defaultBaseUrl;
+            console.warn("Invalid base URL provided, using default");
+        }
+
+        // Validate and set button text
+        this.buttonText = scriptTag.getAttribute('data-text') || "Ask AI";
+
+        // Validate and set main color
+        const mainColor = scriptTag.getAttribute('data-bg-color');
+        if (mainColor && /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(mainColor)) {
+            this.mainColor = mainColor;
+        } else {
+            this.mainColor = null;
+            if (mainColor) console.warn("Invalid main color format, using default");
+        }
+
+        // Validate and set logo URL
+        try {
+            const logoUrl = scriptTag.getAttribute('data-icon-url');
+            if (logoUrl) new URL(logoUrl); // Test if valid URL
+            this.logoUrl = logoUrl;
+        } catch {
+            this.logoUrl = null;
+            console.warn("Invalid logo URL provided, using default");
+        }
+
+        // Validate and set name
+        const name = scriptTag.getAttribute('data-name');
+        if (name && typeof name === 'string' && name.length <= 50) {
+            this.name = name;
+        } else {
+            this.name = null;
+            if (name) console.warn("Invalid name provided, using default");
+        }
+
+        // Validate and set light mode
+        this.lightMode = scriptTag.getAttribute('data-light-mode')?.toLowerCase() === 'true' || false;
+
+        // Validate and set margins
+        try {
+            const margins = JSON.parse(scriptTag.getAttribute('data-margins'));
+            if (margins && 
+                typeof margins === 'object' && 
+                /^\d+(\.\d+)?(px|rem|em|vh|vw)$/.test(margins.bottom) && 
+                /^\d+(\.\d+)?(px|rem|em|vh|vw)$/.test(margins.right)) {
+                this.margins = margins;
+            } else {
+                throw new Error();
+            }
         } catch {
             this.margins = { bottom: "20px", right: "20px" };
+            console.warn("Invalid margins format provided, using default");
         }
     } else {
         // Fallback values if script tag not found
