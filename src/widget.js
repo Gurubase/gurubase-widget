@@ -996,7 +996,7 @@ class ChatWidget {
         align-items: center;
         gap: 12px;
         font-size: 14px;
-        color: #6b7280;
+        color: ${this.lightMode ? '#6B7280' : '#9CA3AF'};
         margin-top: 16px;
       }
   
