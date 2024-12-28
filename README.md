@@ -1,192 +1,39 @@
 # Gurubase Widget
+This repository includes the script for the 'Ask AI' widget, which you can add to your Guru's AI capabilities into your website.
 
-A lightweight, customizable chat widget that can be easily integrated into any website. It connects your webpage to Gurubase, an AI-powered chat interface that can answer any question regarding your product.
+<p align="center">
+  <img src="./assets/widget.gif" alt="widget demo">
+</p>
 
-## Features
+## Prerequisites
 
-- 🚀 Easy integration
-
-- 💬 Real-time streaming responses
-
-- 🎨 Customizable appearance
-
-- 📱 Responsive design
-
-- 🔒 Secure API integration
-
-- 📊 Trust score indicators
-
-- 🔗 Reference link support
-
-- ⌨️ Markdown support
-
-- 🎯 Code syntax highlighting
+- **Your website should have a Guru on Gurubase.io.** If not, [request a new Guru](https://github.com/Gurubase/gurubase?tab=readme-ov-file#how-to-create-a-guru).
+- **You need to have a Widget ID.** You can get it from your Guru's settings page on Gurubase.io.
+   - Go to "My Gurus" page
+   - Select the Guru you want to add the widget to
+   - On the "Widget" section create a new widget
+   - Copy the Widget ID and use it in the installation section
 
 ## Installation
-
-### Pure Javascript
-
-Add the widget to your website by including these scripts in your HTML:
-
+The only thing you need to do is to add the widget.js to your website as follows:
 ```html
 <!-- Gurubase Widget -->
-<script async src="/path/to/widget.js" 
-    data-widget-id="FhdIYUJfuAs3g_Zmm_U6UarG6GJFSVSUzf4NHYltu1g"
-    data-text="Ask AI"
-    data-margins='{"bottom": "20px", "right": "20px"}'
-    data-bg-color="#F5A51D"
-    data-icon-url="https://avatars.githubusercontent.com/u/75415501?s=200&v=4"
-    data-name="Anteon"
-    data-light-mode="true"
+<script src="https://widget.gurubase.io/guru_widget.latest.min.js" 
+    data-widget-id="<your_widget_id>"
     id="guru-widget-id">
 </script>
 ```
 
-### React
+`src`, `data-widget-id`, `id` are required. You can modify the rest of the attributes to customize the widget by using the below options.
 
-1. Add the widget.js in your project. 
-2. Create this component:
-
-```jsx
-"use client";
-
-import { useEffect } from 'react';
-
-function GurubaseWidget({
-  widgetId,
-  text = "Ask AI",
-  margins = { bottom: "20px", right: "20px" },
-  bgColor = null,
-  iconUrl = null,
-  name = null,
-  lightMode = true
-}) {
-  useEffect(() => {
-    // Check if the widget is already initialized
-    if (window.chatWidget) {
-      return;
-    }
-
-    const script = document.createElement('script');
-    script.src = '/path/to/widget.js';
-    script.async = true;
-
-    // Set data attributes
-    script.setAttribute('data-widget-id', widgetId);
-    if (text) {
-    script.setAttribute('data-text', text);
-    }
-    if (margins) {
-    script.setAttribute('data-margins', JSON.stringify(margins));
-    }
-    if (bgColor) {
-    script.setAttribute('data-bg-color', bgColor);
-    }
-    if (iconUrl) {
-    script.setAttribute('data-icon-url', iconUrl);
-    }
-    if (name) {
-    script.setAttribute('data-name', name);
-    }
-    if (lightMode) {
-    script.setAttribute('data-light-mode', lightMode);
-    }
-
-    script.setAttribute('id', 'guru-widget-id');
-
-    document.body.appendChild(script);
-
-    // Cleanup when component unmounts
-    return () => {
-      const widgetScript = document.querySelector('script[src="/widget.js"]');
-      if (widgetScript) {
-        document.body.removeChild(widgetScript);
-      }
-      const widgetContainer = document.querySelector('.chat-widget');
-      if (widgetContainer) {
-        widgetContainer.remove();
-      }
-    };
-  }, [widgetId, text, margins, bgColor, iconUrl, name, lightMode]);
-
-  return null;
-}
-
-export default GurubaseWidget;
-```
-
-3. Use the component in your app.
-
-```jsx
-<GurubaseWidget 
-  widgetId="b_GSd67b_KVColq6d0YFygTkTkT-aaAOhonhP4JsWgP5k"
-  text="Ask AI"
-  margins={{ bottom: "20px", right: "20px" }}
-  lightMode={false}
-  bgColor="#F5A51D"
-  iconUrl="https://avatars.githubusercontent.com/u/75415501?s=200&v=4"
-  name="Anteon"
-/>
-```
-
-## Usage
-
-### Configuration Options
+## Configuration Options
 
 | Option | Type | Description | Default |
 |--------|------|-------------|---------|
-| data-widget-id | string | Your widget ID (Click [here](https://gurubase.io) to get one) | Required |
+| data-widget-id | string | Your widget ID | Required |
 | data-text | string | Text displayed on the chat button | "Ask AI" |
 | data-margins | object | Button positioning margins | { bottom: "20px", right: "20px" } |
-| data-bg-color | string | Primary color for the widget | Fetched from the backend |
-| data-icon-url | string | URL to your company logo | Fetched from the backend |
-| data-name | string | Your company/product name | Fetched from the backend |
-| data-light-mode | boolean | Whether to use light mode | true |
-
-## Customization
-
-### Styling
-
-The widget automatically fetches the following configuration options from the backend:
-
-- `data-bg-color`
-- `data-icon-url`
-- `data-name` 
-
-> You can override these values by passing them as given in the Installation section.
-
-The widget can be customized through the following configuration options:
-
-- `data-bg-color`: Change the primary color of the widget.
-- `data-icon-url`: Change the logo displayed in the widget.
-- `data-name`: Change the name displayed in the widget.
-- `data-text`: Change the text displayed on the chat button.
-- `data-margins`: Change the margins of the chat button.
-- `data-light-mode`: Change the mode of the widget.
-
-#### Examples
-
-# TODO: Add screenshots
-
-## Demos
-
-Currently there are two demos:
-
-- [React App](examples/react_app/index.html)
-    
-    You can view this by the following commands
-    ```bash
-    cd examples/react_app
-    npm install
-    npm run dev
-    ```
-- [Pure JS](examples/pure_js/index.html)
-    
-    You can view this simply by opening the file in your browser.
-
-## License
-MIT License - see the LICENSE file for details.
-
-## Support
-
-For any issues or support requests, please contact us at [support@gurubase.com](mailto:support@gurubase.com).
+| data-bg-color | string | Primary color for the widget | Fetched from the Gurubase.io |
+| data-icon-url | string | URL to your company/product logo | Fetched from the Gurubase.io |
+| data-name | string | Your company/product name | Fetched from the Gurubase.io |
+| data-light-mode | boolean | Whether to use light mode | false |
