@@ -18,7 +18,7 @@ This repository includes the script for the 'Ask AI' widget, which you can add t
 The only thing you need to do is to add the widget.js to your website as follows:
 ```html
 <!-- Gurubase Widget -->
-<script src="https://widget.gurubase.io/guru_widget.latest.min.js" 
+<script src="https://widget.gurubase.io/widget.latest.min.js" 
     data-widget-id="<your_widget_id>"
     id="guru-widget-id">
 </script>
