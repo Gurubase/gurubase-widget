@@ -1720,6 +1720,11 @@ class ChatWidget {
                 if (data.references && data.references.length > 0) {
                   const referencesContainer = document.createElement("div");
                   referencesContainer.className = "references-container";
+                  referencesContainer.innerHTML = `
+                    <header style="font-size: 1rem; font-weight: 600; color: #1f2937;">
+                      Sources
+                    </header>
+                  `;
 
                   data.references.forEach((ref) => {
                     const referenceItem = document.createElement("a");
@@ -1861,6 +1866,12 @@ class ChatWidget {
           if (data.references && data.references.length > 0) {
             const referencesContainer = document.createElement("div");
             referencesContainer.className = "references-container";
+
+            referencesContainer.innerHTML = `
+              <header style="font-size: 1rem; font-weight: 600; color: #1f2937;">
+                Sources
+              </header>
+            `;
 
             data.references.forEach((ref) => {
               const referenceItem = document.createElement("a");
