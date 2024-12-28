@@ -30,7 +30,7 @@ Add the widget to your website by including these scripts in your HTML:
 
 ```html
 <!-- Gurubase Widget -->
-<script src="/path/to/widget.js" 
+<script async src="/path/to/widget.js" 
     data-widget-id="FhdIYUJfuAs3g_Zmm_U6UarG6GJFSVSUzf4NHYltu1g"
     data-text="Ask AI"
     data-margins='{"bottom": "20px", "right": "20px"}'
