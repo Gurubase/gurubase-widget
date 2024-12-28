@@ -2114,6 +2114,22 @@ class ChatWidget {
     widgetContainer.innerHTML = widgetHTML;
     // document.body.appendChild(widgetContainer);
     this.shadow.appendChild(widgetContainer);
+
+    // Add event listener to prevent scroll propagation
+    const chatMessages = this.shadow.querySelector('.chat-messages');
+    chatMessages.addEventListener('wheel', (event) => {
+      const { scrollTop, scrollHeight, clientHeight } = chatMessages;
+      const threshold = 1; // Add small threshold for bottom detection
+      
+      // Check if scroll has reached the top or bottom
+      if (
+        (scrollTop <= 0 && event.deltaY < 0) || // At top and scrolling up
+        (Math.abs(scrollHeight - scrollTop - clientHeight) <= threshold && event.deltaY > 0) // At bottom and scrolling down
+      ) {
+        event.preventDefault();
+        event.stopPropagation(); // Add this to ensure the event doesn't bubble up
+      }
+    }, { passive: false });
   }
 
   async init() {
