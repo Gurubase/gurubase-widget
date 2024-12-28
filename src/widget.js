@@ -30,7 +30,7 @@ class ChatWidget {
         --button-passive-bg: ${this.lightMode ? '#BABFC8' : '#191919'};
         --button-passive-svg-color: ${this.lightMode ? 'white' : '#6D6D6D'};
         --text-accent-color: ${this.lightMode ? '#6D6D6D' : '#A1A1A1'};
-        --text-reference-color: ${this.lightMode ? '#0000ED' : '#000'};
+        --text-reference-color: ${this.lightMode ? '#0000ED' : '#9999ff'};
         --response-button-color: ${this.lightMode ? '#6D6D6D' : 'white'};
         --error-red-color: ${this.lightMode ? '#DC2626' : '#F00'};
       }
@@ -41,6 +41,25 @@ class ChatWidget {
       z-index: 9999;
       pointer-events: none; /* Allow clicks to pass through the container */
     }
+
+    .markdown-content a {
+      text-decoration: none;
+      color: var(--text-reference-color);
+    }
+
+    .markdown-content a:hover {
+      text-decoration: underline;
+      color: var(--text-reference-color);
+    }
+
+    /* Update any other link styles */
+    a {
+      color: var(--text-reference-color);
+    }
+
+    a:hover {
+      color: var(--text-reference-color);
+    }    
 
     /* Make sure interactive elements within the widget can still receive clicks */
     .chat-button,
@@ -99,6 +118,7 @@ class ChatWidget {
           -webkit-box-shadow: 0 0 0px 1000px ${this.lightMode ? "#E7F0FE" : "#0C0D17"} inset;
           transition: background-color 5000s ease-in-out 0s;
         }
+
 
         /* Insert highlight.js theme */
         ${hljsTheme}
