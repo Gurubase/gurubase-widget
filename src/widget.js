@@ -1390,6 +1390,7 @@ class ChatWidget {
         const isOpening = !chatWindow.classList.contains("open");
         chatWindow.classList.toggle("open");
         document.body.classList.toggle("widget-open"); // Use document.body instead of shadow DOM body
+        const windowHeight = window.innerHeight;
         
         if (!isOpening) {
           // Closing
@@ -1406,6 +1407,7 @@ class ChatWidget {
           // Opening
           if (isMobile) {
             chatWindow.style.width = "100%";
+            chatWindow.style.height = `${windowHeight}px`;
           } else {
             wrapper.style.width = `calc(100% - 400px)`;
           }
