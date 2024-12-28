@@ -1110,7 +1110,7 @@ class ChatWidget {
         this.mainColor = scriptTag.getAttribute('data-bg-color') || null;
         this.logoUrl = scriptTag.getAttribute('data-icon-url') || null;
         this.name = scriptTag.getAttribute('data-name') || null;
-        this.lightMode = scriptTag.getAttribute('data-light-mode') === 'true' || false;
+        this.lightMode = scriptTag.getAttribute('data-light-mode').toLowerCase() === 'true' || false;
         
         // Parse margins from JSON string
         try {
