@@ -493,21 +493,6 @@ class ChatWidget {
           position: relative;
         }
   
-        .reference-question[data-tooltip]:hover::after {
-          content: attr(data-tooltip);
-          position: absolute;
-          bottom: -40px;
-          left: 0;
-          background: #18181b;
-          color: white;
-          padding: 8px 12px;
-          border-radius: 6px;
-          font-size: 14px;
-          max-width: 300px;
-          white-space: normal;
-          z-index: 100;
-        }
-  
         /* Trust score styles */
         .trust-score-card {
           padding-top: 16px;
