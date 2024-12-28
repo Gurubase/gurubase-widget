@@ -2131,7 +2131,7 @@ class ChatWidget {
               <a href="https://gurubase.io" target="_blank">
                 <div class="anteon-powered">powered by ${this.getGurubaseLogo()}</div>
               </a>
-              <a href="https://gurubase.io/g/${this.guruSlug}" target="_blank" class="visit-link" target="_blank">
+              <a href="https://gurubase.io/g/${this.guruSlug}" target="_blank" class="visit-link">
                 Ask on <span class="guru-text">Guru</span>base for a better UX
                 <span>
                   <svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
