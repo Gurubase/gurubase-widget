@@ -1723,7 +1723,7 @@ class ChatWidget {
                   const referencesContainer = document.createElement("div");
                   referencesContainer.className = "references-container";
                   referencesContainer.innerHTML = `
-                    <header style="font-size: 1rem; font-weight: 600; color: #1f2937;">
+                    <header style="font-size: 1rem; font-weight: 600;">
                       Sources
                     </header>
                   `;
