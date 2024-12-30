@@ -1256,6 +1256,11 @@ class ChatWidget {
     this.shadow = this.container.attachShadow({ mode: 'open' });
   
     this.init();
+
+    // Add these properties
+    this.isStreaming = false;
+    // Add this property
+    this.shouldAutoScroll = true;
   }
 
   getLogo(maxWidth = 24, maxHeight = 24) {
@@ -1754,6 +1759,7 @@ class ChatWidget {
       // Handle the response
       let data;
       if (response.headers.get("content-type")?.includes("text/event-stream")) {
+        this.isStreaming = true;
         const reader = response.body.getReader();
         const decoder = new TextDecoder();
         let accumulatedResponse = "";
@@ -1761,6 +1767,10 @@ class ChatWidget {
         let bufferedContent = "";
         const messagesContainer = this.shadow.querySelector(".chat-messages");
         let wasAtBottom = this.isUserAtBottom(messagesContainer); // Track initial scroll position
+
+        // Add scroll event listener
+        const boundScrollHandler = (e) => this.handleMessagesScroll(messagesContainer, e);
+        messagesContainer.addEventListener('wheel', boundScrollHandler);
 
         while (true) {
           const { done, value } = await reader.read();
@@ -1860,6 +1870,7 @@ class ChatWidget {
             } catch (error) {
               console.error("Error fetching additional details:", error);
             }
+            this.isStreaming = false;
             break;
           }
 
@@ -1893,11 +1904,14 @@ class ChatWidget {
             wasAtBottom = this.isUserAtBottom(messagesContainer);
 
             // Only auto-scroll if user was at bottom
-            if (wasAtBottom) {
+            if (this.shouldAutoScroll) {
               messagesContainer.scrollTop = messagesContainer.scrollHeight;
             }
           }
         }
+
+        // Remove scroll listener after streaming ends
+        messagesContainer.removeEventListener('wheel', boundScrollHandler);
       } else {
         data = await response.json();
 
@@ -2445,6 +2459,19 @@ class ChatWidget {
   isUserAtBottom(container) {
     const threshold = 70; // pixels from bottom to consider "at bottom"
     return container.scrollHeight - container.scrollTop - container.clientHeight < threshold;
+  }
+
+  handleMessagesScroll(messagesContainer, event) {
+    const isAtBottom = this.isUserAtBottom(messagesContainer);
+    
+    if (this.isStreaming) {
+      if (event.deltaY < 0) {
+        this.shouldAutoScroll = false;
+      }
+      else if (isAtBottom) {
+        this.shouldAutoScroll = true;
+      } 
+    }
   }
 }
 
