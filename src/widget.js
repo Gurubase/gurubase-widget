@@ -362,15 +362,16 @@ class ChatWidget {
           background: var(--bg-secondary);
           padding: 12px;
           border-radius: 6px;
-          white-space: pre-wrap;
-          word-wrap: break-word;
-          max-width: 100%;
+          overflow-x: auto;
+          position: relative;
         }
   
         .markdown-content pre code {
           background: none;
           padding: 0;
-          white-space: pre-wrap;
+          white-space: pre;
+          display: inline-block;
+          min-width: 100%;
         }
   
         .markdown-content p {
