@@ -228,6 +228,28 @@ class ChatWidget {
           overflow-y: auto;
           padding: 32px 20px;
           background-color: var(--bg-primary);
+          
+          /* Webkit scrollbar styles */
+          &::-webkit-scrollbar {
+            width: 4px;  /* Changed from 6px to 4px */
+          }
+
+          &::-webkit-scrollbar-track {
+            background: transparent;
+          }
+
+          &::-webkit-scrollbar-thumb {
+            background-color: ${this.lightMode ? '#D1D5DB' : '#4B5563'};
+            border-radius: 2px;  /* Reduced from 3px to 2px to match thinner width */
+          }
+
+          &::-webkit-scrollbar-thumb:hover {
+            background-color: ${this.lightMode ? '#9CA3AF' : '#6B7280'};
+          }
+
+          /* Firefox scrollbar styles */
+          scrollbar-width: thin;
+          scrollbar-color: ${this.lightMode ? '#D1D5DB' : '#4B5563'} transparent;
         }
   
         .message {
