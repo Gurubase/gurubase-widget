@@ -1467,7 +1467,7 @@ class ChatWidget {
     if (question.length < 10) {
       errorElement.style.display = "block";
       inputContainer.style.paddingBottom = "24px"; // Add padding to input container
-      errorElement.textContent = "Question should be at least 10 characters";
+      errorElement.textContent = "* At least 10 characters required!";
       return;
     }
 
