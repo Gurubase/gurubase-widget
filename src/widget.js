@@ -720,7 +720,18 @@ class ChatWidget {
         padding-right: 20px;
         padding-bottom: 20px;
         color: var(--text-accent-color);
-        font-size: 13px;
+        font-size: 12px;
+      }
+
+      @media (max-width: 374px) {
+        .footer-info {
+          font-size: 10px;
+        }
+        
+        .footer-info .anteon-powered svg {
+          width: 35px;
+          height: 6px;
+        }
       }
 
       .powered-by {
@@ -734,7 +745,6 @@ class ChatWidget {
         align-items: center;
         gap: 4px;
         transition: color 0.2s;
-        font-size: 12px;
         position: relative;
       }
   
@@ -760,7 +770,6 @@ class ChatWidget {
         display: flex;
         align-items: center;
         gap: 4px;
-        font-size: 12px;
       }
   
       .chat-input-container {
