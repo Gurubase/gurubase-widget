@@ -28,7 +28,7 @@ class ChatWidget {
         --button-passive-bg: ${this.lightMode ? '#BABFC8' : '#191919'};
         --button-passive-svg-color: ${this.lightMode ? 'white' : '#6D6D6D'};
         --text-accent-color: ${this.lightMode ? '#6D6D6D' : '#A1A1A1'};
-        --text-reference-color: ${this.lightMode ? '#0000ED' : '#9999ff'};
+        --text-reference-color: ${this.lightMode ? '#3782f6' : '#9999ff'};
         --response-button-color: ${this.lightMode ? '#6D6D6D' : 'white'};
         --error-red-color: ${this.lightMode ? '#DC2626' : '#F00'};
       }
