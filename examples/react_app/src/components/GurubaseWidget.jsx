@@ -25,7 +25,7 @@ function GurubaseWidget({
     // Load widget script after marked.js
     // markedScript.onload = () => {
       const script = document.createElement('script');
-      script.src = 'widget.js';
+      script.src = 'https://widget.gurubase.io/widget.latest.min.js';
       script.async = true;
 
       // Set data attributes
@@ -59,7 +59,7 @@ function GurubaseWidget({
     // Cleanup when component unmounts
     return () => {
     //   document.body.removeChild(markedScript);
-      const widgetScript = document.querySelector('script[src="/widget.js"]');
+      const widgetScript = document.getElementById('guru-widget-id');
       if (widgetScript) {
         document.body.removeChild(widgetScript);
       }

@@ -1,44 +1,34 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import Navigation from './components/Navigation'
+import Home from './pages/Home'
+import About from './pages/About'
+import Contact from './pages/Contact'
 import GurubaseWidget from './components/GurubaseWidget'
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
+    <Router>
       <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+        <Navigation />
+        <main style={{ padding: '2rem' }}>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/contact" element={<Contact />} />
+          </Routes>
+        </main>
+        <GurubaseWidget 
+          widgetId="YOUR_WIDGET_ID"
+          text="Ask AI"
+          margins={{ bottom: "20px", right: "20px" }} // Optional
+          lightMode={false} // Optional
+          bgColor="YOUR_BG_COLOR" // Optional
+          iconUrl="YOUR_ICON_URL" // Optional
+          name="YOUR_NAME" // Optional
+        />
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-      <GurubaseWidget 
-        widgetId="b_GSd67b_KVColq6d0YFygTkT-aaAOhonhP4JsWgP5k"
-        text="Ask AI"
-        margins={{ bottom: "20px", right: "20px" }}
-        lightMode={false}
-        // bgColor="#F5A51D"
-        // iconUrl="https://avatars.githubusercontent.com/u/75415501?s=200&v=4"
-        // name="Anteon"
-      />
-    </>
+    </Router>
   )
 }
 
