@@ -127,7 +127,7 @@ extra_javascript:
 
 ## Sphinx
 
-1. Create a file named `gurubase-widget.js` in your docs directory and add the following code:
+1. Create a file named `gurubase-widget.js` in your `_static` directory and add the following code:
 
 ```js
 document.addEventListener('DOMContentLoaded', function() {
@@ -163,6 +163,7 @@ document.addEventListener('DOMContentLoaded', function() {
 2. Add the script to your Sphinx configuration by updating your `conf.py` file:
 
 ```python
+html_static_path = ['_static']
 html_js_files = ['gurubase-widget.js']
 ```
 
