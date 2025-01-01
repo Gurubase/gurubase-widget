@@ -183,7 +183,7 @@ If you use `mintlify`, you can follow the instructions for Mintlify above.
 
 1. Create a new file `app/components/GurubaseWidget.tsx` (or `.jsx` if you're not using TypeScript):
 
-```tsx:app/components/GurubaseWidget.tsx
+```tsx
 import { useEffect } from 'react';
 
 declare global {
@@ -242,7 +242,7 @@ export function GurubaseWidget({
 
 2. Add the widget to your root layout file (`app/root.tsx` or the layout where you want the widget to appear):
 
-```tsx:app/root.tsx
+```tsx
 import { GurubaseWidget } from '~/components/GurubaseWidget';
 
 export default function App() {
@@ -311,7 +311,7 @@ export default defineConfig({
 
 1. Create a new file named `GurubaseWidget.jsx` in your `src/components` directory:
 
-```jsx:src/components/GurubaseWidget.jsx
+```jsx
 "use client";
 
 import { useEffect } from 'react';
@@ -392,7 +392,7 @@ export default GurubaseWidget;
 
 2. Add the widget to your root layout file (`src/App.jsx` or the layout where you want the widget to appear):
 
-```jsx:src/App.jsx
+```jsx
 import GurubaseWidget from './components/GurubaseWidget';
 
 function App() {
@@ -415,3 +415,63 @@ function App() {
 export default App;
 ```
 
+## Next.js
+
+1. Create a new file named `GurubaseWidget.js` in your `components` directory:
+
+```jsx
+'use client'
+
+import Script from 'next/script'
+
+export default function GurubaseWidget({
+  widgetId,
+  text = "Ask AI",
+  margins = { bottom: "20px", right: "20px" },
+  lightMode = false,
+  bgColor,
+  iconUrl,
+  name
+}) {
+  return (
+    <Script
+      src="https://widget.gurubase.io/widget.latest.min.js"
+      strategy="lazyOnload"
+      async
+      id="guru-widget-id"
+      data-widget-id={widgetId}
+      data-text={text}
+      data-margins={JSON.stringify(margins)}
+      data-light-mode={String(lightMode)}
+      {...(bgColor && { "data-bg-color": bgColor })}
+      {...(iconUrl && { "data-icon-url": iconUrl })}
+      {...(name && { "data-name": name })}
+    />
+  )
+}
+```
+
+2. Use the component in your page, layout, however you want. One way is to create a new file named `_app.js` in your `pages` directory:
+
+```js
+import '../styles/global.css'
+import GurubaseWidget from '../components/GurubaseWidget'
+
+export default function App({ Component, pageProps }) {
+  return (
+    <>
+      <Component {...pageProps} />
+      <GurubaseWidget 
+        widgetId="YOUR_WIDGET_ID" // Replace with your actual widget ID
+        // Optional props:
+        // text="Ask AI"
+        // margins={{ bottom: "20px", right: "20px" }}
+        // lightMode={false}
+        // bgColor="YOUR_BG_COLOR"
+        // iconUrl="YOUR_ICON_URL"
+        // name="YOUR_NAME"
+      />
+    </>
+  )
+}
+```
