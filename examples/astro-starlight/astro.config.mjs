@@ -23,6 +23,22 @@ export default defineConfig({
 					autogenerate: { directory: 'reference' },
 				},
 			],
+			head: [
+				{
+					tag: 'script',
+					attrs: {
+						id: 'guru-widget-id',
+						src: 'https://widget.gurubase.io/widget.latest.min.js',
+						'data-widget-id': 'YOUR_WIDGET_ID', // Replace with your actual widget ID
+						'data-margins': JSON.stringify({ bottom: "20px", right: "20px" }), // Optional
+						'data-text': 'Ask AI', // Optional
+						'data-name': 'YOUR_NAME', // Optional
+						'data-icon-url': 'YOUR_ICON_URL', // Optional
+						'data-light-mode': 'true', // Optional
+						defer: true,
+					},
+				},
+			],
 		}),
 	],
 });

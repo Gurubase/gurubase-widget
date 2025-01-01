@@ -271,3 +271,39 @@ export default function App() {
 ```
 
 The widget will now be available across all pages in your Remix documentation app. Make sure to replace `YOUR_WIDGET_ID` with your actual GuruBase widget ID.
+
+## Astro - Starlight
+
+1. Add this to your `astro.config.mjs` file:
+
+```js
+// https://astro.build/config
+export default defineConfig({
+	integrations: [
+		starlight({
+
+      // ...
+
+			head: [ // Add this to the head section
+				{
+					tag: 'script',
+					attrs: {
+						id: 'guru-widget-id',
+						src: 'https://widget.gurubase.io/widget.latest.min.js',
+						'data-widget-id': 'YOUR_WIDGET_ID', // Replace with your actual widget ID
+						'data-margins': JSON.stringify({ bottom: "20px", right: "20px" }), // Optional
+						'data-text': 'Ask AI', // Optional
+						'data-name': 'YOUR_NAME', // Optional
+						'data-icon-url': 'YOUR_ICON_URL', // Optional
+						'data-light-mode': 'true', // Optional
+						defer: true,
+					},
+				},
+			],
+
+      // ...
+		}),
+	],
+});
+
+```
