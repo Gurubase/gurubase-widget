@@ -36,6 +36,7 @@ module.exports = function (context) {
               "data-name": "YOUR_NAME", // Optional
               "data-icon-url": "YOUR_ICON_URL", // Optional
               "data-bg-color": "YOUR_BG_COLOR", // Optional
+              "data-baseUrl": "YOUR_BASE_URL", // Optional, only needed for self-hosted widgets
               defer: true,
               id: "guru-widget-id", // Do not change this
             },
@@ -46,6 +47,8 @@ module.exports = function (context) {
   };
 };
 ```
+
+> See the [Docusaurus example](https://github.com/Gurubase/gurubase-widget/tree/master/examples/docusaurus).
 
 ## Mintlify
 
@@ -61,6 +64,7 @@ const widgetSettings = {
   name: "YOUR_NAME", // Optional - Widget name
   iconUrl: "YOUR_ICON_URL", // Optional - Widget icon URL
   bgColor: "YOUR_BG_COLOR", // Optional - Widget background color
+  baseUrl: "YOUR_BASE_URL", // Optional, only needed for self-hosted widgets
 };
 
 // Load the GuruBase widget
@@ -77,7 +81,8 @@ Object.entries({
   "data-light-mode": widgetSettings.lightMode,
   "data-name": widgetSettings.name,
   "data-icon-url": widgetSettings.iconUrl,
-  "data-bg-color": widgetSettings.bgColor
+  "data-bg-color": widgetSettings.bgColor,
+  "data-baseUrl": widgetSettings.baseUrl
 }).forEach(([key, value]) => {
   guruScript.setAttribute(key, value);
 });
@@ -97,6 +102,8 @@ document.body.appendChild(guruScript);
   ]
 }
 ```
+
+> See the [Mintlify example](https://github.com/Gurubase/gurubase-widget/tree/master/examples/mintlify).
 
 ## MkDocs
 
@@ -118,7 +125,8 @@ document.addEventListener("DOMContentLoaded", () => {
     "data-light-mode": "false", // Optional - Force light mode
     "data-name": "YOUR_NAME", // Optional - Widget name
     "data-icon-url": "YOUR_ICON_URL", // Optional - Widget icon URL
-    "data-bg-color": "YOUR_BG_COLOR" // Optional - Widget background color
+    "data-bg-color": "YOUR_BG_COLOR", // Optional - Widget background color
+    "data-baseUrl": "YOUR_BASE_URL" // Optional, only needed for self-hosted widgets
   };
 
   // Add widget settings as data attributes
@@ -137,6 +145,8 @@ extra_javascript:
   - gurubase-widget.js
 ```
 
+> See the [MkDocs example](https://github.com/GuruBase/examples/tree/main/mkdocs).
+
 ## Sphinx
 
 1. Create a file named `gurubase-widget.js` in your `_static` directory and add the following code:
@@ -151,7 +161,8 @@ document.addEventListener('DOMContentLoaded', function() {
         lightMode: false, // Optional - Force light mode
         bgColor: "YOUR_BG_COLOR", // Optional - Widget background color
         iconUrl: "YOUR_ICON_URL", // Optional - Widget icon URL
-        name: "YOUR_NAME" // Optional - Widget name
+        name: "YOUR_NAME", // Optional - Widget name
+        baseUrl: "YOUR_BASE_URL" // Optional, only needed for self-hosted widgets
     };
 
     // Load the GuruBase widget
@@ -168,7 +179,8 @@ document.addEventListener('DOMContentLoaded', function() {
         "data-light-mode": widgetSettings.lightMode,
         "data-bg-color": widgetSettings.bgColor,
         "data-icon-url": widgetSettings.iconUrl,
-        "data-name": widgetSettings.name
+        "data-name": widgetSettings.name,
+        "data-baseUrl": widgetSettings.baseUrl
     }).forEach(([key, value]) => {
         guruScript.setAttribute(key, value);
     });
@@ -185,17 +197,19 @@ html_static_path = ['_static']
 html_js_files = ['gurubase-widget.js']
 ```
 
+> See the [Sphinx example](https://github.com/GuruBase/examples/tree/main/sphinx).
+
 ## ReadTheDocs
 
 The installation depends on what you use to build your docs.
 
-If you use `sphinx`, you can follow the instructions for Sphinx above.
+If you use `sphinx`, see the [Sphinx example](https://github.com/GuruBase/examples/tree/main/sphinx).
 
-If you use `mkdocs`, you can follow the instructions for MkDocs above.
+If you use `mkdocs`, see the [MkDocs example](https://github.com/GuruBase/examples/tree/main/mkdocs).
 
-If you use `docusaurus`, you can follow the instructions for Docusaurus above.
+If you use `docusaurus`, see the [Docusaurus example](https://github.com/GuruBase/examples/tree/main/docusaurus).
 
-If you use `mintlify`, you can follow the instructions for Mintlify above.
+If you use `mintlify`, see the [Mintlify example](https://github.com/GuruBase/examples/tree/main/mintlify).
 
 ## Remix
 
@@ -218,6 +232,7 @@ interface GurubaseWidgetProps {
   iconUrl?: string;
   name?: string;
   lightMode?: boolean;
+  baseUrl?: string;
 }
 
 export function GurubaseWidget({
@@ -227,7 +242,8 @@ export function GurubaseWidget({
   bgColor,
   iconUrl,
   name,
-  lightMode = false
+  lightMode = false,
+  baseUrl
 }: GurubaseWidgetProps) {
   useEffect(() => {
     if (window.chatWidget) return;
@@ -242,6 +258,7 @@ export function GurubaseWidget({
     if (bgColor) script.setAttribute('data-bg-color', bgColor);
     if (iconUrl) script.setAttribute('data-icon-url', iconUrl);
     if (name) script.setAttribute('data-name', name);
+    if (baseUrl) script.setAttribute('data-baseUrl', baseUrl);
     script.setAttribute('data-light-mode', String(lightMode));
 
     document.body.appendChild(script);
@@ -252,7 +269,7 @@ export function GurubaseWidget({
       const widgetContainer = document.querySelector('.chat-widget');
       if (widgetContainer) widgetContainer.remove();
     };
-  }, [widgetId, text, margins, bgColor, iconUrl, name, lightMode]);
+  }, [widgetId, text, margins, bgColor, iconUrl, name, lightMode, baseUrl]);
 
   return null;
 }
@@ -280,6 +297,7 @@ export default function App() {
           // bgColor="YOUR_BG_COLOR"
           // iconUrl="YOUR_ICON_URL"
           // name="YOUR_NAME"
+          // baseUrl="YOUR_BASE_URL"
         />
         <Scripts />
       </body>
@@ -289,6 +307,8 @@ export default function App() {
 ```
 
 The widget will now be available across all pages in your Remix documentation app. Make sure to replace `YOUR_WIDGET_ID` with your actual GuruBase widget ID.
+
+> See the [Remix example](https://github.com/GuruBase/examples/tree/main/remix).
 
 ## Astro - Starlight
 
@@ -315,6 +335,7 @@ export default defineConfig({
 						'data-icon-url': 'YOUR_ICON_URL', // Optional
 						'data-light-mode': 'true', // Optional
 						'data-bg-color': 'YOUR_BG_COLOR', // Optional
+						'data-baseUrl': 'YOUR_BASE_URL', // Optional, only needed for self-hosted widgets
 						defer: true,
 					},
 				},
@@ -325,6 +346,8 @@ export default defineConfig({
 	],
 });
 ```
+
+> See the [Astro - Starlight example](https://github.com/GuruBase/examples/tree/main/astro-starlight).
 
 ## React
 
@@ -342,7 +365,8 @@ function GurubaseWidget({
   bgColor = null,
   iconUrl = null,
   name = null,
-  lightMode = true
+  lightMode = true,
+  baseUrl = null
 }) {
   useEffect(() => {
     // Check if widget is already initialized
@@ -381,7 +405,10 @@ function GurubaseWidget({
       if (lightMode) {
         script.setAttribute('data-light-mode', lightMode);
       }
-
+      if (baseUrl) {
+        script.setAttribute('data-baseUrl', baseUrl);
+      }
+  
       script.setAttribute('id', 'guru-widget-id');
 
       document.body.appendChild(script);
@@ -401,7 +428,7 @@ function GurubaseWidget({
         widgetContainer.remove();
       }
     };
-  }, [widgetId, text, margins, bgColor, iconUrl, name]);
+  }, [widgetId, text, margins, bgColor, iconUrl, name, baseUrl]);
 
   return null;
 }
@@ -425,6 +452,7 @@ function App() {
           bgColor="YOUR_BG_COLOR" // Optional
           iconUrl="YOUR_ICON_URL" // Optional
           name="YOUR_NAME" // Optional
+          baseUrl="YOUR_BASE_URL" // Optional
         />
       {/* ... existing app content ... */}
     </div>
@@ -433,6 +461,8 @@ function App() {
 
 export default App;
 ```
+
+> See the [React example](https://github.com/GuruBase/examples/tree/main/react).
 
 ## Next.js
 
@@ -450,7 +480,8 @@ export default function GurubaseWidget({
   lightMode = false,
   bgColor,
   iconUrl,
-  name
+  name,
+  baseUrl
 }) {
   return (
     <Script
@@ -465,6 +496,7 @@ export default function GurubaseWidget({
       {...(name && { "data-name": name })}
       {...(iconUrl && { "data-icon-url": iconUrl })}
       {...(bgColor && { "data-bg-color": bgColor })}
+      {...(baseUrl && { "data-baseUrl": baseUrl })}
     />
   )
 }
@@ -489,8 +521,11 @@ export default function App({ Component, pageProps }) {
         // bgColor="YOUR_BG_COLOR"
         // iconUrl="YOUR_ICON_URL"
         // name="YOUR_NAME"
+        // baseUrl="YOUR_BASE_URL"
       />
     </>
   )
 }
 ```
+
+> See the [Next.js example](https://github.com/GuruBase/examples/tree/main/nextjs).
