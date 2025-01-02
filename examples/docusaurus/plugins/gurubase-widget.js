@@ -12,6 +12,9 @@ module.exports = function (context) {
                 "data-text": "Ask AI", // Optional
                 "data-margins": '{"bottom": "20px", "right": "20px"}', // Optional
                 "data-light-mode": "false", // Optional
+                "data-name": "YOUR_NAME", // Optional
+                "data-icon-url": "YOUR_ICON_URL", // Optional
+                "data-bg-color": "#000000", // Optional
                 defer: true,
                 id: "guru-widget-id", // Do not change this
               },

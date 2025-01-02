@@ -7,9 +7,9 @@ export default function GurubaseWidget({
   text = "Ask AI",
   margins = { bottom: "20px", right: "20px" },
   lightMode = false,
-  bgColor,
-  iconUrl,
-  name
+  bgColor = null,
+  iconUrl = null,
+  name = null
 }) {
   return (
     <Script

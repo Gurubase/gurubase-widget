@@ -35,6 +35,7 @@ export default defineConfig({
 						'data-name': 'YOUR_NAME', // Optional
 						'data-icon-url': 'YOUR_ICON_URL', // Optional
 						'data-light-mode': 'true', // Optional
+						'data-bg-color': '#000000', // Optional
 						defer: true,
 					},
 				},

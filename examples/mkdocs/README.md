@@ -1,47 +1,49 @@
-# MkDocs Example Project
+# MKDocs Example for Gurubase Widget
 
-This is a basic MkDocs documentation project that demonstrates a typical documentation structure. It uses the Material theme and shows common MkDocs features.
+This is a simple MKDocs example.
 
-## Project Structure
+## Gurubase Widget Integration
 
+1. Create a file named `gurubase-widget.js` in your docs directory and add the following code:
+
+```js
+document.addEventListener("DOMContentLoaded", () => {
+  // Load the GuruBase widget
+  const guruScript = document.createElement("script");
+  guruScript.src = "https://widget.gurubase.io/widget.latest.min.js";
+  guruScript.defer = true;
+  guruScript.id = "guru-widget-id";
+
+  // Configure widget settings
+  const widgetSettings = {
+    "data-widget-id": "YOUR_WIDGET_ID", // Replace with your widget ID
+    "data-text": "Ask AI", // Optional - Button text
+    "data-margins": JSON.stringify({ bottom: "20px", right: "20px" }), // Optional
+    "data-light-mode": "false", // Optional - Force light mode
+    "data-name": "YOUR_NAME", // Optional - Widget name
+    "data-icon-url": "YOUR_ICON_URL", // Optional - Widget icon URL
+    "data-bg-color": "#000000" // Optional - Widget background color
+  };
+
+  // Add widget settings as data attributes
+  Object.entries(widgetSettings).forEach(([key, value]) => {
+    guruScript.setAttribute(key, value);
+  });
+
+  document.body.appendChild(guruScript);
+});
 ```
-examples/mkdocs/
-├── docs/
-│   ├── index.md              # Homepage
-│   ├── about.md              # About page
-│   └── user-guide/           # User guide section
-│       ├── getting-started.md
-│       └── configuration.md
-├── mkdocs.yml                # MkDocs configuration file
-└── README.md                 # This file
+
+2. Add the script to your MkDocs configuration by updating your `mkdocs.yml` file:
+
+```yaml
+extra_javascript:
+  - gurubase-widget.js
 ```
 
-## Setup Instructions
-
-1. Install the required packages:
-   ```bash
-   pip install mkdocs mkdocs-material
-   ```
-
-2. Navigate to this directory:
-   ```bash
-   cd examples/mkdocs
-   ```
-
-3. Start the development server:
-   ```bash
-   mkdocs serve
-   ```
-
-4. Open your browser and visit `http://127.0.0.1:8000`
-
-## Building the Documentation
-
-To build the static site:
+## Usage
 
 ```bash
-mkdocs build
+pip install mkdocs mkdocs-material
+mkdocs serve
 ```
-
-This will create a `site` directory containing the built documentation.
-

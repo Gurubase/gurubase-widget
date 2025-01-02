@@ -1,41 +1,51 @@
-# Website
+# Docusaurus Example for Gurubase Widget
 
-This website is built using [Docusaurus](https://docusaurus.io/), a modern static website generator.
+This is a simple Docusaurus example.
 
-### Installation
+## Gurubase Widget Integration
 
-```
-$ yarn
-```
+1. The following is created in `plugins/gurubase-widget.js`.
 
-### Local Development
-
-```
-$ yarn start
-```
-
-This command starts a local development server and opens up a browser window. Most changes are reflected live without having to restart the server.
-
-### Build
-
-```
-$ yarn build
-```
-
-This command generates static content into the `build` directory and can be served using any static contents hosting service.
-
-### Deployment
-
-Using SSH:
-
-```
-$ USE_SSH=true yarn deploy
-```
-
-Not using SSH:
-
-```
-$ GIT_USER=<Your GitHub username> yarn deploy
+```js
+module.exports = function (context) {
+    return {
+      name: "docusaurus-plugin-gurubase-widget", // Feel free to change this name
+      injectHtmlTags() {
+        return {
+          postBodyTags: [
+            {
+              tagName: "script",
+              attributes: {
+                src: "https://widget.gurubase.io/widget.latest.min.js",
+                "data-widget-id": "YOUR_WIDGET_ID", // Replace with your widget ID
+                "data-text": "Ask AI", // Optional
+                "data-margins": '{"bottom": "20px", "right": "20px"}', // Optional
+                "data-light-mode": "false", // Optional
+                "data-name": "YOUR_NAME", // Optional
+                "data-icon-url": "YOUR_ICON_URL", // Optional
+                "data-bg-color": "#000000", // Optional
+                defer: true,
+                id: "guru-widget-id", // Do not change this
+              },
+            },
+          ],
+        };
+      },
+    };
+  };
 ```
 
-If you are using GitHub pages for hosting, this command is a convenient way to build the website and push to the `gh-pages` branch.
+2. The following is added to `docusaurus.config.ts` under the config object.
+
+```ts
+plugins: [
+    require.resolve("./plugins/gurubase-widget.js"), // Add this line
+],
+```
+
+## Usage
+
+```bash
+yarn
+yarn start
+```

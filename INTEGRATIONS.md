@@ -33,6 +33,9 @@ module.exports = function (context) {
               "data-text": "Ask AI", // Optional
               "data-margins": '{"bottom": "20px", "right": "20px"}', // Optional
               "data-light-mode": "false", // Optional
+              "data-name": "YOUR_NAME", // Optional
+              "data-icon-url": "YOUR_ICON_URL", // Optional
+              "data-bg-color": "YOUR_BG_COLOR", // Optional
               defer: true,
               id: "guru-widget-id", // Do not change this
             },
@@ -54,7 +57,10 @@ const widgetSettings = {
   widgetId: "YOUR_WIDGET_ID", // Replace with your widget ID
   text: "Ask AI", // Optional - Button text
   margins: { bottom: "20px", right: "20px" }, // Optional - Widget positioning
-  lightMode: false // Optional - Force light mode
+  lightMode: false, // Optional - Force light mode
+  name: "YOUR_NAME", // Optional - Widget name
+  iconUrl: "YOUR_ICON_URL", // Optional - Widget icon URL
+  bgColor: "YOUR_BG_COLOR", // Optional - Widget background color
 };
 
 // Load the GuruBase widget
@@ -68,7 +74,10 @@ Object.entries({
   "data-widget-id": widgetSettings.widgetId,
   "data-text": widgetSettings.text,
   "data-margins": JSON.stringify(widgetSettings.margins),
-  "data-light-mode": widgetSettings.lightMode
+  "data-light-mode": widgetSettings.lightMode,
+  "data-name": widgetSettings.name,
+  "data-icon-url": widgetSettings.iconUrl,
+  "data-bg-color": widgetSettings.bgColor
 }).forEach(([key, value]) => {
   guruScript.setAttribute(key, value);
 });
@@ -106,7 +115,10 @@ document.addEventListener("DOMContentLoaded", () => {
     "data-widget-id": "YOUR_WIDGET_ID", // Replace with your widget ID
     "data-text": "Ask AI", // Optional - Button text
     "data-margins": JSON.stringify({ bottom: "20px", right: "20px" }), // Optional
-    "data-light-mode": "false" // Optional - Force light mode
+    "data-light-mode": "false", // Optional - Force light mode
+    "data-name": "YOUR_NAME", // Optional - Widget name
+    "data-icon-url": "YOUR_ICON_URL", // Optional - Widget icon URL
+    "data-bg-color": "YOUR_BG_COLOR" // Optional - Widget background color
   };
 
   // Add widget settings as data attributes
@@ -136,7 +148,10 @@ document.addEventListener('DOMContentLoaded', function() {
         widgetId: "YOUR_WIDGET_ID", // Replace with your widget ID
         text: "Ask AI", // Optional - Button text
         margins: { bottom: "20px", right: "20px" }, // Optional
-        lightMode: false // Optional - Force light mode
+        lightMode: false, // Optional - Force light mode
+        bgColor: "YOUR_BG_COLOR", // Optional - Widget background color
+        iconUrl: "YOUR_ICON_URL", // Optional - Widget icon URL
+        name: "YOUR_NAME" // Optional - Widget name
     };
 
     // Load the GuruBase widget
@@ -150,7 +165,10 @@ document.addEventListener('DOMContentLoaded', function() {
         "data-widget-id": widgetSettings.widgetId,
         "data-text": widgetSettings.text,
         "data-margins": JSON.stringify(widgetSettings.margins),
-        "data-light-mode": widgetSettings.lightMode
+        "data-light-mode": widgetSettings.lightMode,
+        "data-bg-color": widgetSettings.bgColor,
+        "data-icon-url": widgetSettings.iconUrl,
+        "data-name": widgetSettings.name
     }).forEach(([key, value]) => {
         guruScript.setAttribute(key, value);
     });
@@ -296,6 +314,7 @@ export default defineConfig({
 						'data-name': 'YOUR_NAME', // Optional
 						'data-icon-url': 'YOUR_ICON_URL', // Optional
 						'data-light-mode': 'true', // Optional
+						'data-bg-color': 'YOUR_BG_COLOR', // Optional
 						defer: true,
 					},
 				},
@@ -443,9 +462,9 @@ export default function GurubaseWidget({
       data-text={text}
       data-margins={JSON.stringify(margins)}
       data-light-mode={String(lightMode)}
-      {...(bgColor && { "data-bg-color": bgColor })}
-      {...(iconUrl && { "data-icon-url": iconUrl })}
       {...(name && { "data-name": name })}
+      {...(iconUrl && { "data-icon-url": iconUrl })}
+      {...(bgColor && { "data-bg-color": bgColor })}
     />
   )
 }

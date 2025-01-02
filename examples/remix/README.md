@@ -1,64 +1,101 @@
-# Example Remix Documentation
+# Remix Example for Gurubase Widget
 
-This is a basic Remix documentation site with GuruBase AI Chat Widget integration.
+This is a simple Remix example.
 
-## Project Structure
+## Gurubase Widget Integration
 
+1. Create a new file `app/components/GurubaseWidget.tsx` (or `.jsx` if you're not using TypeScript):
+
+```tsx
+import { useEffect } from 'react';
+
+declare global {
+  interface Window {
+    chatWidget?: any;
+  }
+}
+
+interface GurubaseWidgetProps {
+  widgetId: string;
+  text?: string;
+  margins?: { bottom: string; right: string };
+  bgColor?: string;
+  iconUrl?: string;
+  name?: string;
+  lightMode?: boolean;
+}
+
+export function GurubaseWidget({
+  widgetId,
+  text = "Ask AI",
+  margins = { bottom: "20px", right: "20px" },
+  bgColor = null,
+  iconUrl = null,
+  name = null,
+  lightMode = false
+}: GurubaseWidgetProps) {
+  useEffect(() => {
+    if (window.chatWidget) return;
+
+    const script = document.createElement('script');
+    script.src = "https://widget.gurubase.io/widget.latest.min.js";
+    script.async = true;
+    script.id = "guru-widget-id";
+    script.setAttribute('data-widget-id', widgetId);
+    script.setAttribute('data-text', text);
+    script.setAttribute('data-margins', JSON.stringify(margins));
+    if (bgColor) script.setAttribute('data-bg-color', bgColor);
+    if (iconUrl) script.setAttribute('data-icon-url', iconUrl);
+    if (name) script.setAttribute('data-name', name);
+    script.setAttribute('data-light-mode', String(lightMode));
+
+    document.body.appendChild(script);
+
+    return () => {
+      const widgetScript = document.getElementById('guru-widget-id');
+      if (widgetScript) document.body.removeChild(widgetScript);
+      const widgetContainer = document.querySelector('.chat-widget');
+      if (widgetContainer) widgetContainer.remove();
+    };
+  }, [widgetId, text, margins, bgColor, iconUrl, name, lightMode]);
+
+  return null;
+}
 ```
-examples/remix/
-├── app/
-│   ├── components/
-│   │   └── GurubaseWidget.tsx     # GuruBase widget component
-│   ├── routes/
-│   │   ├── _index.tsx            # Homepage
-│   │   └── docs.tsx              # Documentation page
-│   └── root.tsx                  # Root layout
-├── public/
-│   └── assets/                   # Static assets
-├── package.json                  # Project dependencies
-├── remix.config.js              # Remix configuration
-└── tsconfig.json                # TypeScript configuration
+
+2. Add the widget to your root layout file (`app/root.tsx` or the layout where you want the widget to appear):
+
+```tsx
+import { GurubaseWidget } from '~/components/GurubaseWidget';
+
+export default function App() {
+  return (
+    <html lang="en">
+      <head>
+        {/* ... existing head content ... */}
+      </head>
+      <body>
+        {/* ... existing body content ... */}
+        <GurubaseWidget 
+          widgetId="YOUR_WIDGET_ID" // Replace with your actual widget ID
+          // Optional props:
+          // text="Ask AI"
+          // margins={{ bottom: "20px", right: "20px" }}
+          // lightMode={false}
+          // bgColor="YOUR_BG_COLOR"
+          // iconUrl="YOUR_ICON_URL"
+          // name="YOUR_NAME"
+        />
+        <Scripts />
+      </body>
+    </html>
+  );
+}
 ```
 
 ## Usage
 
-1. Install dependencies:
-   ```bash
-   npm install
-   ```
-
-2. Start the development server:
-   ```bash
-   npm run dev
-   ```
-
-3. Build for production:
-   ```bash
-   npm run build
-   npm start
-   ```
-
-## Customizing the GuruBase Widget
-
-1. Open `app/components/GurubaseWidget.tsx`
-2. Replace `YOUR_WIDGET_ID` with your actual GuruBase Widget ID
-3. Adjust the widget settings as needed:
-   ```typescript
-   const widgetSettings = {
-     widgetId: "YOUR_WIDGET_ID",
-     text: "Ask AI",
-     margins: { bottom: "20px", right: "20px" },
-     lightMode: false
-   };
-   ```
-
-## Project Files
-
-- `app/components/GurubaseWidget.tsx`: GuruBase widget component
-- `app/root.tsx`: Root layout with widget integration
-- `app/routes/`: Application routes and documentation pages
-- `remix.config.js`: Remix configuration file
-
-## Development
-
-The widget is loaded client-side using Remix's `useEffect` hook to ensure proper browser-only execution. The component is typically mounted in the root layout to make it available across all routes.
+```bash
+npm install
+npm run dev
+```
