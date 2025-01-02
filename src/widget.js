@@ -28,9 +28,10 @@ class ChatWidget {
         --button-passive-bg: ${this.lightMode ? '#BABFC8' : '#191919'};
         --button-passive-svg-color: ${this.lightMode ? 'white' : '#6D6D6D'};
         --text-accent-color: ${this.lightMode ? '#6D6D6D' : '#A1A1A1'};
-        --text-reference-color: ${this.lightMode ? '#3782f6' : '#9999ff'};
+        --link-color: ${this.lightMode ? '#3782f6' : '#9999ff'};
         --response-button-color: ${this.lightMode ? '#6D6D6D' : 'white'};
         --error-red-color: ${this.lightMode ? '#DC2626' : '#F00'};
+        --text-reference-color: ${this.lightMode ? '#000' : '#9999ff'}
       }
 
     .chat-widget {
@@ -42,17 +43,17 @@ class ChatWidget {
 
     .markdown-content a {
       text-decoration: none;
-      color: var(--text-reference-color);
+      color: var(--link-color);
     }
 
     .markdown-content a:hover {
       text-decoration: underline;
-      color: var(--text-reference-color);
+      color: var(--link-color);
     }
 
     /* Update any other link styles */
     a {
-      color: var(--text-reference-color);
+      color: var(--link-color);
     }
 
 
@@ -504,6 +505,8 @@ class ChatWidget {
           text-overflow: ellipsis;
           white-space: nowrap;
           position: relative;
+          color: var(--text-reference-color);
+          font-weight: 500;
         }
   
         /* Simple tooltip styles */
