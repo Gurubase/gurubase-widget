@@ -1,0 +1,12 @@
+site_name: Sample MkDocs Site
+theme: material
+
+nav:
+  - Home: index.md
+  - About: about.md
+  - User Guide: 
+    - Getting Started: user-guide/getting-started.md
+    - Configuration: user-guide/configuration.md 
+
+extra_javascript:
+  - gurubase-widget.js
