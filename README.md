@@ -40,3 +40,16 @@ The only thing you need to do is to add the widget.js to your website as follows
 | data-icon-url | string | URL to your company/product logo | Fetched from the Gurubase.io |
 | data-name | string | Your company/product name | Fetched from the Gurubase.io |
 | data-light-mode | boolean | Whether to use light mode | false |
+
+## Demos
+Below are example installations of the Gurubase Widget for various technologies. If your technology isn’t listed, we’d gladly accept a demo, feel free to submit a pull request.
+
+- [Astro - Starlight](https://github.com/Gurubase/gurubase-widget/tree/master/examples/astro-starlight)
+- [Docusaurus](https://github.com/Gurubase/gurubase-widget/tree/master/examples/docusaurus)
+- [Mintlify](https://github.com/Gurubase/gurubase-widget/tree/master/examples/mintlify)
+- [MKDocs](https://github.com/Gurubase/gurubase-widget/tree/master/examples/mkdocs)
+- [Next.js](https://github.com/Gurubase/gurubase-widget/tree/master/examples/nextjs)
+- [JS](https://github.com/Gurubase/gurubase-widget/tree/master/examples/pure_js)
+- [React](https://github.com/Gurubase/gurubase-widget/tree/master/examples/react_app)
+- [Remix](https://github.com/Gurubase/gurubase-widget/tree/master/examples/remix)
+- [Sphinx](https://github.com/Gurubase/gurubase-widget/tree/master/examples/sphinx)
