@@ -1823,10 +1823,13 @@ class ChatWidget {
                   `;
 
                   data.references.forEach((ref) => {
-                    const referenceItem = document.createElement("a");
-                    referenceItem.href = ref.link;
-                    referenceItem.target = "_blank";
+                    const referenceItem = document.createElement(ref.link ? 'a' : 'div');
+                    if (ref.link) {
+                      referenceItem.href = ref.link;
+                      referenceItem.target = "_blank";
+                    }
                     referenceItem.className = "reference-item";
+                    referenceItem.style.cursor = ref.link ? "pointer" : "default";
 
                     const shouldShowTooltip = ref.question.length > 90;
                     const displayedQuestion = shouldShowTooltip
@@ -1970,10 +1973,13 @@ class ChatWidget {
             `;
 
             data.references.forEach((ref) => {
-              const referenceItem = document.createElement("a");
-              referenceItem.href = ref.link;
-              referenceItem.target = "_blank";
+              const referenceItem = document.createElement(ref.link ? 'a' : 'div');
+              if (ref.link) {
+                referenceItem.href = ref.link;
+                referenceItem.target = "_blank";
+              }
               referenceItem.className = "reference-item";
+              referenceItem.style.cursor = ref.link ? "pointer" : "default";
 
               const shouldShowTooltip = ref.question.length > 90;
               const displayedQuestion = shouldShowTooltip
