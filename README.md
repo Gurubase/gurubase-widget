@@ -14,6 +14,9 @@ This repository includes the script for the 'Ask AI' widget, which you can add t
    - On the "Widget" section create a new widget
    - Copy the Widget ID and use it in the installation section
 
+> [!IMPORTANT]
+> Widget IDs are unique to the provided full domains, including subdomains. If you create a Widget ID for `https://www.example.com`, Gurubase will only accept incoming requests from `https://www.example.com`. Requests from subdomains or localhost will be rejected. You can create a new Widget ID for local testing using your app's full localhost domain, e.g., `http://localhost:<your_local_app_port>`.
+
 ## Installation
 The only thing you need to do is to add the widget.js to your website as follows:
 ```html
