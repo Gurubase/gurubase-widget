@@ -227,7 +227,7 @@ class ChatWidget {
         .chat-messages {
           flex: 1;
           overflow-y: auto;
-          padding: 32px 20px;
+          padding: 12px 20px;
           background-color: var(--bg-primary);
           
           /* Webkit scrollbar styles */
@@ -780,7 +780,7 @@ class ChatWidget {
         flex-direction: column;
         padding-left: 20px;
         padding-right: 20px;
-        padding-top: 16px;
+        padding-top: 20px;
         padding-bottom: 0px;
         transition: padding-bottom 0.2s ease;
         background-color: var(--bg-primary);
@@ -794,15 +794,16 @@ class ChatWidget {
         width: 100%;
       }
 
-      .chat-input-container .flex.flex-wrap.gap-2.mb-4 {
+      .example-questions {
         display: flex;
         flex-wrap: wrap;
         row-gap: 8px;
         column-gap: 8px;
-        margin-bottom: 12px;
+        margin-y: 12px;
+        margin-x: 20px;
       }
 
-      .chat-input-container .example-question {
+      .example-questions .example-question {
         font-family: Inter, system-ui, -apple-system, sans-serif;
         font-size: 13px;
         font-weight: 400;
@@ -821,12 +822,12 @@ class ChatWidget {
         background-color: var(--search-bar-bg);
       }
 
-      .chat-input-container .example-question:hover {
+      .example-questions .example-question:hover {
         border-color: var(--border-color);
         background-color: var(--search-bar-bg);
       }
 
-      .chat-input-container .example-question:active {
+      .example-questions .example-question:active {
         transform: scale(0.98);
       }
 
@@ -2092,36 +2093,30 @@ class ChatWidget {
         );
 
         if (followUpExamples.length > 0) {
-          const inputContainer = this.shadow.querySelector(".chat-input-container");
-          inputContainer.style.paddingTop = "12px"; // Keep original padding when there are examples
+          const messagesContainer = this.shadow.querySelector(".chat-messages");
           const exampleQuestionsContainer = this.createExampleQuestions(
             followUpExamples,
             (selectedQuestion) => {
               const questionInput = this.shadow.getElementById("questionInput");
               questionInput.value = selectedQuestion;
-              // questionInput.focus();
-              // Trigger input event to update submit button state
               questionInput.dispatchEvent(new Event("input"));
               this.submitQuestion(selectedQuestion);
               // Clear follow up examples
               exampleQuestionsContainer.remove();
-              inputContainer.style.paddingTop = "16px";
             }
           );
 
           if (exampleQuestionsContainer) {
             // Remove any existing example questions
-            const existingExamples = inputContainer.querySelector(".flex.flex-wrap.gap-2.mb-4");
+            const existingExamples = messagesContainer.querySelector(".example-questions");
             if (existingExamples) {
               existingExamples.remove();
             }
-            // Insert example questions before the input
-            inputContainer.insertBefore(exampleQuestionsContainer, inputContainer.firstChild);
+            // Append example questions to messages container
+            messagesContainer.appendChild(exampleQuestionsContainer);
+            // Scroll to show the new examples
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
           }
-        } else {
-          // When there are no follow-up examples, set padding to 16px
-          const inputContainer = this.shadow.querySelector(".chat-input-container");
-          inputContainer.style.paddingTop = "16px";
         }
       }
 
@@ -2617,7 +2612,7 @@ class ChatWidget {
     if (!Array.isArray(questions) || questions.length === 0) return null;
 
     const container = document.createElement("div");
-    container.className = "flex flex-wrap gap-2 mb-4";
+    container.className = "example-questions flex flex-wrap gap-2";
 
     questions.forEach((question, index) => {
       const button = document.createElement("button");
