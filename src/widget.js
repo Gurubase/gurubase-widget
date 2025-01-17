@@ -1621,6 +1621,14 @@ class ChatWidget {
 
     if (!question) return;
 
+    // Disable clear button at the start of submission
+    const clearButton = this.shadow.querySelector(".clear-button");
+    if (clearButton) {
+      clearButton.disabled = true;
+      clearButton.style.opacity = "0.5";
+      clearButton.style.cursor = "not-allowed";
+    }
+
     // Remove empty state if it exists
     const emptyState = this.shadow.querySelector(".empty-state");
     if (emptyState) {
@@ -2171,9 +2179,17 @@ class ChatWidget {
       messagesContainer.appendChild(errorMessage);
       messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
+    finally {
+      // Re-enable clear button when streaming is complete
+      const clearButton = this.shadow.querySelector(".clear-button");
+      if (clearButton) {
+        clearButton.disabled = false;
+        clearButton.style.opacity = "1";
+        clearButton.style.cursor = "pointer";
+      }
+    }
 
     // Add this after adding a new message to chat-messages
-    const clearButton = this.shadow.querySelector(".clear-button");
     if (clearButton) {
       clearButton.style.display = "flex";
     }
