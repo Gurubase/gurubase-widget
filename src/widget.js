@@ -1616,6 +1616,11 @@ class ChatWidget {
   // ... rest of the methods (askQuestion, submitQuestion) remain the same
   // Just remove the function keyword and add them as class methods
   async submitQuestion() {
+    const exampleQuestions = this.shadow.querySelector(".example-questions");
+    if (exampleQuestions) {
+      exampleQuestions.remove();
+    }
+
     const questionInput = this.shadow.getElementById("questionInput");
     const question = questionInput.value.trim();
 
@@ -2109,8 +2114,6 @@ class ChatWidget {
               questionInput.value = selectedQuestion;
               questionInput.dispatchEvent(new Event("input"));
               this.submitQuestion(selectedQuestion);
-              // Clear follow up examples
-              exampleQuestionsContainer.remove();
             }
           );
 
