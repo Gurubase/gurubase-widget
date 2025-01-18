@@ -2361,13 +2361,7 @@ class ChatWidget {
     this.handleKeyPress = this.handleKeyPress.bind(this);
     this.askQuestion = this.askQuestion.bind(this);
 
-    const colorExists = this.mainColor && this.mainColor !== undefined && this.mainColor !== null && this.mainColor !== "undefined";
-    const logoExists = this.logoUrl && this.logoUrl !== null && this.logoUrl !== undefined && this.logoUrl !== "undefined";
-    const nameExists = this.name && this.name !== null && this.name !== undefined && this.name !== "undefined";
-
-    if (!colorExists || !logoExists || !nameExists) {
-      await this.fetchDefaultValues();
-    }    
+    await this.fetchDefaultValues();
 
     // Set primary color CSS variable
     document.documentElement.style.setProperty("--primary", this.mainColor);
