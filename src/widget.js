@@ -1203,7 +1203,7 @@ class ChatWidget {
             this.baseUrl = baseUrl;
         } catch {
             this.baseUrl = defaultBaseUrl;
-            console.warn("Invalid base URL provided, using default");
+            // console.warn("Invalid base URL provided, using default");
         }
 
         // Validate and set button text
