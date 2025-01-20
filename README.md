@@ -36,13 +36,17 @@ The only thing you need to do is to add the widget.js to your website as follows
 
 | Option | Type | Description | Default |
 |--------|------|-------------|---------|
-| data-widget-id | string | Your widget ID | Required |
+| data-widget-id | string | Your widget ID | Get it from your Guru's settings page |
 | data-text | string | Text displayed on the chat button | "Ask AI" |
-| data-margins | object | Button positioning margins | { bottom: "20px", right: "20px" } |
+| data-margins | object | Button positioning margins | `{ bottom: "20px", right: "20px" }` |
 | data-bg-color | string | Primary color for the widget | Fetched from the Gurubase.io |
 | data-icon-url | string | URL to your company/product logo | Fetched from the Gurubase.io |
 | data-name | string | Your company/product name | Fetched from the Gurubase.io |
 | data-light-mode | boolean | Whether to use light mode | false |
+| data-baseUrl | string | URL to your Gurubase backend. **Only for self-hosted Gurubase.** | Gurubase Cloud |
+
+> [!INFO]
+> If you want to use the widget in your Self-hosted Gurubase, you can set the backend URL using the `data-baseUrl` attribute.
 
 ## Demos
 Below are example installations of the Gurubase Widget for various technologies. If your technology isn’t listed, we’d gladly accept a demo, feel free to submit a pull request.
