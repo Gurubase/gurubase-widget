@@ -14,6 +14,9 @@ This repository includes the script for the 'Ask AI' widget, which you can add t
    - On the "Widget" section create a new widget
    - Copy the Widget ID and use it in the installation section
 
+> [!IMPORTANT]
+> Widget IDs are unique to the provided full domains, including subdomains. If you create a Widget ID for `https://www.example.com`, Gurubase will only accept incoming requests from `https://www.example.com`. Requests from subdomains or localhost will be rejected. You can create a new Widget ID for local testing using your app's full localhost domain, e.g., `http://localhost:<your_local_app_port>`.
+
 ## Installation
 The only thing you need to do is to add the widget.js to your website as follows:
 ```html
@@ -33,10 +36,27 @@ The only thing you need to do is to add the widget.js to your website as follows
 
 | Option | Type | Description | Default |
 |--------|------|-------------|---------|
-| data-widget-id | string | Your widget ID | Required |
+| data-widget-id | string | Your widget ID | Get it from your Guru's settings page |
 | data-text | string | Text displayed on the chat button | "Ask AI" |
-| data-margins | object | Button positioning margins | { bottom: "20px", right: "20px" } |
+| data-margins | object | Button positioning margins | `{ bottom: "20px", right: "20px" }` |
 | data-bg-color | string | Primary color for the widget | Fetched from the Gurubase.io |
 | data-icon-url | string | URL to your company/product logo | Fetched from the Gurubase.io |
 | data-name | string | Your company/product name | Fetched from the Gurubase.io |
 | data-light-mode | boolean | Whether to use light mode | false |
+| data-baseUrl | string | URL to your Gurubase backend. **Only for self-hosted Gurubase.** | Gurubase Cloud |
+
+> [!INFO]
+> If you want to use the widget in your Self-hosted Gurubase, you can set the backend URL using the `data-baseUrl` attribute.
+
+## Demos
+Below are example installations of the Gurubase Widget for various technologies. If your technology isn’t listed, we’d gladly accept a demo, feel free to submit a pull request.
+
+- [Astro - Starlight](https://github.com/Gurubase/gurubase-widget/tree/master/examples/astro-starlight)
+- [Docusaurus](https://github.com/Gurubase/gurubase-widget/tree/master/examples/docusaurus)
+- [Mintlify](https://github.com/Gurubase/gurubase-widget/tree/master/examples/mintlify)
+- [MKDocs](https://github.com/Gurubase/gurubase-widget/tree/master/examples/mkdocs)
+- [Next.js](https://github.com/Gurubase/gurubase-widget/tree/master/examples/nextjs)
+- [JS](https://github.com/Gurubase/gurubase-widget/tree/master/examples/pure_js)
+- [React](https://github.com/Gurubase/gurubase-widget/tree/master/examples/react_app)
+- [Remix](https://github.com/Gurubase/gurubase-widget/tree/master/examples/remix)
+- [Sphinx](https://github.com/Gurubase/gurubase-widget/tree/master/examples/sphinx)
