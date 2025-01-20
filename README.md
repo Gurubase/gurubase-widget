@@ -45,7 +45,7 @@ The only thing you need to do is to add the widget.js to your website as follows
 | data-light-mode | boolean | Whether to use light mode | false |
 | data-baseUrl | string | URL to your Gurubase backend. **Only for self-hosted Gurubase.** | Gurubase Cloud |
 
-> [!INFO]
+> [!NOTE]
 > If you want to use the widget in your Self-hosted Gurubase, you can set the backend URL using the `data-baseUrl` attribute.
 
 ## Demos
