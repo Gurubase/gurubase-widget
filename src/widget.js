@@ -1774,7 +1774,9 @@ class ChatWidget {
         let errorMessage = "An error occurred while processing your request.";
         try {
           const errorData = await response.json();
-          if (errorData.error) {
+          if (errorData.msg) {
+            errorMessage = "An error occurred: " + errorData.msg;
+          } else if (errorData.error) {
             errorMessage = errorData.error;
           }
         } catch (error) {
