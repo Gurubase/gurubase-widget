@@ -45,8 +45,16 @@ The only thing you need to do is to add the widget.js to your website as follows
 | data-light-mode | boolean | Whether to use light mode | false |
 | data-baseUrl | string | URL to your Gurubase backend. **Only for self-hosted Gurubase.** | Gurubase Cloud |
 
+
 > [!NOTE]
-> If you want to use the widget in your Self-hosted Gurubase, you can set the backend URL using the `data-baseUrl` attribute.
+> If you're using self-hosted Gurubase, you must set the backend URL using the `data-baseUrl` attribute. The default backend URL of Self-hosted Gurubase is `http://localhost:8029/api/`.
+> ```html
+> <script async src="https://widget.gurubase.io/widget.latest.min.js" 
+>     data-widget-id="YOUR_WIDGET_ID"
+>     data-baseUrl="http://localhost:8029/api/"
+>     id="guru-widget-id">
+> </script>
+> ```
 
 ## Demos
 Below are example installations of the Gurubase Widget for various technologies. If your technology isn’t listed, we’d gladly accept a demo, feel free to submit a pull request.
