@@ -34,6 +34,25 @@ class ChatWidget {
         --text-reference-color: ${this.lightMode ? '#000' : '#9999ff'}
       }
 
+      @media (max-width: 768px) {
+        body.widget-open {
+          width: 100%;
+          touch-action: none;
+          -webkit-overflow-scrolling: none;
+          overscroll-behavior: none;
+        }
+        
+        .chat-window {
+          overscroll-behavior: contain;
+          -webkit-overflow-scrolling: touch;
+        }
+        
+        .chat-messages {
+          overscroll-behavior: contain;
+          -webkit-overflow-scrolling: touch;
+        }
+      }
+
     .chat-widget {
       /* Add these properties */
       position: fixed;
@@ -1473,6 +1492,7 @@ class ChatWidget {
   toggleChat() {
     const chatWindow = this.shadow.getElementById("chatWindow");
     const wrapper = document.getElementById("page-content-wrapper");
+    const chatButton = this.shadow.querySelector(".chat-button");  // Add this line
     const isMobile = window.innerWidth <= 768;
 
     if (chatWindow) {
@@ -1493,17 +1513,31 @@ class ChatWidget {
 
           if (isMobile) {
             chatWindow.style.width = "0%";
+            // Re-enable page scrolling when closing on mobile
+            document.body.style.overflow = '';
+            document.body.style.position = '';
+            document.body.style.height = '';
+            wrapper.style.overflow = '';
+            wrapper.style.height = '';
           }
           wrapper.style.width = "100%";
+          chatButton.style.display = 'flex';  // Show button when closing
         } else {
           // Opening
           if (isMobile) {
             chatWindow.style.width = `${windowWidth}px`;
             chatWindow.style.height = `${windowHeight}px`;
             chatWindow.style.minWidth = `${windowWidth}px`;
+            // Prevent page scrolling when opening on mobile
+            document.body.style.overflow = 'hidden';
+            document.body.style.position = 'fixed';
+            document.body.style.height = '100%';
+            wrapper.style.overflow = 'hidden';
+            wrapper.style.height = '100%';
           } else {
             wrapper.style.width = `calc(100% - 400px)`;
           }
+          chatButton.style.display = 'none';  // Hide button when opening
         }
       }, 0);
     }
