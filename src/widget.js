@@ -40,16 +40,39 @@ class ChatWidget {
           touch-action: none;
           -webkit-overflow-scrolling: none;
           overscroll-behavior: none;
+          height: 100%;
+          position: fixed;
         }
         
         .chat-window {
+          position: fixed !important;
+          width: 100vw !important;
+          max-width: 100vw;
+          height: 100% !important;
+          right: -100vw; // Start from outside viewport
+          border-radius: 0 !important;
+          transition: right 0.3s ease, transform 0.3s ease;
           overscroll-behavior: contain;
           -webkit-overflow-scrolling: touch;
+          display: flex;
+          flex-direction: column;
+          bottom: 0;
+          left: auto; // Remove left positioning
+          box-sizing: border-box;
         }
         
         .chat-messages {
+          flex: 1;
+          overflow-y: auto;
           overscroll-behavior: contain;
           -webkit-overflow-scrolling: touch;
+          padding-bottom: env(safe-area-inset-bottom);
+        }
+
+        .chat-input-container {
+          background: var(--header-bg);
+          padding-bottom: env(safe-area-inset-bottom);
+          z-index: 10000;
         }
       }
 
@@ -200,7 +223,7 @@ class ChatWidget {
           display: none;
           flex-direction: column;
           overflow: hidden;
-          transition: right 0.3s ease;
+          transition: right 0.3s ease, transform 0.3s ease; // Add transform to transition
           border-radius: 0;
           background-color: var(--bg-primary);
         }
@@ -732,6 +755,9 @@ class ChatWidget {
         gap: 12px;
         transition: padding-bottom 0.2s ease;
         background-color: var(--bg-primary);
+        width: 100%;
+        box-sizing: border-box;
+        padding: 0;
       }
   
       .footer-info {
@@ -743,6 +769,8 @@ class ChatWidget {
         padding-bottom: 20px;
         color: var(--text-accent-color);
         font-size: 12px;
+        width: 100%;
+        box-sizing: border-box;
       }
 
       @media (max-width: 374px) {
@@ -1191,6 +1219,7 @@ class ChatWidget {
       this.guruSlug = data.slug || ""; // Add guru slug
 
     } catch (error) {
+      console.log("Def degerleri alamadim");
       console.error('Error fetching default values:', error);
       // Fallback to hardcoded defaults if fetch fails
       this.mainColor = this.mainColor || "#0F9500";
@@ -1339,6 +1368,8 @@ class ChatWidget {
     this.isStreaming = false;
     // Add this property
     this.shouldAutoScroll = true;
+    this.handleViewportHeight = this.handleViewportHeight.bind(this);
+    this.handleVisualViewportChange = this.handleVisualViewportChange.bind(this);
   }
 
   getLogo(maxWidth = 24, maxHeight = 24) {
@@ -1492,54 +1523,59 @@ class ChatWidget {
   toggleChat() {
     const chatWindow = this.shadow.getElementById("chatWindow");
     const wrapper = document.getElementById("page-content-wrapper");
-    const chatButton = this.shadow.querySelector(".chat-button");  // Add this line
+    const chatButton = this.shadow.querySelector(".chat-button");
     const isMobile = window.innerWidth <= 768;
 
     if (chatWindow) {
-      chatWindow.style.display = "flex";
-      setTimeout(() => {
         const isOpening = !chatWindow.classList.contains("open");
-        chatWindow.classList.toggle("open");
-        document.body.classList.toggle("widget-open"); // Use document.body instead of shadow DOM body
-        const windowHeight = window.innerHeight;
-        const windowWidth = window.innerWidth;
         
         if (!isOpening) {
-          // Closing
-          // Reset widths when closing
-          if (!isMobile && chatWindow.style.width > "400px") {
-            chatWindow.style.width = "400px";
-          }
+            // Closing
+            chatWindow.classList.remove("open");
+            document.body.classList.remove("widget-open");
+            chatButton.style.display = 'flex';
+            
+            // Wait for transition to complete before hiding
+            chatWindow.addEventListener('transitionend', () => {
+                chatWindow.style.display = "none";
+            }, { once: true }); // Use once: true to automatically remove the listener
+            
+            if (!isMobile && chatWindow.style.width > "400px") {
+                chatWindow.style.width = "400px";
+            }
 
-          if (isMobile) {
-            chatWindow.style.width = "0%";
-            // Re-enable page scrolling when closing on mobile
-            document.body.style.overflow = '';
-            document.body.style.position = '';
-            document.body.style.height = '';
-            wrapper.style.overflow = '';
-            wrapper.style.height = '';
-          }
-          wrapper.style.width = "100%";
-          chatButton.style.display = 'flex';  // Show button when closing
+            if (isMobile) {
+                // Re-enable page scrolling when closing on mobile
+                document.body.style.overflow = '';
+                document.body.style.position = '';
+                document.body.style.height = '';
+                wrapper.style.overflow = '';
+                wrapper.style.height = '';
+            }
+            wrapper.style.width = "100%";
         } else {
-          // Opening
-          if (isMobile) {
-            chatWindow.style.width = `${windowWidth}px`;
-            chatWindow.style.height = `${windowHeight}px`;
-            chatWindow.style.minWidth = `${windowWidth}px`;
-            // Prevent page scrolling when opening on mobile
-            document.body.style.overflow = 'hidden';
-            document.body.style.position = 'fixed';
-            document.body.style.height = '100%';
-            wrapper.style.overflow = 'hidden';
-            wrapper.style.height = '100%';
-          } else {
-            wrapper.style.width = `calc(100% - 400px)`;
-          }
-          chatButton.style.display = 'none';  // Hide button when opening
+            // Opening
+            chatWindow.style.display = "flex";
+            
+            // Force a reflow to ensure the display: flex is applied
+            chatWindow.offsetHeight;
+            
+            // Add open class to trigger transition
+            chatWindow.classList.add("open");
+            document.body.classList.add("widget-open");
+            chatButton.style.display = 'none';
+            
+            if (isMobile) {
+                // Prevent page scrolling when opening on mobile
+                document.body.style.overflow = 'hidden';
+                document.body.style.position = 'fixed';
+                document.body.style.height = '100%';
+                wrapper.style.overflow = 'hidden';
+                wrapper.style.height = '100%';
+            } else {
+                wrapper.style.width = `calc(100% - 400px)`;
+            }
         }
-      }, 0);
     }
   }
 
@@ -2492,6 +2528,14 @@ class ChatWidget {
       document.head.appendChild(highlightScript);
     }
 
+    this.handleViewportHeight();
+    window.addEventListener('resize', this.handleViewportHeight);
+    
+    // Add visualViewport listeners for keyboard detection
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', this.handleVisualViewportChange);
+      window.visualViewport.addEventListener('scroll', this.handleVisualViewportChange);
+    }
 
   }
 
@@ -2511,6 +2555,11 @@ class ChatWidget {
     document.removeEventListener("mousedown", this.handleClickOutside);
     document.removeEventListener("mousemove", this.handleDrag);
     document.removeEventListener("mouseup", this.handleDragEnd);
+    window.removeEventListener('resize', this.handleViewportHeight);
+    if (window.visualViewport) {
+      window.visualViewport.removeEventListener('resize', this.handleVisualViewportChange);
+      window.visualViewport.removeEventListener('scroll', this.handleVisualViewportChange);
+    }
   }
 
   handleDragStart(e) {
@@ -2569,6 +2618,13 @@ class ChatWidget {
 
   handleClearHistory() {
     const messagesContainer = this.shadow.querySelector(".chat-messages");
+    const questionInput = this.shadow.getElementById("questionInput");
+    
+    // Blur the input to dismiss keyboard
+    if (questionInput) {
+        questionInput.blur();
+    }
+    
     // Get fresh templates with current mainColor
     messagesContainer.innerHTML = this.getEmptyState();
     this.isFirstQuestion = true;
@@ -2578,13 +2634,13 @@ class ChatWidget {
     // Hide the edit button
     const editButton = this.shadow.querySelector(".edit-button");
     if (editButton) {
-      editButton.style.display = "none";
+        editButton.style.display = "none";
     }
 
     // Hide the clear button
     const clearButton = this.shadow.querySelector(".clear-button");
     if (clearButton) {
-      clearButton.style.display = "none";
+        clearButton.style.display = "none";
     }
   }
 
@@ -2673,6 +2729,65 @@ class ChatWidget {
     });
 
     return container;
+  }
+
+  handleViewportHeight() {
+    // First we get the viewport height and we multiply it by 1% to get a value for a vh unit
+    let vh = window.innerHeight * 0.01;
+    // Then we set the value in the --vh custom property to the root of the document
+    document.documentElement.style.setProperty('--vh', `${vh}px`);
+  }
+
+  handleVisualViewportChange() {
+    if (!window.visualViewport) return;
+    
+    const chatWindow = this.shadow.getElementById("chatWindow");
+    const inputContainer = this.shadow.querySelector(".chat-input-container");
+    const messagesContainer = this.shadow.querySelector(".chat-messages");
+    if (!chatWindow || !inputContainer || !messagesContainer) return;
+
+    // Check if browser is Safari
+    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+    
+    // Calculate the keyboard height
+    const keyboardHeight = window.innerHeight - window.visualViewport.height;
+    
+    if (keyboardHeight > 0) {
+        // Keyboard is shown
+        if (!isSafari) {
+            // Apply our custom handling only for non-Safari browsers
+            chatWindow.style.height = `${window.visualViewport.height}px`;
+            chatWindow.style.maxHeight = `${window.visualViewport.height}px`;
+            
+            // Adjust the input container position
+            inputContainer.style.position = 'fixed';
+            inputContainer.style.bottom = '0';
+            inputContainer.style.left = '0';
+            inputContainer.style.right = '0';
+            inputContainer.style.transform = `translateY(-${keyboardHeight}px)`;
+            
+            // Adjust messages container to make room for keyboard
+            messagesContainer.style.marginBottom = `${keyboardHeight}px`;
+        }
+        
+        // Scroll to the input after a short delay
+        setTimeout(() => {
+            inputContainer.scrollIntoView({ behavior: 'smooth' });
+        }, 10);
+    } else {
+        // Keyboard is hidden
+        if (!isSafari) {
+            // Reset styles only for non-Safari browsers
+            chatWindow.style.height = '';
+            chatWindow.style.maxHeight = '';
+            inputContainer.style.transform = '';
+            inputContainer.style.position = '';
+            inputContainer.style.bottom = '';
+            inputContainer.style.left = '';
+            inputContainer.style.right = '';
+            messagesContainer.style.marginBottom = '';
+        }
+    }
   }
 }
 
