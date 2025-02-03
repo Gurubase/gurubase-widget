@@ -1551,6 +1551,11 @@ class ChatWidget {
                 document.body.style.height = '';
                 wrapper.style.overflow = '';
                 wrapper.style.height = '';
+                // Restore scroll position
+                if (this.savedScrollY !== undefined) {
+                    window.scrollTo(0, this.savedScrollY);
+                    this.savedScrollY = undefined;
+                }
             }
             wrapper.style.width = "100%";
         } else {
@@ -1566,10 +1571,13 @@ class ChatWidget {
             chatButton.style.display = 'none';
             
             if (isMobile) {
+                // Save current scroll position before fixing position
+                this.savedScrollY = window.scrollY;
                 // Prevent page scrolling when opening on mobile
                 document.body.style.overflow = 'hidden';
                 document.body.style.position = 'fixed';
                 document.body.style.height = '100%';
+                document.body.style.top = `-${this.savedScrollY}px`;
                 wrapper.style.overflow = 'hidden';
                 wrapper.style.height = '100%';
             } else {
