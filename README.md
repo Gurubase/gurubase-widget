@@ -11,7 +11,8 @@ This repository includes the script for the 'Ask AI' widget, which you can add t
 - **You need to have a Widget ID.** You can get it from your Guru's settings page on Gurubase.io.
    - Go to "My Gurus" page
    - Select the Guru you want to add the widget to
-   - On the "Widget" section create a new widget
+   - Click “Integrations” and then “Web Widget”
+   - Create a new widget
    - Copy the Widget ID and use it in the installation section
 
 > [!IMPORTANT]
