@@ -23,4 +23,5 @@ nav:
     - Configuration: user-guide/configuration.md 
 
 extra_javascript:
-  - gurubase-widget.js
+  - js/theme-switch.js
+  - js/gurubase-widget.js
