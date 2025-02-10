@@ -17,6 +17,12 @@ examples/pagy/
 
 ## Setup
 
+0. Serve the widget locally:
+
+```bash
+python server.py
+```
+
 1. Install Retype:
 ```bash
 npm install retypeapp --global
@@ -29,7 +35,7 @@ npm install
 
 3. Start the development server:
 ```bash
-retype watch
+retype start
 ```
 
 4. Build for production:
