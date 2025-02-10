@@ -57,6 +57,10 @@ The only thing you need to do is to add the widget.js to your website as follows
 > </script>
 > ```
 
+### Theme Syncing
+
+The widget exposes a function named `switchTheme` that you can use to sync the theme of the widget with the theme of your website. An example of how to use it is shown in the [MKDocs](https://github.com/Gurubase/gurubase-widget/tree/master/examples/mkdocs) example in the `theme-switch.js` file.
+
 ## Demos
 Below are example installations of the Gurubase Widget for various technologies. If your technology isn’t listed, we’d gladly accept a demo, feel free to submit a pull request.
 
