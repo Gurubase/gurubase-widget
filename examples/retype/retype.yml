@@ -1,0 +1,36 @@
+input: .
+output: .retype
+url: # Add your documentation site URL here
+branding:
+  title: Retype Docs
+  label: v6.0
+  logo: assets/logo.svg
+
+links:
+  - text: GitHub
+    link: https://github.com/ddnexus/pagy
+    icon: mark-github
+    target: blank
+
+footer:
+  copyright: "&copy; Copyright {{ year }}. All rights reserved."
+
+serve:
+  host: 127.0.0.1:5005
+
+sidebar:
+  - Home: index.md
+  - Getting Started:
+    - Prerequisites: prerequisites.md
+    - How To: how-to.md
+  - API:
+    - Core API: api/core.md
+    - Backend: api/backend.md
+    - Frontend: api/frontend.md
+  - Extras:
+    - Items: extras/items.md
+    - Bootstrap: extras/bootstrap.md
+    - Tailwind: extras/tailwind.md
+  - Guides:
+    - Migration Guide: migration-guide.md
+    - Troubleshooting: troubleshooting.md
