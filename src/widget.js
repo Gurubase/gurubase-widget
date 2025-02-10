@@ -2899,6 +2899,24 @@ class ChatWidget {
       document.body.insertBefore(wrapper, document.body.firstChild);
     }
   }
+
+  // Add this new method to switch themes
+  async switchTheme() {
+    console.log("Switching theme");
+    this.lightMode = !this.lightMode;
+    // Reinject styles with new theme
+    const hljsThemeName = this.lightMode ? 'atom-one-light' : 'atom-one-dark';
+    const hljsTheme = await this.loadHljsTheme(hljsThemeName);
+    this.injectStyles(hljsTheme);
+    
+    // Update the Gurubase logo in the footer
+    const gurubaseLogo = this.shadow.querySelector('.anteon-powered');
+    if (gurubaseLogo) {
+      gurubaseLogo.innerHTML = `powered by ${this.getGurubaseLogo()}`;
+    } else {
+      console.error("Could not find Gurubase logo element");
+    }
+  }
 }
 
 function loadScript(url) {
