@@ -4,7 +4,10 @@ document.addEventListener('DOMContentLoaded', function() {
         widgetId: "YOUR_WIDGET_ID", // Replace with your widget ID
         text: "Ask AI", // Optional - Button text
         margins: { bottom: "20px", right: "20px" }, // Optional
-        lightMode: false // Optional - Force light mode
+        lightMode: false, // Optional - Force light mode
+        bgColor: "YOUR_BG_COLOR", // Optional - Widget background color
+        iconUrl: "YOUR_ICON_URL", // Optional - Widget icon URL
+        name: "YOUR_NAME" // Optional - Widget name
     };
 
     // Load the GuruBase widget
@@ -18,7 +21,10 @@ document.addEventListener('DOMContentLoaded', function() {
         "data-widget-id": widgetSettings.widgetId,
         "data-text": widgetSettings.text,
         "data-margins": JSON.stringify(widgetSettings.margins),
-        "data-light-mode": widgetSettings.lightMode
+        "data-light-mode": widgetSettings.lightMode,
+        "data-bg-color": widgetSettings.bgColor,
+        "data-icon-url": widgetSettings.iconUrl,
+        "data-name": widgetSettings.name
     }).forEach(([key, value]) => {
         guruScript.setAttribute(key, value);
     });
