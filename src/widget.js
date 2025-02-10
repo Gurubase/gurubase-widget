@@ -1219,7 +1219,6 @@ class ChatWidget {
       this.guruSlug = data.slug || ""; // Add guru slug
 
     } catch (error) {
-      console.log("Def degerleri alamadim");
       console.error('Error fetching default values:', error);
       // Fallback to hardcoded defaults if fetch fails
       this.mainColor = this.mainColor || "#0F9500";
