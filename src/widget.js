@@ -2901,9 +2901,13 @@ class ChatWidget {
   }
 
   // Add this new method to switch themes
-  async switchTheme() {
+  async switchTheme(lightMode = null) {
     console.log("Switching theme");
-    this.lightMode = !this.lightMode;
+    if (lightMode !== null) {
+      this.lightMode = lightMode;
+    } else {
+      this.lightMode = !this.lightMode;
+    }
     // Reinject styles with new theme
     const hljsThemeName = this.lightMode ? 'atom-one-light' : 'atom-one-dark';
     const hljsTheme = await this.loadHljsTheme(hljsThemeName);
