@@ -35,6 +35,24 @@ document.addEventListener('DOMContentLoaded', function() {
                         attributeFilter: ['hidden', 'title']
                     });
                 });
+
+                // Set initial theme based on current MkDocs theme
+                const htmlElement = document.querySelector('body');
+                const currentTheme = htmlElement.getAttribute('data-md-color-scheme');
+                const widgetShouldBeDark = currentTheme === 'slate';
+                const widgetIsDark = !window.chatWidget.lightMode;
+
+                console.log('Initial theme check:', {
+                    mkdocsTheme: currentTheme,
+                    widgetShouldBeDark,
+                    widgetIsDark,
+                    needsSwitch: widgetShouldBeDark !== widgetIsDark
+                });
+
+                // Only switch if there's a mismatch
+                if (widgetShouldBeDark !== widgetIsDark) {
+                    window.chatWidget.switchTheme();
+                }
             } else {
                 console.error('Theme toggle labels not found!');
             }
