@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
     // Load the GuruBase widget
     const guruScript = document.createElement("script");
-    guruScript.src = "http://localhost:8020/src/widget.js";
+    guruScript.src = "https://widget.gurubase.io/widget.latest.min.js";
     guruScript.defer = true;
     guruScript.id = "guru-widget-id";
   
