@@ -57,6 +57,19 @@ The only thing you need to do is to add the widget.js to your website as follows
 > </script>
 > ```
 
+## Exposed Functions
+
+- `switchTheme(lightMode = null)`
+  
+  You can use this function to sync the theme of the widget with the theme of your website. It accepts an optional `lightMode` boolean parameter to force the widget to be in light/dark mode. 3 possible usages of this function:
+  - `switchTheme()`: Toggle the theme
+  - `switchTheme(true)`: Force light mode
+  - `switchTheme(false)`: Force dark mode
+  
+  This function can be accessed with `window.chatWidget.switchTheme();`
+
+  An example usage is shown in the [MKDocs](https://github.com/Gurubase/gurubase-widget/tree/master/examples/mkdocs/docs/js/theme-switch.js) example in the `theme-switch.js` script. It toggles the theme of the widget based on the MkDocs website by listening for changes in the theme and using this function with each change. 
+
 ## Demos
 Below are example installations of the Gurubase Widget for various technologies. If your technology isn’t listed, we’d gladly accept a demo, feel free to submit a pull request.
 
@@ -69,3 +82,4 @@ Below are example installations of the Gurubase Widget for various technologies.
 - [React](https://github.com/Gurubase/gurubase-widget/tree/master/examples/react_app)
 - [Remix](https://github.com/Gurubase/gurubase-widget/tree/master/examples/remix)
 - [Sphinx](https://github.com/Gurubase/gurubase-widget/tree/master/examples/sphinx)
+- [Retype](https://github.com/Gurubase/gurubase-widget/tree/master/examples/retype)
