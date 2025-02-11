@@ -2670,6 +2670,15 @@ class ChatWidget {
         inputContainer.style.paddingBottom = "0"; // Reset input container padding
       }
     });
+
+    // Add keydown event listener to prevent propagation when input is focused
+    questionInput.addEventListener("keydown", (event) => {
+      // Only prevent propagation if the widget is open
+      const chatWindow = this.shadow.getElementById("chatWindow");
+      if (chatWindow && chatWindow.classList.contains("open")) {
+        event.stopPropagation();
+      }
+    });
   }
 
   // Add this helper function at the class level
