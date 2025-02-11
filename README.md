@@ -66,7 +66,7 @@ The only thing you need to do is to add the widget.js to your website as follows
   - `switchTheme(lightMode = true)`: Force light mode
   - `switchTheme(lightMode = false)`: Force dark mode
   
-  An example of how to use it is shown in the [MKDocs](https://github.com/Gurubase/gurubase-widget/tree/master/examples/mkdocs) example in the `theme-switch.js` file.
+  An example of how to use it is shown in the [MKDocs](https://github.com/Gurubase/gurubase-widget/tree/master/examples/mkdocs/docs/js/theme-switch.js) example in the `theme-switch.js` file. 
 
 ## Demos
 Below are example installations of the Gurubase Widget for various technologies. If your technology isn’t listed, we’d gladly accept a demo, feel free to submit a pull request.

@@ -1,3 +1,17 @@
+/**
+ * Theme Switch Integration for Gurubase Chat Widget
+ * 
+ * This script synchronizes the theme (light/dark mode) between MkDocs and the Gurubase chat widget.
+ * It works by:
+ * 1. Waiting for the chat widget to be initialized
+ * 2. Setting up a MutationObserver to detect theme changes in MkDocs
+ * 3. Automatically switching the widget theme when MkDocs theme changes
+ * 4. Setting the correct initial theme on page load
+ * 
+ * The script handles theme synchronization by monitoring changes to the visibility
+ * of theme toggle labels in the MkDocs header.
+ */
+
 // Theme switch integration with Gurubase widget
 
 document.addEventListener('DOMContentLoaded', function() {
