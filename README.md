@@ -63,8 +63,8 @@ The only thing you need to do is to add the widget.js to your website as follows
   
   You can use this function to sync the theme of the widget with the theme of your website. It accepts an optional `lightMode` boolean parameter to force the widget to be in light/dark mode. 3 possible usages of this function:
   - `switchTheme()`: Toggle the theme
-  - `switchTheme(lightMode = true)`: Force light mode
-  - `switchTheme(lightMode = false)`: Force dark mode
+  - `switchTheme(true)`: Force light mode
+  - `switchTheme(false)`: Force dark mode
   
   This function can be accessed with `window.chatWidget.switchTheme();`
 
