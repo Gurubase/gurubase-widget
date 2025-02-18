@@ -9,7 +9,9 @@ function GurubaseWidget({
   bgColor = null,
   iconUrl = null,
   name = null,
-  lightMode = true
+  lightMode = true,
+  tooltip = null,
+  tooltipWidth = null
 }) {
   useEffect(() => {
     // Check if widget is already initialized
@@ -47,6 +49,12 @@ function GurubaseWidget({
       }
       if (lightMode) {
         script.setAttribute('data-light-mode', lightMode);
+      }
+      if (tooltip) {
+        script.setAttribute('data-tooltip', tooltip);
+      }
+      if (tooltipWidth) {
+        script.setAttribute('data-tooltip-width', tooltipWidth);
       }
 
       script.setAttribute('id', 'guru-widget-id');

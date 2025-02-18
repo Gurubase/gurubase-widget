@@ -18,7 +18,116 @@ class ChatWidget {
         --link-color: ${this.lightMode ? '#3782f6' : '#9999ff'};
         --response-button-color: ${this.lightMode ? '#6D6D6D' : 'white'};
         --error-red-color: ${this.lightMode ? '#DC2626' : '#F00'};
-        --text-reference-color: ${this.lightMode ? '#000' : '#9999ff'}
+        --text-reference-color: ${this.lightMode ? '#000' : '#9999ff'};
+        --tooltip-bg: ${this.lightMode ? '#1F2937' : '#F9FAFB'};
+        --tooltip-text: ${this.lightMode ? 'white' : '#1F2937'};
+        --tooltip-width: ${this.tooltipWidth}px;
+      }
+
+      .chat-button[data-tooltip] {
+        transition: all 0.2s ease;
+      }
+
+      .chat-button[data-tooltip]::before {
+        content: attr(data-tooltip);
+        position: absolute;
+        bottom: calc(100% + 8px);
+        right: 50%;
+        transform: translateX(50%);
+        padding: 6px 12px;
+        border-radius: 6px;
+        background-color: var(--tooltip-bg);
+        color: var(--tooltip-text);
+        font-size: 14px;
+        opacity: 0;
+        visibility: hidden;
+        width: var(--tooltip-width);
+        text-align: center;
+        pointer-events: none;
+      }
+
+      .chat-button[data-tooltip]::after {
+        content: '';
+        position: absolute;
+        bottom: calc(100% + 4px);
+        right: 50%;
+        transform: translateX(50%) rotate(45deg);
+        width: 8px;
+        height: 8px;
+        background-color: var(--tooltip-bg);
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+      }
+
+      /* Bottom position */
+      .chat-button[data-tooltip].tooltip-bottom::before {
+        bottom: auto;
+        top: calc(100% + 8px);
+      }
+
+      .chat-button[data-tooltip].tooltip-bottom::after {
+        bottom: auto;
+        top: calc(100% + 4px);
+        transform: translateX(50%) rotate(225deg);
+      }
+
+      /* Left position */
+      .chat-button[data-tooltip].tooltip-left::before {
+        right: 0;
+        transform: translateX(0);
+      }
+
+      .chat-button[data-tooltip].tooltip-left::after {
+        right: 16px;
+        transform: translateX(0) rotate(45deg);
+      }
+
+      /* Right position */
+      .chat-button[data-tooltip].tooltip-right::before {
+        right: 100%;
+        transform: translateX(100%);
+      }
+
+      .chat-button[data-tooltip].tooltip-right::after {
+        right: 84%;
+        transform: translateX(100%) rotate(45deg);
+      }
+
+      /* Combined positions for bottom */
+      .chat-button[data-tooltip].tooltip-bottom.tooltip-left::after {
+        transform: translateX(0) rotate(225deg);
+      }
+
+      .chat-button[data-tooltip].tooltip-bottom.tooltip-right::after {
+        transform: translateX(100%) rotate(225deg);
+      }
+
+      .chat-button[data-tooltip]:hover::before,
+      .chat-button[data-tooltip]:hover::after {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      /* Add new classes for edge positioning */
+      .chat-button[data-tooltip].tooltip-left::before {
+        right: 0;
+        transform: translateX(0);
+      }
+
+      .chat-button[data-tooltip].tooltip-left::after {
+        right: 16px;
+        transform: translateX(0) rotate(45deg);
+      }
+
+      .chat-button[data-tooltip].tooltip-right::before {
+        right: 100%;
+        transform: translateX(100%);
+      }
+
+      .chat-button[data-tooltip].tooltip-right::after {
+        right: 84%;
+        transform: translateX(100%) rotate(45deg);
       }
 
       @media (max-width: 768px) {
@@ -1243,6 +1352,9 @@ class ChatWidget {
         // Validate and set button text
         this.buttonText = scriptTag.getAttribute('data-text') || "Ask AI";
 
+        // Validate and set tooltip text
+        this.tooltipText = scriptTag.getAttribute('data-tooltip');
+
         // Validate and set main color
         const mainColor = scriptTag.getAttribute('data-bg-color');
         if (mainColor && /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(mainColor)) {
@@ -1288,6 +1400,14 @@ class ChatWidget {
         } catch {
             this.margins = { bottom: "20px", right: "20px" };
             console.warn("Invalid margins format provided, using default");
+        }
+
+        // Validate and set tooltip width
+        const tooltipWidth = scriptTag.getAttribute('data-tooltip-width');
+        if (tooltipWidth && /^\d+$/.test(tooltipWidth)) {
+            this.tooltipWidth = parseInt(tooltipWidth);
+        } else {
+            this.tooltipWidth = 300; // Default width
         }
     } else {
         // Fallback values if script tag not found
@@ -2309,7 +2429,9 @@ class ChatWidget {
   injectHTML() {
     const widgetHTML = `
       <div class="chat-widget">
-        <button class="chat-button" style="bottom: ${this.margins.bottom}; right: ${this.margins.right}; background-color: ${this.mainColor};">
+        <button class="chat-button" 
+          style="bottom: ${this.margins.bottom}; right: ${this.margins.right}; background-color: ${this.mainColor};"
+          ${this.tooltipText ? `data-tooltip="${this.tooltipText}"` : ''}>
           <span class="sparkle">${this.getWidgetButtonSparkle()}</span>
           ${this.buttonText}
         </button>
@@ -2544,6 +2666,12 @@ class ChatWidget {
       window.visualViewport.addEventListener('resize', this.handleVisualViewportChange);
       window.visualViewport.addEventListener('scroll', this.handleVisualViewportChange);
     }
+
+    // Add event listener for window resize to handle tooltip positioning
+    window.addEventListener('resize', () => this.handleTooltipPosition());
+    
+    // Initial tooltip position check
+    this.handleTooltipPosition();
 
   }
 
@@ -2928,6 +3056,34 @@ class ChatWidget {
       gurubaseLogo.innerHTML = `powered by ${this.getGurubaseLogo()}`;
     } else {
       console.error("Could not find Gurubase logo element");
+    }
+  }
+
+  handleTooltipPosition() {
+    const chatButton = this.shadow.querySelector('.chat-button');
+    if (!chatButton || !chatButton.hasAttribute('data-tooltip')) return;
+
+    const buttonRect = chatButton.getBoundingClientRect();
+    const tooltipWidth = this.tooltipWidth; // Use class property
+    const tooltipHeight = 100; // Approximate height of tooltip with padding
+    const windowWidth = window.innerWidth;
+    const windowHeight = window.innerHeight;
+    
+    // Remove existing positioning classes
+    chatButton.classList.remove('tooltip-left', 'tooltip-right', 'tooltip-bottom');
+    
+    // Check vertical position first
+    const shouldShowBelow = buttonRect.top < tooltipHeight + 20; // 20px for padding and arrow
+    if (shouldShowBelow) {
+      chatButton.classList.add('tooltip-bottom');
+    }
+    
+    // Then check horizontal position
+    if (buttonRect.right + (tooltipWidth/2) > windowWidth) {
+      chatButton.classList.add('tooltip-left');
+    }
+    else if (buttonRect.left - (tooltipWidth/2) < 0) {
+      chatButton.classList.add('tooltip-right');
     }
   }
 }

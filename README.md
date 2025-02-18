@@ -45,6 +45,8 @@ The only thing you need to do is to add the widget.js to your website as follows
 | data-name | string | Your company/product name | Fetched from the Gurubase.io |
 | data-light-mode | boolean | Whether to use light mode | false |
 | data-baseUrl | string | URL to your Gurubase backend. **Only for self-hosted Gurubase.** | Gurubase Cloud |
+| data-tooltip | string | Tooltip text | null |
+| data-tooltip-width | number | Tooltip width | 300 |
 
 
 > [!NOTE]
@@ -56,6 +58,8 @@ The only thing you need to do is to add the widget.js to your website as follows
 >     id="guru-widget-id">
 > </script>
 > ```
+
+> [!Note], the tooltip adjusts itself depending on the viewport size. If the button is too close to an edge, it moves the tooltip to the other side. If it moves the tooltip to a side unnecessarily, you can reduce the tooltip width using the `data-tooltip-width` attribute. This will make the tooltip more compact and prevent it from moving to the side.
 
 ## Exposed Functions
 
