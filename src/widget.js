@@ -21,6 +21,7 @@ class ChatWidget {
         --text-reference-color: ${this.lightMode ? '#000' : '#9999ff'};
         --tooltip-bg: ${this.lightMode ? '#1F2937' : '#F9FAFB'};
         --tooltip-text: ${this.lightMode ? 'white' : '#1F2937'};
+        --tooltip-width: ${this.tooltipWidth}px;
       }
 
       .chat-button[data-tooltip] {
@@ -40,7 +41,7 @@ class ChatWidget {
         font-size: 14px;
         opacity: 0;
         visibility: hidden;
-        width: 300px;
+        width: var(--tooltip-width);
         text-align: center;
         pointer-events: none;
       }
@@ -1399,6 +1400,14 @@ class ChatWidget {
         } catch {
             this.margins = { bottom: "20px", right: "20px" };
             console.warn("Invalid margins format provided, using default");
+        }
+
+        // Validate and set tooltip width
+        const tooltipWidth = scriptTag.getAttribute('data-tooltip-width');
+        if (tooltipWidth && /^\d+$/.test(tooltipWidth)) {
+            this.tooltipWidth = parseInt(tooltipWidth);
+        } else {
+            this.tooltipWidth = 300; // Default width
         }
     } else {
         // Fallback values if script tag not found
@@ -3055,7 +3064,7 @@ class ChatWidget {
     if (!chatButton || !chatButton.hasAttribute('data-tooltip')) return;
 
     const buttonRect = chatButton.getBoundingClientRect();
-    const tooltipWidth = 300; // Width of the tooltip
+    const tooltipWidth = this.tooltipWidth; // Use class property
     const tooltipHeight = 100; // Approximate height of tooltip with padding
     const windowWidth = window.innerWidth;
     const windowHeight = window.innerHeight;
