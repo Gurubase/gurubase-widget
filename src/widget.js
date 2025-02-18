@@ -65,6 +65,27 @@ class ChatWidget {
         visibility: visible;
       }
 
+      /* Add new classes for edge positioning */
+      .chat-button[data-tooltip].tooltip-left::before {
+        right: 0;
+        transform: translateX(0);
+      }
+
+      .chat-button[data-tooltip].tooltip-left::after {
+        right: 16px;
+        transform: translateX(0) rotate(45deg);
+      }
+
+      .chat-button[data-tooltip].tooltip-right::before {
+        right: 100%;
+        transform: translateX(100%);
+      }
+
+      .chat-button[data-tooltip].tooltip-right::after {
+        right: 84%;
+        transform: translateX(100%) rotate(45deg);
+      }
+
       @media (max-width: 768px) {
         body.widget-open {
           width: 100%;
@@ -2594,6 +2615,12 @@ class ChatWidget {
       window.visualViewport.addEventListener('scroll', this.handleVisualViewportChange);
     }
 
+    // Add event listener for window resize to handle tooltip positioning
+    window.addEventListener('resize', () => this.handleTooltipPosition());
+    
+    // Initial tooltip position check
+    this.handleTooltipPosition();
+
   }
 
   async loadHljsTheme(themeName) {
@@ -2977,6 +3004,27 @@ class ChatWidget {
       gurubaseLogo.innerHTML = `powered by ${this.getGurubaseLogo()}`;
     } else {
       console.error("Could not find Gurubase logo element");
+    }
+  }
+
+  handleTooltipPosition() {
+    const chatButton = this.shadow.querySelector('.chat-button');
+    if (!chatButton || !chatButton.hasAttribute('data-tooltip')) return;
+
+    const buttonRect = chatButton.getBoundingClientRect();
+    const tooltipWidth = 300; // Width of the tooltip
+    const windowWidth = window.innerWidth;
+    
+    // Remove existing positioning classes
+    chatButton.classList.remove('tooltip-left', 'tooltip-right');
+    
+    // Check if tooltip would overflow on the right
+    if (buttonRect.right + (tooltipWidth/2) > windowWidth) {
+      chatButton.classList.add('tooltip-left');
+    }
+    // Check if tooltip would overflow on the left
+    else if (buttonRect.left - (tooltipWidth/2) < 0) {
+      chatButton.classList.add('tooltip-right');
     }
   }
 }
