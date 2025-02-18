@@ -1735,24 +1735,7 @@ class ChatWidget {
               <line x1="6" y1="6" x2="18" y2="18"></line>
             </svg>
           </div>
-          <span>Finding the best contexts from sources.</span>
-        </div>
-        <div class="loading-stage" id="evaluation-stage" style="display: none;">
-          <div class="loading-dots">
-            <span></span>
-            <span></span>
-            <span></span>
-          </div>
-          <div class="stage-status-container">
-            <svg class="success-tick hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polyline points="20 6 9 17 4 12"></polyline>
-            </svg>
-            <svg class="error-cross hidden" viewBox="0 0 24 24" fill="none" stroke="red" stroke-width="2">
-              <line x1="18" y1="6" x2="6" y2="18"></line>
-              <line x1="6" y1="6" x2="18" y2="18"></line>
-            </svg>
-          </div>
-          <span>Evaluating sources to prevent hallucinations</span>
+          <span class="stage-text">Finding the best contexts from sources.</span>
         </div>
       </div>
     `;
@@ -1770,7 +1753,6 @@ class ChatWidget {
     function completeFirstStage() {
       firstStageComplete = true;
       const contextStage = loadingMessage.querySelector("#context-stage");
-      const evaluationStage = loadingMessage.querySelector("#evaluation-stage");
 
       contextStage.querySelector(".loading-dots").classList.add("hidden");
       const contextStatusContainer = contextStage.querySelector(
@@ -1781,7 +1763,15 @@ class ChatWidget {
         .querySelector(".success-tick")
         .classList.remove("hidden");
 
-      evaluationStage.style.display = "flex";
+      // Instead of showing a new stage, update the text of the existing stage
+      const stageText = contextStage.querySelector(".stage-text");
+      stageText.textContent = "Evaluating sources to prevent hallucinations";
+      
+      // Reset the loading animation
+      contextStage.querySelector(".loading-dots").classList.remove("hidden");
+      contextStatusContainer.classList.remove("visible");
+      contextStatusContainer.querySelector(".success-tick").classList.add("hidden");
+
       messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
 
@@ -1859,7 +1849,7 @@ class ChatWidget {
         await new Promise((resolve) => setTimeout(resolve, 700));
       }
 
-      const evaluationStage = loadingMessage.querySelector("#evaluation-stage");
+      const evaluationStage = loadingMessage.querySelector("#context-stage");
 
       const evaluationStatusContainer = evaluationStage.querySelector(
         ".stage-status-container"
@@ -2208,21 +2198,21 @@ class ChatWidget {
       console.error("Error:", error, "Error message:", error.message);
       clearTimeout(firstStageTimer);
 
-      const failedStage = firstStageComplete
-        ? loadingMessage.querySelector("#evaluation-stage")
-        : loadingMessage.querySelector("#context-stage");
-
+      const failedStage = loadingMessage.querySelector("#context-stage");
+      const failedStatusContainer = failedStage.querySelector(".stage-status-container");
+      
       failedStage.querySelector(".loading-dots").classList.add("hidden");
-      const failedStatusContainer = failedStage.querySelector(
-        ".stage-status-container"
-      );
       failedStatusContainer.classList.add("visible");
-      failedStatusContainer
-        .querySelector(".success-tick")
-        .classList.add("hidden");
-      failedStatusContainer
-        .querySelector(".error-cross")
-        .classList.remove("hidden");
+      failedStatusContainer.querySelector(".success-tick").classList.add("hidden");
+      failedStatusContainer.querySelector(".error-cross").classList.remove("hidden");
+
+      // Update the text to show the error stage
+      const stageText = failedStage.querySelector(".stage-text");
+      if (firstStageComplete) {
+        stageText.textContent = "Error evaluating sources";
+      } else {
+        stageText.textContent = "Error finding contexts";
+      }
 
       await new Promise((resolve) => setTimeout(resolve, 700));
 
