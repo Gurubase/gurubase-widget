@@ -22,7 +22,9 @@ document.addEventListener("DOMContentLoaded", () => {
     "data-light-mode": "false", // Optional - Force light mode
     "data-name": "YOUR_NAME", // Optional - Widget name
     "data-icon-url": "YOUR_ICON_URL", // Optional - Widget icon URL
-    "data-bg-color": "#000000" // Optional - Widget background color
+    "data-bg-color": "#000000", // Optional - Widget background color
+    "data-tooltip": "This is a tooltip.", // Optional
+    "data-tooltip-width": "300" // Optional - Widget tooltip width
   };
 
   // Add widget settings as data attributes

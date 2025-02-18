@@ -16,7 +16,9 @@ document.addEventListener('DOMContentLoaded', function() {
         lightMode: false, // Optional - Force light mode
         bgColor: "YOUR_BG_COLOR", // Optional - Widget background color
         iconUrl: "YOUR_ICON_URL", // Optional - Widget icon URL
-        name: "YOUR_NAME" // Optional - Widget name
+        name: "YOUR_NAME", // Optional - Widget name
+        tooltip: "This is a tooltip.", // Optional
+        tooltipWidth: 300 // Optional
     };
 
     // Load the GuruBase widget
@@ -33,7 +35,9 @@ document.addEventListener('DOMContentLoaded', function() {
         "data-light-mode": widgetSettings.lightMode,
         "data-bg-color": widgetSettings.bgColor,
         "data-icon-url": widgetSettings.iconUrl,
-        "data-name": widgetSettings.name
+        "data-name": widgetSettings.name,
+        "data-tooltip": widgetSettings.tooltip,
+        "data-tooltip-width": widgetSettings.tooltipWidth
     }).forEach(([key, value]) => {
         guruScript.setAttribute(key, value);
     });

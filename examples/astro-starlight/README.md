@@ -20,6 +20,8 @@ head: [
             'data-icon-url': 'YOUR_ICON_URL', // Optional
             'data-light-mode': 'true', // Optional
             'data-bg-color': '#000000', // Optional
+            'data-tooltip': 'This is a tooltip.', // Optional
+            'data-tooltip-width': '300', // Optional
             defer: true,
         },
     },
