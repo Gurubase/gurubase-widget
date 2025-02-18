@@ -30,6 +30,8 @@ export default function App() {
           // text="Ask AI"
           // margins={{ bottom: "20px", right: "20px" }}
           // lightMode={false}
+          // tooltip="This is a tooltip."
+          // tooltipWidth="300"
         />        
         <div className="min-h-screen">
           <Outlet />

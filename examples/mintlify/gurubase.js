@@ -7,6 +7,8 @@ const widgetSettings = {
     name: "YOUR_NAME", // Optional - Widget name
     iconUrl: "YOUR_ICON_URL", // Optional - Widget icon URL
     bgColor: "#000000", // Optional - Widget background color
+    tooltip: "This is a tooltip.", // Optional
+    tooltipWidth: 300, // Optional
   };
   
   // Load the GuruBase widget
@@ -23,7 +25,9 @@ const widgetSettings = {
     "data-light-mode": widgetSettings.lightMode,
     "data-name": widgetSettings.name,
     "data-icon-url": widgetSettings.iconUrl,
-    "data-bg-color": widgetSettings.bgColor
+    "data-bg-color": widgetSettings.bgColor,
+    "data-tooltip": widgetSettings.tooltip,
+    "data-tooltip-width": widgetSettings.tooltipWidth
   }).forEach(([key, value]) => {
     guruScript.setAttribute(key, value);
   });
