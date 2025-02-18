@@ -18,7 +18,51 @@ class ChatWidget {
         --link-color: ${this.lightMode ? '#3782f6' : '#9999ff'};
         --response-button-color: ${this.lightMode ? '#6D6D6D' : 'white'};
         --error-red-color: ${this.lightMode ? '#DC2626' : '#F00'};
-        --text-reference-color: ${this.lightMode ? '#000' : '#9999ff'}
+        --text-reference-color: ${this.lightMode ? '#000' : '#9999ff'};
+        --tooltip-bg: ${this.lightMode ? '#1F2937' : '#F9FAFB'};
+        --tooltip-text: ${this.lightMode ? 'white' : '#1F2937'};
+      }
+
+      .chat-button[data-tooltip] {
+        transition: all 0.2s ease;
+      }
+
+      .chat-button[data-tooltip]::before {
+        content: attr(data-tooltip);
+        position: absolute;
+        bottom: calc(100% + 8px);
+        right: 50%;
+        transform: translateX(50%);
+        padding: 6px 12px;
+        border-radius: 6px;
+        background-color: var(--tooltip-bg);
+        color: var(--tooltip-text);
+        font-size: 14px;
+        opacity: 0;
+        visibility: hidden;
+        width: 300px;
+        text-align: center;
+        pointer-events: none;
+      }
+
+      .chat-button[data-tooltip]::after {
+        content: '';
+        position: absolute;
+        bottom: calc(100% + 4px);
+        right: 50%;
+        transform: translateX(50%) rotate(45deg);
+        width: 8px;
+        height: 8px;
+        background-color: var(--tooltip-bg);
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+      }
+
+      .chat-button[data-tooltip]:hover::before,
+      .chat-button[data-tooltip]:hover::after {
+        opacity: 1;
+        visibility: visible;
       }
 
       @media (max-width: 768px) {
@@ -1243,6 +1287,9 @@ class ChatWidget {
         // Validate and set button text
         this.buttonText = scriptTag.getAttribute('data-text') || "Ask AI";
 
+        // Validate and set tooltip text
+        this.tooltipText = scriptTag.getAttribute('data-tooltip');
+
         // Validate and set main color
         const mainColor = scriptTag.getAttribute('data-bg-color');
         if (mainColor && /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(mainColor)) {
@@ -2309,7 +2356,9 @@ class ChatWidget {
   injectHTML() {
     const widgetHTML = `
       <div class="chat-widget">
-        <button class="chat-button" style="bottom: ${this.margins.bottom}; right: ${this.margins.right}; background-color: ${this.mainColor};">
+        <button class="chat-button" 
+          style="bottom: ${this.margins.bottom}; right: ${this.margins.right}; background-color: ${this.mainColor};"
+          ${this.tooltipText ? `data-tooltip="${this.tooltipText}"` : ''}>
           <span class="sparkle">${this.getWidgetButtonSparkle()}</span>
           ${this.buttonText}
         </button>
