@@ -37,7 +37,7 @@ export default defineConfig({
 						'data-light-mode': 'true', // Optional
 						'data-bg-color': '#000000', // Optional
 						'data-tooltip': 'This is a tooltip.', // Optional
-						'data-tooltip-width': '300', // Optional
+						'data-tooltip-width': '100', // Optional
 						defer: true,
 					},
 				},

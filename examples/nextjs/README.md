@@ -60,7 +60,7 @@ export default function Home() {
         // iconUrl="YOUR_ICON_URL"
         // name="YOUR_NAME"
         // tooltip="This is a tooltip."
-        // tooltipWidth="300"
+        // tooltipWidth="100"
       />
     </>
   )

@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
       "data-icon-url": "YOUR_ICON_URL", // Optional - Widget icon URL
       "data-bg-color": "#000000", // Optional - Widget background color
       "data-tooltip": "This is a tooltip.", // Optional
-      "data-tooltip-width": "300", // Optional
+      "data-tooltip-width": "100", // Optional
     };
   
     // Add widget settings as data attributes

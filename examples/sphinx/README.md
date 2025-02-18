@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function() {
         iconUrl: "YOUR_ICON_URL", // Optional - Widget icon URL
         name: "YOUR_NAME", // Optional - Widget name
         tooltip: "This is a tooltip.", // Optional
-        tooltipWidth: 300 // Optional
+        tooltipWidth: 100 // Optional
     };
 
     // Load the GuruBase widget

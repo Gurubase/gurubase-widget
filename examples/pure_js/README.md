@@ -16,7 +16,7 @@ This is a simple example of how to integrate the Gurubase Widget into your websi
     data-icon-url="YOUR_ICON_URL"
     data-name="YOUR_NAME"
     data-tooltip="This is a tooltip."
-    data-tooltip-width="300"
+    data-tooltip-width="100"
     id="guru-widget-id"
 ></script>
 ```

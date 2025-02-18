@@ -109,7 +109,7 @@ function App() {
           iconUrl="YOUR_ICON_URL" // Optional
           name="YOUR_NAME" // Optional
           tooltip="This is a tooltip." // Optional
-          tooltipWidth="300" // Optional
+          tooltipWidth="100" // Optional
         />
       {/* ... existing app content ... */}
     </div>

@@ -31,7 +31,7 @@ export default function App() {
           // margins={{ bottom: "20px", right: "20px" }}
           // lightMode={false}
           // tooltip="This is a tooltip."
-          // tooltipWidth="300"
+          // tooltipWidth="100"
         />        
         <div className="min-h-screen">
           <Outlet />
