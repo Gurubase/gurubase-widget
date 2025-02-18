@@ -59,6 +59,49 @@ class ChatWidget {
         pointer-events: none;
       }
 
+      /* Bottom position */
+      .chat-button[data-tooltip].tooltip-bottom::before {
+        bottom: auto;
+        top: calc(100% + 8px);
+      }
+
+      .chat-button[data-tooltip].tooltip-bottom::after {
+        bottom: auto;
+        top: calc(100% + 4px);
+        transform: translateX(50%) rotate(225deg);
+      }
+
+      /* Left position */
+      .chat-button[data-tooltip].tooltip-left::before {
+        right: 0;
+        transform: translateX(0);
+      }
+
+      .chat-button[data-tooltip].tooltip-left::after {
+        right: 16px;
+        transform: translateX(0) rotate(45deg);
+      }
+
+      /* Right position */
+      .chat-button[data-tooltip].tooltip-right::before {
+        right: 100%;
+        transform: translateX(100%);
+      }
+
+      .chat-button[data-tooltip].tooltip-right::after {
+        right: 84%;
+        transform: translateX(100%) rotate(45deg);
+      }
+
+      /* Combined positions for bottom */
+      .chat-button[data-tooltip].tooltip-bottom.tooltip-left::after {
+        transform: translateX(0) rotate(225deg);
+      }
+
+      .chat-button[data-tooltip].tooltip-bottom.tooltip-right::after {
+        transform: translateX(100%) rotate(225deg);
+      }
+
       .chat-button[data-tooltip]:hover::before,
       .chat-button[data-tooltip]:hover::after {
         opacity: 1;
@@ -3013,16 +3056,23 @@ class ChatWidget {
 
     const buttonRect = chatButton.getBoundingClientRect();
     const tooltipWidth = 300; // Width of the tooltip
+    const tooltipHeight = 100; // Approximate height of tooltip with padding
     const windowWidth = window.innerWidth;
+    const windowHeight = window.innerHeight;
     
     // Remove existing positioning classes
-    chatButton.classList.remove('tooltip-left', 'tooltip-right');
+    chatButton.classList.remove('tooltip-left', 'tooltip-right', 'tooltip-bottom');
     
-    // Check if tooltip would overflow on the right
+    // Check vertical position first
+    const shouldShowBelow = buttonRect.top < tooltipHeight + 20; // 20px for padding and arrow
+    if (shouldShowBelow) {
+      chatButton.classList.add('tooltip-bottom');
+    }
+    
+    // Then check horizontal position
     if (buttonRect.right + (tooltipWidth/2) > windowWidth) {
       chatButton.classList.add('tooltip-left');
     }
-    // Check if tooltip would overflow on the left
     else if (buttonRect.left - (tooltipWidth/2) < 0) {
       chatButton.classList.add('tooltip-right');
     }
