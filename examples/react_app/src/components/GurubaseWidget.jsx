@@ -9,7 +9,8 @@ function GurubaseWidget({
   bgColor = null,
   iconUrl = null,
   name = null,
-  lightMode = true
+  lightMode = true,
+  baseUrl = null
 }) {
   useEffect(() => {
     // Check if widget is already initialized
@@ -47,6 +48,9 @@ function GurubaseWidget({
       }
       if (lightMode) {
         script.setAttribute('data-light-mode', lightMode);
+      }
+      if (baseUrl) {
+        script.setAttribute('data-baseUrl', baseUrl);
       }
 
       script.setAttribute('id', 'guru-widget-id');
