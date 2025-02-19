@@ -1076,6 +1076,19 @@ class ChatWidget {
         color: ${this.lightMode ? '#6B7280' : '#9CA3AF'};
         margin-top: 16px;
       }
+
+      .stage-text {
+        -webkit-mask: linear-gradient(-60deg, #000 30%, #0005, #000 70%) right/350% 100%;
+        mask: linear-gradient(-60deg, #000 30%, #0005, #000 70%) right/350% 100%;
+        animation: shimmer 2.5s infinite;
+      }
+
+      @keyframes shimmer {
+        100% {
+          -webkit-mask-position: left;
+          mask-position: left;
+        }
+      }
   
       .stage-status-container {
         width: 40px;
@@ -1740,7 +1753,7 @@ class ChatWidget {
     // Start first stage animation
     const firstStageTimer = setTimeout(() => {
       completeFirstStage();
-    }, 1000);
+    }, 2000);
 
     function completeFirstStage() {
       firstStageComplete = true;
