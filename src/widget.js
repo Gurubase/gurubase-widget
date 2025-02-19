@@ -473,33 +473,10 @@ class ChatWidget {
           align-items: center;
           gap: 4px;
           height: 24px;
-        }
-  
-        .loading-dots span {
-          width: 4px;
-          height: 4px;
-          background-color: var(--text-primary);
-          border-radius: 50%;
-          animation: bounce 1.4s infinite ease-in-out;
-          opacity: 0.6;
-        }
-  
-        .loading-dots span:nth-child(1) {
-          animation-delay: -0.32s;
-        }
-        .loading-dots span:nth-child(2) {
-          animation-delay: -0.16s;
-        }
-  
-        @keyframes bounce {
-          0%,
-          80%,
-          100% {
-            transform: scale(0);
-          }
-          40% {
-            transform: scale(1);
-          }
+          width: 24px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
   
         /* Add styles for references */
@@ -1100,14 +1077,6 @@ class ChatWidget {
         margin-top: 16px;
       }
   
-      .loading-dots {
-        width: 40px;
-        height: 20px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-  
       .stage-status-container {
         width: 40px;
         height: 20px;
@@ -1118,13 +1087,13 @@ class ChatWidget {
   
       .success-tick {
         width: 20px;
-        height: 20px;
+        height: 24px;
         color: #10B981;
       }
 
       .error-cross {
         width: 20px;
-        height: 20px;
+        height: 24px;
         color: red;
       }
   
@@ -1169,6 +1138,31 @@ class ChatWidget {
         align-items: center;
         width: 24px;
         height: 24px;
+      }
+
+      .loading-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 0px;
+      }
+
+      .loader {
+        background-color: ${this.lightMode ? '#6B7280' : '#9CA3AF'};
+        width: 12px;
+        aspect-ratio: 1;
+        --_g: no-repeat radial-gradient(farthest-side,${this.lightMode ? '#6B7280' : '#9CA3AF'} 94%,#0000);
+        background:
+          var(--_g) 0    0,
+          var(--_g) 100% 0,
+          var(--_g) 100% 100%,
+          var(--_g) 0    100%;
+        background-size: 40% 40%;
+        animation: l38 .5s infinite; 
+      }
+
+      @keyframes l38 {
+        100% {background-position: 100% 0,100% 100%,0 100%,0 0}
       }
     `;
   
@@ -1722,9 +1716,7 @@ class ChatWidget {
       <div class="message-content">
         <div class="loading-stage" id="context-stage">
           <div class="loading-dots">
-            <span></span>
-            <span></span>
-            <span></span>
+            <div class="loader"></div>
           </div>
           <div class="stage-status-container">
             <svg class="success-tick hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
