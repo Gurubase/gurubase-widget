@@ -1241,7 +1241,7 @@ class ChatWidget {
         try {
             const baseUrl = scriptTag.getAttribute('data-baseUrl');
             new URL(baseUrl); // Test if valid URL
-            this.baseUrl = baseUrl;
+            this.baseUrl = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
         } catch {
             this.baseUrl = defaultBaseUrl;
             // console.warn("Invalid base URL provided, using default");
