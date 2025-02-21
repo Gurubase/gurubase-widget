@@ -597,33 +597,10 @@ class ChatWidget {
           align-items: center;
           gap: 4px;
           height: 24px;
-        }
-  
-        .loading-dots span {
-          width: 4px;
-          height: 4px;
-          background-color: var(--text-primary);
-          border-radius: 50%;
-          animation: bounce 1.4s infinite ease-in-out;
-          opacity: 0.6;
-        }
-  
-        .loading-dots span:nth-child(1) {
-          animation-delay: -0.32s;
-        }
-        .loading-dots span:nth-child(2) {
-          animation-delay: -0.16s;
-        }
-  
-        @keyframes bounce {
-          0%,
-          80%,
-          100% {
-            transform: scale(0);
-          }
-          40% {
-            transform: scale(1);
-          }
+          width: 24px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
   
         /* Add styles for references */
@@ -1223,13 +1200,18 @@ class ChatWidget {
         color: ${this.lightMode ? '#6B7280' : '#9CA3AF'};
         margin-top: 16px;
       }
-  
-      .loading-dots {
-        width: 40px;
-        height: 20px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+
+      .stage-text {
+        -webkit-mask: linear-gradient(-60deg, #000 30%, #0005, #000 70%) right/350% 100%;
+        mask: linear-gradient(-60deg, #000 30%, #0005, #000 70%) right/350% 100%;
+        animation: shimmer 2.5s infinite;
+      }
+
+      @keyframes shimmer {
+        100% {
+          -webkit-mask-position: left;
+          mask-position: left;
+        }
       }
   
       .stage-status-container {
@@ -1242,13 +1224,13 @@ class ChatWidget {
   
       .success-tick {
         width: 20px;
-        height: 20px;
+        height: 24px;
         color: #10B981;
       }
 
       .error-cross {
         width: 20px;
-        height: 20px;
+        height: 24px;
         color: red;
       }
   
@@ -1293,6 +1275,31 @@ class ChatWidget {
         align-items: center;
         width: 24px;
         height: 24px;
+      }
+
+      .loading-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 0px;
+      }
+
+      .loader {
+        background-color: ${this.lightMode ? '#6B7280' : '#9CA3AF'};
+        width: 12px;
+        aspect-ratio: 1;
+        --_g: no-repeat radial-gradient(farthest-side,${this.lightMode ? '#6B7280' : '#9CA3AF'} 94%,#0000);
+        background:
+          var(--_g) 0    0,
+          var(--_g) 100% 0,
+          var(--_g) 100% 100%,
+          var(--_g) 0    100%;
+        background-size: 40% 40%;
+        animation: l38 .5s infinite; 
+      }
+
+      @keyframes l38 {
+        100% {background-position: 100% 0,100% 100%,0 100%,0 0}
       }
     `;
   
@@ -1863,9 +1870,7 @@ class ChatWidget {
       <div class="message-content">
         <div class="loading-stage" id="context-stage">
           <div class="loading-dots">
-            <span></span>
-            <span></span>
-            <span></span>
+            <div class="loader"></div>
           </div>
           <div class="stage-status-container">
             <svg class="success-tick hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1876,24 +1881,7 @@ class ChatWidget {
               <line x1="6" y1="6" x2="18" y2="18"></line>
             </svg>
           </div>
-          <span>Finding the best contexts from sources.</span>
-        </div>
-        <div class="loading-stage" id="evaluation-stage" style="display: none;">
-          <div class="loading-dots">
-            <span></span>
-            <span></span>
-            <span></span>
-          </div>
-          <div class="stage-status-container">
-            <svg class="success-tick hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polyline points="20 6 9 17 4 12"></polyline>
-            </svg>
-            <svg class="error-cross hidden" viewBox="0 0 24 24" fill="none" stroke="red" stroke-width="2">
-              <line x1="18" y1="6" x2="6" y2="18"></line>
-              <line x1="6" y1="6" x2="18" y2="18"></line>
-            </svg>
-          </div>
-          <span>Evaluating sources to prevent hallucinations</span>
+          <span class="stage-text">Finding the best contexts from sources.</span>
         </div>
       </div>
     `;
@@ -1906,12 +1894,11 @@ class ChatWidget {
     // Start first stage animation
     const firstStageTimer = setTimeout(() => {
       completeFirstStage();
-    }, 1000);
+    }, 2000);
 
     function completeFirstStage() {
       firstStageComplete = true;
       const contextStage = loadingMessage.querySelector("#context-stage");
-      const evaluationStage = loadingMessage.querySelector("#evaluation-stage");
 
       contextStage.querySelector(".loading-dots").classList.add("hidden");
       const contextStatusContainer = contextStage.querySelector(
@@ -1922,7 +1909,15 @@ class ChatWidget {
         .querySelector(".success-tick")
         .classList.remove("hidden");
 
-      evaluationStage.style.display = "flex";
+      // Instead of showing a new stage, update the text of the existing stage
+      const stageText = contextStage.querySelector(".stage-text");
+      stageText.textContent = "Evaluating sources to prevent hallucinations";
+      
+      // Reset the loading animation
+      contextStage.querySelector(".loading-dots").classList.remove("hidden");
+      contextStatusContainer.classList.remove("visible");
+      contextStatusContainer.querySelector(".success-tick").classList.add("hidden");
+
       messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
 
@@ -2000,7 +1995,7 @@ class ChatWidget {
         await new Promise((resolve) => setTimeout(resolve, 700));
       }
 
-      const evaluationStage = loadingMessage.querySelector("#evaluation-stage");
+      const evaluationStage = loadingMessage.querySelector("#context-stage");
 
       const evaluationStatusContainer = evaluationStage.querySelector(
         ".stage-status-container"
@@ -2349,21 +2344,21 @@ class ChatWidget {
       console.error("Error:", error, "Error message:", error.message);
       clearTimeout(firstStageTimer);
 
-      const failedStage = firstStageComplete
-        ? loadingMessage.querySelector("#evaluation-stage")
-        : loadingMessage.querySelector("#context-stage");
-
+      const failedStage = loadingMessage.querySelector("#context-stage");
+      const failedStatusContainer = failedStage.querySelector(".stage-status-container");
+      
       failedStage.querySelector(".loading-dots").classList.add("hidden");
-      const failedStatusContainer = failedStage.querySelector(
-        ".stage-status-container"
-      );
       failedStatusContainer.classList.add("visible");
-      failedStatusContainer
-        .querySelector(".success-tick")
-        .classList.add("hidden");
-      failedStatusContainer
-        .querySelector(".error-cross")
-        .classList.remove("hidden");
+      failedStatusContainer.querySelector(".success-tick").classList.add("hidden");
+      failedStatusContainer.querySelector(".error-cross").classList.remove("hidden");
+
+      // Update the text to show the error stage
+      const stageText = failedStage.querySelector(".stage-text");
+      if (firstStageComplete) {
+        stageText.textContent = "Error evaluating sources";
+      } else {
+        stageText.textContent = "Error finding contexts";
+      }
 
       await new Promise((resolve) => setTimeout(resolve, 700));
 
