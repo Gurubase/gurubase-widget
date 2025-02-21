@@ -23,8 +23,6 @@ interface GurubaseWidgetProps {
   iconUrl?: string;
   name?: string;
   lightMode?: boolean;
-  tooltip?: string;
-  tooltipWidth?: number;
 }
 
 export function GurubaseWidget({
@@ -35,8 +33,6 @@ export function GurubaseWidget({
   iconUrl,
   name,
   lightMode = false,
-  tooltip,
-  tooltipWidth
 }: GurubaseWidgetProps) {
   useEffect(() => {
     if (window.chatWidget) return;
@@ -52,8 +48,6 @@ export function GurubaseWidget({
     if (iconUrl) script.setAttribute('data-icon-url', iconUrl);
     if (name) script.setAttribute('data-name', name);
     script.setAttribute('data-light-mode', String(lightMode));
-    if (tooltip) script.setAttribute('data-tooltip', tooltip);
-    if (tooltipWidth) script.setAttribute('data-tooltip-width', tooltipWidth);
 
     document.body.appendChild(script);
 
@@ -63,7 +57,7 @@ export function GurubaseWidget({
       const widgetContainer = document.querySelector('.chat-widget');
       if (widgetContainer) widgetContainer.remove();
     };
-  }, [widgetId, text, margins, bgColor, iconUrl, name, lightMode, tooltip, tooltipWidth]);
+  }, [widgetId, text, margins, bgColor, iconUrl, name, lightMode]);
 
   return null;
 }
@@ -91,8 +85,6 @@ export default function App() {
           // bgColor="YOUR_BG_COLOR"
           // iconUrl="YOUR_ICON_URL"
           // name="YOUR_NAME"
-          // tooltip="This is a tooltip."
-          // tooltipWidth="100"
         />
         <Scripts />
       </body>

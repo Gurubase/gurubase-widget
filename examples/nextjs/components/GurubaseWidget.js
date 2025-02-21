@@ -10,8 +10,6 @@ export default function GurubaseWidget({
   bgColor = null,
   iconUrl = null,
   name = null,
-  tooltip = null,
-  tooltipWidth = null
 }) {
   return (
     <Script
@@ -26,8 +24,6 @@ export default function GurubaseWidget({
       {...(bgColor && { "data-bg-color": bgColor })}
       {...(iconUrl && { "data-icon-url": iconUrl })}
       {...(name && { "data-name": name })}
-      {...(tooltip && { "data-tooltip": tooltip })}
-      {...(tooltipWidth && { "data-tooltip-width": tooltipWidth })}
     />
   )
 }

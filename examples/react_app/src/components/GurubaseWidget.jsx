@@ -10,8 +10,6 @@ function GurubaseWidget({
   iconUrl = null,
   name = null,
   lightMode = true,
-  tooltip = null,
-  tooltipWidth = null
 }) {
   useEffect(() => {
     // Check if widget is already initialized
@@ -50,12 +48,6 @@ function GurubaseWidget({
       if (lightMode) {
         script.setAttribute('data-light-mode', lightMode);
       }
-      if (tooltip) {
-        script.setAttribute('data-tooltip', tooltip);
-      }
-      if (tooltipWidth) {
-        script.setAttribute('data-tooltip-width', tooltipWidth);
-      }
 
       script.setAttribute('id', 'guru-widget-id');
 
@@ -76,7 +68,7 @@ function GurubaseWidget({
         widgetContainer.remove();
       }
     };
-  }, [widgetId, text, margins, bgColor, iconUrl, name]);
+  }, [widgetId, text, margins, bgColor, iconUrl, name, lightMode]);
 
   return null;
 }

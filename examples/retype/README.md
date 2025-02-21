@@ -54,8 +54,6 @@ The Gurubase Widget is integrated into the documentation using the following con
     data-text="Ask about Pagy"
     data-margins='{"bottom": "20px", "right": "20px"}'
     data-light-mode="true"
-    data-tooltip="This is a tooltip."
-    data-tooltip-width="100">
 </script>
 ```
 
