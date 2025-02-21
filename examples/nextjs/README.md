@@ -18,7 +18,7 @@ export default function GurubaseWidget({
   lightMode = false,
   bgColor,
   iconUrl,
-  name,
+  name
 }) {
   return (
     <Script

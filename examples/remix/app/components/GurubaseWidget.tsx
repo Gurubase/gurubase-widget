@@ -23,7 +23,7 @@ export function GurubaseWidget({
   bgColor,
   iconUrl,
   name,
-  lightMode = false,
+  lightMode = false
 }: GurubaseWidgetProps) {
   useEffect(() => {
     if (window.chatWidget) return;

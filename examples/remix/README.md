@@ -29,10 +29,10 @@ export function GurubaseWidget({
   widgetId,
   text = "Ask AI",
   margins = { bottom: "20px", right: "20px" },
-  bgColor,
-  iconUrl,
-  name,
-  lightMode = false,
+  bgColor = null,
+  iconUrl = null,
+  name = null,
+  lightMode = false
 }: GurubaseWidgetProps) {
   useEffect(() => {
     if (window.chatWidget) return;

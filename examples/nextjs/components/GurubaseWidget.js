@@ -9,7 +9,7 @@ export default function GurubaseWidget({
   lightMode = false,
   bgColor = null,
   iconUrl = null,
-  name = null,
+  name = null
 }) {
   return (
     <Script

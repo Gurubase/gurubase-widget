@@ -32,7 +32,7 @@ const widgetSettings = {
     "data-light-mode": widgetSettings.lightMode,
     "data-name": widgetSettings.name,
     "data-icon-url": widgetSettings.iconUrl,
-    "data-bg-color": widgetSettings.bgColor,
+    "data-bg-color": widgetSettings.bgColor
   }).forEach(([key, value]) => {
     guruScript.setAttribute(key, value);
   });
