@@ -69,7 +69,7 @@ class ChatWidget {
       /* Top position */
       .chat-button[data-tooltip-side="top"]::before {
         bottom: 100%;
-        left: 0%;
+        left: var(--tooltip-left, 0%);
         transform: translateX(-50%) translateY(-8px);
       }
 
@@ -82,7 +82,7 @@ class ChatWidget {
       /* Bottom position */
       .chat-button[data-tooltip-side="bottom"]::before {
         top: 100%;
-        left: 0%;
+        left: var(--tooltip-left, 0%);
         transform: translateX(-50%) translateY(8px);
       }
 
@@ -3083,29 +3083,24 @@ class ChatWidget {
 
   handleTooltipPosition() {
     const chatButton = this.shadow.querySelector('.chat-button');
-    if (!chatButton || !chatButton.hasAttribute('data-tooltip')) return;
+    if (!chatButton) return;
 
-    const buttonRect = chatButton.getBoundingClientRect();
-    const tooltipWidth = this.tooltipWidth; // Use class property
-    const tooltipHeight = 100; // Approximate height of tooltip with padding
-    const windowWidth = window.innerWidth;
-    const windowHeight = window.innerHeight;
+    const tooltipText = chatButton.getAttribute('data-tooltip');
+    if (!tooltipText) return;
+
+    // Calculate position based on text length
+    const textLength = tooltipText.length;
+    const maxLength = 200; // Adjust this based on your longest expected text
+    const minLeft = -40;
+    const maxLeft = 40;
     
-    // Remove existing positioning classes
-    chatButton.classList.remove('tooltip-left', 'tooltip-right', 'tooltip-bottom');
+    // Linear interpolation between maxLeft and minLeft based on text length
+    const leftPosition = maxLeft - ((textLength / maxLength) * (maxLeft - minLeft));
     
-    // Check vertical position first
-    const shouldShowBelow = buttonRect.top < tooltipHeight + 20; // 20px for padding and arrow
-    if (shouldShowBelow) {
-      chatButton.classList.add('tooltip-bottom');
-    }
-    
-    // Then check horizontal position
-    if (buttonRect.right + (tooltipWidth/2) > windowWidth) {
-      chatButton.classList.add('tooltip-left');
-    }
-    else if (buttonRect.left - (tooltipWidth/2) < 0) {
-      chatButton.classList.add('tooltip-right');
+    // Apply the calculated position
+    const tooltipSide = chatButton.getAttribute('data-tooltip-side');
+    if (tooltipSide === 'top' || tooltipSide === 'bottom') {
+      chatButton.style.setProperty('--tooltip-left', `${leftPosition}%`);
     }
   }
 }
