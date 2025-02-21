@@ -1702,6 +1702,13 @@ class ChatWidget {
       clearButton.style.cursor = "not-allowed";
     }
 
+    const submitButton = this.shadow.querySelector(".submit-button");
+    if (submitButton) {
+      submitButton.disabled = true;
+      submitButton.style.opacity = "0.5";
+      submitButton.style.cursor = "not-allowed";
+    }
+
     // Remove empty state if it exists
     const emptyState = this.shadow.querySelector(".empty-state");
     if (emptyState) {
@@ -2248,6 +2255,13 @@ class ChatWidget {
         clearButton.style.opacity = "1";
         clearButton.style.cursor = "pointer";
       }
+
+      const submitButton = this.shadow.querySelector(".submit-button");
+      if (submitButton) {
+        submitButton.disabled = false;
+        submitButton.style.opacity = "1";
+        submitButton.style.cursor = "pointer";
+      }
     }
 
     // Add this after adding a new message to chat-messages
@@ -2299,7 +2313,6 @@ class ChatWidget {
   }
 
   injectHTML() {
-    console.log("Injecting the widget.js")
     const widgetHTML = `
       <div class="chat-widget">
         <button class="chat-button" style="bottom: ${this.margins.bottom}; right: ${this.margins.right}; background-color: ${this.mainColor};">
