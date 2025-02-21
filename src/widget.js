@@ -1401,7 +1401,6 @@ class ChatWidget {
   getSubmitButton() {
     return `
       <button 
-        onclick="window.chatWidget.validateAndSubmit()"
         class="submit-button"
         aria-label="Send message"
       >
@@ -1684,8 +1683,6 @@ class ChatWidget {
     };
   }
 
-  // ... rest of the methods (askQuestion, submitQuestion) remain the same
-  // Just remove the function keyword and add them as class methods
   async submitQuestion() {
     const exampleQuestions = this.shadow.querySelector(".example-questions");
     if (exampleQuestions) {
@@ -2302,6 +2299,7 @@ class ChatWidget {
   }
 
   injectHTML() {
+    console.log("Injecting the widget.js")
     const widgetHTML = `
       <div class="chat-widget">
         <button class="chat-button" style="bottom: ${this.margins.bottom}; right: ${this.margins.right}; background-color: ${this.mainColor};">
@@ -2320,7 +2318,6 @@ class ChatWidget {
             </div>
             <button 
               class="header-button"
-              onclick="window.chatWidget.toggleChat()"
               aria-label="Close chat">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -2348,7 +2345,6 @@ class ChatWidget {
                   ${this.getSubmitButton()}
                 </div>
                 <button 
-                  onclick="window.chatWidget.handleClearHistory()"
                   class="clear-button" 
                   aria-label="Clear history"
                   style="display: none;"
@@ -2380,8 +2376,23 @@ class ChatWidget {
     // Create a container for the widget and inject it into the body
     const widgetContainer = document.createElement("div");
     widgetContainer.innerHTML = widgetHTML;
-    // document.body.appendChild(widgetContainer);
     this.shadow.appendChild(widgetContainer);
+
+    // Add event listeners for buttons that previously had inline onclick
+    const closeButton = this.shadow.querySelector('.header-button');
+    if (closeButton) {
+      closeButton.addEventListener('click', () => this.toggleChat());
+    }
+
+    const clearButton = this.shadow.querySelector('.clear-button');
+    if (clearButton) {
+      clearButton.addEventListener('click', () => this.handleClearHistory());
+    }
+
+    const submitButton = this.shadow.querySelector('.submit-button');
+    if (submitButton) {
+      submitButton.addEventListener('click', () => this.validateAndSubmit());
+    }
 
     // Add event listener to prevent scroll propagation
     const chatMessages = this.shadow.querySelector('.chat-messages');
