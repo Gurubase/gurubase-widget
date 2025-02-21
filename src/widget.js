@@ -19,8 +19,8 @@ class ChatWidget {
         --response-button-color: ${this.lightMode ? '#6D6D6D' : 'white'};
         --error-red-color: ${this.lightMode ? '#DC2626' : '#F00'};
         --text-reference-color: ${this.lightMode ? '#000' : '#9999ff'};
-        --tooltip-bg: ${this.lightMode ? '#1F2937' : '#F9FAFB'};
-        --tooltip-text: ${this.lightMode ? 'white' : '#1F2937'};
+        --tooltip-bg: ${this.lightMode ? '#1B242D' : '#FFF'};
+        --tooltip-text: ${this.lightMode ? '#FFF' : '#1B242D'};
         --max-tooltip-width: ${this.maxTooltipWidth}px;
       }
 
@@ -31,16 +31,24 @@ class ChatWidget {
       .chat-button[data-tooltip]::before {
         content: attr(data-tooltip);
         position: absolute;
-        padding: 6px 12px;
-        border-radius: 6px;
+        display: flex;
+        width: 220px;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 12px;
+        border-radius: 8px;
         background-color: var(--tooltip-bg);
         color: var(--tooltip-text);
         font-size: 14px;
+        font-style: normal;
+        font-weight: 500;
+        line-height: normal;
+        text-align: center;
         opacity: 0;
         visibility: hidden;
         max-width: var(--max-tooltip-width);
         width: max-content;
-        text-align: center;
         pointer-events: none;
         white-space: pre-wrap;
         z-index: 1000;
