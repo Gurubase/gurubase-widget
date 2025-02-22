@@ -45,6 +45,8 @@ The only thing you need to do is to add the widget.js to your website as follows
 | data-name | string | Your company/product name | Fetched from the Gurubase.io |
 | data-light-mode | boolean | Whether to use light mode | false |
 | data-baseUrl | string | URL to your Gurubase backend. **Only for self-hosted Gurubase.** | Gurubase Cloud |
+| data-tooltip | string | Tooltip text | null |
+| data-tooltip-side | string | Tooltip side. 4 possible values: "top", "bottom", "left", "right" | "left" |
 
 
 > [!NOTE]
@@ -55,6 +57,10 @@ The only thing you need to do is to add the widget.js to your website as follows
 >     data-baseUrl="http://localhost:8029/api/"
 >     id="guru-widget-id">
 > </script>
+> ```
+
+> [!NOTE]
+> The background color of the tooltip is the inverse of the widget's background color. If `data-light-mode` is `true`, the tooltip's background color will be black, or vice versa.
 > ```
 
 ## Exposed Functions

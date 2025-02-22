@@ -72,7 +72,7 @@ function GurubaseWidget({
         widgetContainer.remove();
       }
     };
-  }, [widgetId, text, margins, bgColor, iconUrl, name]);
+  }, [widgetId, text, margins, bgColor, iconUrl, name, lightMode]);
 
   return null;
 }
