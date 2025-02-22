@@ -1421,19 +1421,15 @@ class ChatWidget {
             }
         } catch {
             this.margins = { bottom: "20px", right: "20px" };
-            console.warn("Invalid margins format provided, using default");
         }
 
         // Validate and set tooltip width
-        console.log(scriptTag.getAttribute('data-tooltip-side'));
         const tooltipSide = scriptTag.getAttribute('data-tooltip-side');
         if (tooltipSide && ['top', 'bottom', 'left', 'right'].includes(tooltipSide.toLowerCase())) {
             this.tooltipSide = tooltipSide.toLowerCase();
         } else {
             this.tooltipSide = 'left'; // Default side
         }
-
-        console.log(this.tooltipSide);
 
         // Set max tooltip width
         this.maxTooltipWidth = 300; // Maximum width in pixels
@@ -3056,7 +3052,6 @@ class ChatWidget {
 
   // Add this new method to switch themes
   async switchTheme(lightMode = null) {
-    console.log("Switching theme");
     if (lightMode !== null) {
       this.lightMode = lightMode;
     } else {
