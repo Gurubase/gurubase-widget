@@ -1430,7 +1430,7 @@ class ChatWidget {
         if (tooltipSide && ['top', 'bottom', 'left', 'right'].includes(tooltipSide.toLowerCase())) {
             this.tooltipSide = tooltipSide.toLowerCase();
         } else {
-            this.tooltipSide = 'top'; // Default side
+            this.tooltipSide = 'left'; // Default side
         }
 
         console.log(this.tooltipSide);
