@@ -2040,6 +2040,11 @@ class ChatWidget {
           // Only update display if we've found and stripped the header
           if (headerFound) {
             botResponseElement.innerHTML = marked.parse(bufferedContent);
+            // Add target="_blank" to all links
+            botResponseElement.querySelectorAll('a').forEach(link => {
+              link.setAttribute('target', '_blank');
+              link.setAttribute('rel', 'noopener noreferrer');
+            });
             this.processCodeBlocks(botResponseElement);
             
             // Update wasAtBottom based on current position
@@ -2082,6 +2087,11 @@ class ChatWidget {
           }
 
           markdownContent.innerHTML = marked.parse(displayContent);
+          // Add target="_blank" to all links
+          markdownContent.querySelectorAll('a').forEach(link => {
+            link.setAttribute('target', '_blank');
+            link.setAttribute('rel', 'noopener noreferrer');
+          });
           this.processCodeBlocks(markdownContent);
           messageContent.appendChild(markdownContent);
 
