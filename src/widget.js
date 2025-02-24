@@ -2442,8 +2442,7 @@ class ChatWidget {
     const widgetHTML = `
       <div class="chat-widget">
         <button class="chat-button" 
-          data-tooltip="${this.tooltipText || ''}"
-          data-tooltip-side="${this.tooltipSide || 'bottom'}"
+          ${this.tooltipText ? `data-tooltip="${this.tooltipText}" data-tooltip-side="${this.tooltipSide || 'left'}"` : ''}
           style="bottom: ${this.margins.bottom}; right: ${this.margins.right}; background-color: ${this.mainColor};">
           <span class="sparkle">${this.getWidgetButtonSparkle()}</span>
           ${this.buttonText}
