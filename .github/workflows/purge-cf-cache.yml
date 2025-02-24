@@ -9,7 +9,7 @@ jobs:
     if: |
       github.event.deployment_status.state == 'success' && 
       github.event.deployment.environment == 'Cloudflare Pages' &&
-      github.event.deployment.ref == 'refs/heads/master'
+      (github.event.deployment.ref == 'refs/heads/master' || github.event.deployment.ref == 'master')
     steps:
       - name: Wait for 30 seconds
         run: sleep 30
