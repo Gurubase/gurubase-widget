@@ -1,0 +1,36 @@
+name: PR Console Check
+
+on:
+  pull_request:
+    branches:
+      - master
+    paths:
+      - 'src/widget.js'
+  push:
+    branches:
+      - master
+    paths:
+      - 'src/widget.js'
+
+jobs:
+  check-console:
+    name: Check for Console Statements
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: .
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Check for console.log statements
+        run: |
+          files_with_console=$(find . -name "widget.js" -exec grep -inE "console\.log\s*\(" {} \; || true)
+          if [ -n "$files_with_console" ]; then
+            echo "console.log statements found:"
+            echo "$files_with_console"
+            echo "Please remove console.log statements before merging. Use console.warn or console.error for important messages."
+            exit 1
+          else
+            echo "No console.log statements found in widget.js."
+          fi
