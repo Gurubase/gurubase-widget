@@ -1450,7 +1450,6 @@ class ChatWidget {
 
   // Replace the Speed Highlight implementation with highlight.js
   processCodeBlocks(container) {
-    // Find all pre elements that were created from markdown
     const preElements = container.querySelectorAll("pre");
 
     preElements.forEach((pre, index) => {
@@ -1470,45 +1469,46 @@ class ChatWidget {
       // Add copy button
       const buttonHtml = `
         <button 
-        class="code-block-copy-button"
-          onclick="(function() {
-              // Add click effect
-              this.style.transform = 'scale(0.95)';
-              setTimeout(() => this.style.transform = 'scale(1)', 100);
-  
-              const codeText = this.parentElement.querySelector('code').textContent;
-              navigator.clipboard.writeText(codeText).then(() => {
-                  
-                  // Change button state
-                  this.innerHTML = \`
-                      <svg width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'>
-                          <polyline points='20 6 9 17 4 12'></polyline>
-                      </svg>
-                  \`;
-                  
-                  // Reset button after delay
-                  setTimeout(() => { 
-  
-                      this.innerHTML = \`
-                          <svg width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'>
-                              <rect x='9' y='9' width='13' height='13' rx='2' ry='2'></rect>
-                              <path d='M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1'></path>
-                          </svg>
-                      \`;
-                  }, 2000);
-              });
-          }).call(this)"
-          onmousedown="event.preventDefault()"
-      >
+          class="code-block-copy-button"
+          aria-label="Copy code">
           <svg width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'>
-              <rect x='9' y='9' width='13' height='13' rx='2' ry='2'></rect>
-              <path d='M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1'></path>
+            <rect x='9' y='9' width='13' height='13' rx='2' ry='2'></rect>
+            <path d='M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1'></path>
           </svg>
-      </button>
-  `;
+        </button>
+      `;
 
-      // pre'ye position: relative eklemek yerine wrapper'a button'u ekleyelim
-      wrapper.insertAdjacentHTML("beforeend", buttonHtml);
+      const buttonContainer = document.createElement("div");
+      buttonContainer.innerHTML = buttonHtml;
+      const button = buttonContainer.querySelector("button");
+      wrapper.appendChild(button);
+
+      // Add click event listener
+      button.addEventListener('click', function() {
+        // Add click effect
+        this.style.transform = 'scale(0.95)';
+        setTimeout(() => this.style.transform = 'scale(1)', 100);
+
+        const codeText = this.parentElement.querySelector('code').textContent;
+        navigator.clipboard.writeText(codeText).then(() => {
+          // Change button state
+          this.innerHTML = `
+            <svg width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'>
+              <polyline points='20 6 9 17 4 12'></polyline>
+            </svg>
+          `;
+          
+          // Reset button after delay
+          setTimeout(() => { 
+            this.innerHTML = `
+              <svg width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'>
+                <rect x='9' y='9' width='13' height='13' rx='2' ry='2'></rect>
+                <path d='M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1'></path>
+              </svg>
+            `;
+          }, 1000);
+        });
+      });
     });
   }
 
