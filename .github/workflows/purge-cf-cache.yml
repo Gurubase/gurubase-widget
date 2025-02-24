@@ -1,13 +1,15 @@
 name: Purge Cache After CF Deploy
 
 on:
-  repository_dispatch:
-    types: [cloudflare_pages_deploy]
+  deployment_status
 
 jobs:
   purge-cache:
     runs-on: ubuntu-latest
-    if: github.event.client_payload.branch == 'master'
+    if: |
+      github.event.deployment_status.state == 'success' && 
+      github.event.deployment.environment == 'Cloudflare Pages' &&
+      github.event.deployment.ref == 'refs/heads/master'
     steps:
       - name: Wait for 30 seconds
         run: sleep 30
