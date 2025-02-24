@@ -1984,7 +1984,7 @@ class ChatWidget {
         }
         throw new Error(errorMessage);
       }
-
+      console.log("hii")
       // Clear the first stage timer if it hasn't completed
       clearTimeout(firstStageTimer);
 

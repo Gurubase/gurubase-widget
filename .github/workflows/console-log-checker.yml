@@ -1,0 +1,36 @@
+name: PR Console Check
+
+on:
+  pull_request:
+    branches:
+      - master
+    paths:
+      - 'src/widget.js'
+  push:
+    branches:
+      - master
+    paths:
+      - 'src/widget.js'
+
+jobs:
+  check-console:
+    name: Check for Console Statements
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: .
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Check for console statements
+        run: |
+          files_with_console=$(grep -rL "use server" --include="src/widget.js" . | xargs grep -nE "console\.log" | cut -d: -f1 | sort -u || true)
+          if [ -n "$files_with_console" ]; then
+            echo "Console.log statements found in the following files:"
+            echo "$files_with_console"
+            echo "Please remove console.log statements before merging to develop/master branch."
+            exit 1
+          else
+            echo "No console.log statements found in widget.js."
+          fi 
