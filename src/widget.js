@@ -812,7 +812,7 @@ class ChatWidget {
       body {
       }
   
-      #page-content-wrapper {
+      #gurubase-page-content-wrapper {
         width: 100%;
       }
   
@@ -1489,7 +1489,7 @@ class ChatWidget {
     document.head.appendChild(customStyles);
 
     this.container = document.createElement('div');
-    this.container.id = 'chat-widget-container';
+    this.container.id = 'gurubase-chat-widget-container';
     this.shadow = this.container.attachShadow({ mode: 'open' });
   
     this.init();
@@ -1651,7 +1651,7 @@ class ChatWidget {
 
   toggleChat() {
     const chatWindow = this.shadow.getElementById("chatWindow");
-    const wrapper = document.getElementById("page-content-wrapper");
+    const wrapper = document.getElementById("gurubase-page-content-wrapper");
     const chatButton = this.shadow.querySelector(".chat-button");
     const isMobile = window.innerWidth <= 768;
 
@@ -2667,23 +2667,23 @@ class ChatWidget {
       });
     }
 
-    // Wrap page content
-    const wrapper = document.createElement("div");
-    wrapper.id = "page-content-wrapper";
+    // // Wrap page content
+    // const wrapper = document.createElement("div");
+    // wrapper.id = "gurubase-page-content-wrapper";
 
-    wrapper.style.position = "relative"; // Add this
-    wrapper.style.zIndex = "1"; // Add this to ensure it stays below the widget    
+    // wrapper.style.position = "relative"; // Add this
+    // wrapper.style.zIndex = "1"; // Add this to ensure it stays below the widget    
 
-    // Move all body children into wrapper except chat widget
-    while (document.body.firstChild) {
-      const child = document.body.firstChild;
-      if (!child.classList?.contains("chat-widget")) {
-        wrapper.appendChild(child);
-      }
-    }
+    // // Move all body children into wrapper except chat widget
+    // while (document.body.firstChild) {
+    //   const child = document.body.firstChild;
+    //   if (!child.classList?.contains("chat-widget")) {
+    //     wrapper.appendChild(child);
+    //   }
+    // }
 
-    wrapper.style.width = "100%";
-    document.body.insertBefore(wrapper, document.body.firstChild);
+    // wrapper.style.width = "100%";
+    // document.body.insertBefore(wrapper, document.body.firstChild);
 
     // Remove Speed Highlight CSS import
     // Remove Speed Highlight script import
@@ -2770,7 +2770,7 @@ class ChatWidget {
     if (!this.isDragging) return;
 
     const chatWindow = this.shadow.getElementById("chatWindow");
-    const wrapper = document.getElementById("page-content-wrapper");
+    const wrapper = document.getElementById("gurubase-page-content-wrapper");
     const deltaX = this.startX - e.clientX;
     const newWidth = Math.min(Math.max(this.startWidth + deltaX, 400), 800);
 
@@ -3011,7 +3011,7 @@ class ChatWidget {
 
       // Check if chat is open and adjust wrapper width
       const chatWindow = this.shadow.getElementById("chatWindow");
-      const wrapper = document.getElementById("page-content-wrapper");
+      const wrapper = document.getElementById("gurubase-page-content-wrapper");
       if (chatWindow && wrapper && chatWindow.classList.contains("open")) {
         const chatWidth = chatWindow.style.width || "400px";
         wrapper.style.width = `calc(100% - ${chatWidth})`;
@@ -3057,12 +3057,12 @@ class ChatWidget {
   }
 
   initializeContentWrapper() {
-    let wrapper = document.getElementById("page-content-wrapper");
+    let wrapper = document.getElementById("gurubase-page-content-wrapper");
     
     // If wrapper doesn't exist, create it
     if (!wrapper) {
       wrapper = document.createElement("div");
-      wrapper.id = "page-content-wrapper";
+      wrapper.id = "gurubase-page-content-wrapper";
       wrapper.style.position = "relative";
       wrapper.style.zIndex = "1";
       wrapper.style.width = "100%";
