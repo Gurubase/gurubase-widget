@@ -1,20 +1,29 @@
 name: Purge Cache After CF Deploy
 
 on:
-  deployment_status
+  push:
+    branches:
+      - master
+      - test-cache-purge
 
 jobs:
   purge-cache:
     runs-on: ubuntu-latest
-    if: |
-      github.event.deployment_status.state == 'success' && 
-      github.event.deployment.environment == 'Cloudflare Pages' &&
-      (github.event.deployment.ref == 'refs/heads/master' || github.event.deployment.ref == 'master')
+    permissions:
+      contents: read
+      deployments: write
     steps:
-      - name: Wait for 30 seconds
-        run: sleep 30
-        
+      - name: Wait for Cloudflare Pages Deployment
+        id: cf-pages
+        uses: WalshyDev/cf-pages-await@v1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          project: ${{ secrets.CLOUDFLARE_PROJECT_NAME }}
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
+      
       - name: Purge Cloudflare Cache
+        if: steps.cf-pages.outputs.success == 'true'
         run: |
           curl -X POST "https://api.cloudflare.com/client/v4/zones/${{ secrets.CLOUDFLARE_ZONE_ID }}/purge_cache" \
           -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
