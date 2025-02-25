@@ -20,7 +20,6 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           project: ${{ secrets.CLOUDFLARE_PROJECT_NAME }}
-          githubToken: ${{ secrets.GITHUB_TOKEN }}
       
       - name: Purge Cloudflare Cache
         if: steps.cf-pages.outputs.success == 'true'
