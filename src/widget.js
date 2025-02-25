@@ -2667,23 +2667,23 @@ class ChatWidget {
       });
     }
 
-    // Wrap page content
-    const wrapper = document.createElement("div");
-    wrapper.id = "page-content-wrapper";
+    // // Wrap page content
+    // const wrapper = document.createElement("div");
+    // wrapper.id = "page-content-wrapper";
 
-    wrapper.style.position = "relative"; // Add this
-    wrapper.style.zIndex = "1"; // Add this to ensure it stays below the widget    
+    // wrapper.style.position = "relative"; // Add this
+    // wrapper.style.zIndex = "1"; // Add this to ensure it stays below the widget    
 
-    // Move all body children into wrapper except chat widget
-    while (document.body.firstChild) {
-      const child = document.body.firstChild;
-      if (!child.classList?.contains("chat-widget")) {
-        wrapper.appendChild(child);
-      }
-    }
+    // // Move all body children into wrapper except chat widget
+    // while (document.body.firstChild) {
+    //   const child = document.body.firstChild;
+    //   if (!child.classList?.contains("chat-widget")) {
+    //     wrapper.appendChild(child);
+    //   }
+    // }
 
-    wrapper.style.width = "100%";
-    document.body.insertBefore(wrapper, document.body.firstChild);
+    // wrapper.style.width = "100%";
+    // document.body.insertBefore(wrapper, document.body.firstChild);
 
     // Remove Speed Highlight CSS import
     // Remove Speed Highlight script import
