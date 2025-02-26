@@ -157,7 +157,7 @@ class ChatWidget {
         
         .chat-window {
           position: fixed !important;
-          min-width: 360px;
+          min-width: 360px !important;
           width: 100vw !important;
           max-width: 100vw;
           height: 100% !important;
