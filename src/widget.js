@@ -157,6 +157,7 @@ class ChatWidget {
         
         .chat-window {
           position: fixed !important;
+          min-width: 360px;
           width: 100vw !important;
           max-width: 100vw;
           height: 100% !important;
@@ -1302,11 +1303,11 @@ class ChatWidget {
         100% {background-position: 100% 0,100% 100%,0 100%,0 0}
       }
     `;
-  
+
     // document.head.appendChild(styleElement);
     this.shadow.appendChild(styleElement);
   };
-  
+
   darkenColor(color, percent) {
     const num = parseInt(color.replace("#", ""), 16);
     const amt = Math.round(2.55 * percent * 100);
@@ -1314,7 +1315,7 @@ class ChatWidget {
     const G = ((num >> 8) & 0x00ff) - amt;
     const B = (num & 0x0000ff) - amt;
     return `#${(0x1000000 + (R < 255 ? (R < 1 ? 0 : R) : 255) * 0x10000 + (G < 255 ? (G < 1 ? 0 : G) : 255) * 0x100 + (B < 255 ? (B < 1 ? 0 : B) : 255)).toString(16).slice(1)}`;
-  }  
+  }
 
   async fetchDefaultValues() {
     try {
@@ -1324,7 +1325,7 @@ class ChatWidget {
           origin: window.location.href
         }
       });
-      
+
       if (!response.ok) {
         throw new Error('Failed to fetch default values');
       }
@@ -1344,15 +1345,15 @@ class ChatWidget {
       this.name = this.name || "";
       this.guruSlug = "";
     }
-  }  
+  }
 
   constructor() {
     // Find the widget script tag
     const scriptTag = document.querySelector('script#guru-widget-id');
-    
+
     // Default values
     const defaultBaseUrl = "https://api.gurubase.io";
-    
+
     if (scriptTag) {
         // Read attributes from script tag
         const widgetId = scriptTag.getAttribute('data-widget-id');
@@ -1411,9 +1412,9 @@ class ChatWidget {
         // Validate and set margins
         try {
             const margins = JSON.parse(scriptTag.getAttribute('data-margins'));
-            if (margins && 
-                typeof margins === 'object' && 
-                /^\d+(\.\d+)?(px|rem|em|vh|vw)$/.test(margins.bottom) && 
+            if (margins &&
+                typeof margins === 'object' &&
+                /^\d+(\.\d+)?(px|rem|em|vh|vw)$/.test(margins.bottom) &&
                 /^\d+(\.\d+)?(px|rem|em|vh|vw)$/.test(margins.right)) {
                 this.margins = margins;
             } else {
@@ -1491,7 +1492,7 @@ class ChatWidget {
     this.container = document.createElement('div');
     this.container.id = 'gurubase-chat-widget-container';
     this.shadow = this.container.attachShadow({ mode: 'open' });
-  
+
     this.init();
 
     // Add these properties
@@ -1634,9 +1635,9 @@ class ChatWidget {
               <polyline points='20 6 9 17 4 12'></polyline>
             </svg>
           `;
-          
+
           // Reset button after delay
-          setTimeout(() => { 
+          setTimeout(() => {
             this.innerHTML = `
               <svg width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'>
                 <rect x='9' y='9' width='13' height='13' rx='2' ry='2'></rect>
@@ -1657,18 +1658,18 @@ class ChatWidget {
 
     if (chatWindow) {
         const isOpening = !chatWindow.classList.contains("open");
-        
+
         if (!isOpening) {
             // Closing
             chatWindow.classList.remove("open");
             document.body.classList.remove("widget-open");
             chatButton.style.display = 'flex';
-            
+
             // Wait for transition to complete before hiding
             chatWindow.addEventListener('transitionend', () => {
                 chatWindow.style.display = "none";
             }, { once: true }); // Use once: true to automatically remove the listener
-            
+
             if (!isMobile && chatWindow.style.width > "400px") {
                 chatWindow.style.width = "400px";
             }
@@ -1690,15 +1691,15 @@ class ChatWidget {
         } else {
             // Opening
             chatWindow.style.display = "flex";
-            
+
             // Force a reflow to ensure the display: flex is applied
             chatWindow.offsetHeight;
-            
+
             // Add open class to trigger transition
             chatWindow.classList.add("open");
             document.body.classList.add("widget-open");
             chatButton.style.display = 'none';
-            
+
             if (isMobile) {
                 // Save current scroll position before fixing position
                 this.savedScrollY = window.scrollY;
@@ -1912,7 +1913,7 @@ class ChatWidget {
       // Instead of showing a new stage, update the text of the existing stage
       const stageText = contextStage.querySelector(".stage-text");
       stageText.textContent = "Evaluating sources to prevent hallucinations";
-      
+
       // Reset the loading animation
       contextStage.querySelector(".loading-dots").classList.remove("hidden");
       contextStatusContainer.classList.remove("visible");
@@ -2183,7 +2184,7 @@ class ChatWidget {
               link.setAttribute('rel', 'noopener noreferrer');
             });
             this.processCodeBlocks(botResponseElement);
-            
+
             // Update wasAtBottom based on current position
             wasAtBottom = this.isUserAtBottom(messagesContainer);
 
@@ -2356,7 +2357,7 @@ class ChatWidget {
 
       const failedStage = loadingMessage.querySelector("#context-stage");
       const failedStatusContainer = failedStage.querySelector(".stage-status-container");
-      
+
       failedStage.querySelector(".loading-dots").classList.add("hidden");
       failedStatusContainer.classList.add("visible");
       failedStatusContainer.querySelector(".success-tick").classList.add("hidden");
@@ -2558,14 +2559,14 @@ class ChatWidget {
 
     // Add event listener to prevent scroll propagation
     const chatMessages = this.shadow.querySelector('.chat-messages');
-    
+
     // Prevent scroll propagation for both mouse wheel and touch events
     chatMessages.addEventListener('wheel', (event) => {
       const { scrollTop, scrollHeight, clientHeight } = chatMessages;
       const threshold = 1;
-      
+
       if (
-        (scrollTop <= 0 && event.deltaY < 0) || 
+        (scrollTop <= 0 && event.deltaY < 0) ||
         (Math.abs(scrollHeight - scrollTop - clientHeight) <= threshold && event.deltaY > 0)
       ) {
         event.preventDefault();
@@ -2583,7 +2584,7 @@ class ChatWidget {
       const touchY = event.touches[0].pageY;
       const touchDelta = this.touchStartY - touchY;
       const { scrollTop, scrollHeight, clientHeight } = chatMessages;
-      
+
       // Prevent scrolling when at the boundaries
       if (
         (scrollTop <= 0 && touchDelta < 0) || // At top and scrolling up
@@ -2672,7 +2673,7 @@ class ChatWidget {
     // wrapper.id = "gurubase-page-content-wrapper";
 
     // wrapper.style.position = "relative"; // Add this
-    // wrapper.style.zIndex = "1"; // Add this to ensure it stays below the widget    
+    // wrapper.style.zIndex = "1"; // Add this to ensure it stays below the widget
 
     // // Move all body children into wrapper except chat widget
     // while (document.body.firstChild) {
@@ -2706,7 +2707,7 @@ class ChatWidget {
 
     this.handleViewportHeight();
     window.addEventListener('resize', this.handleViewportHeight);
-    
+
     // Add visualViewport listeners for keyboard detection
     if (window.visualViewport) {
       window.visualViewport.addEventListener('resize', this.handleVisualViewportChange);
@@ -2715,7 +2716,7 @@ class ChatWidget {
 
     // Add event listener for window resize to handle tooltip positioning
     window.addEventListener('resize', () => this.handleTooltipPosition());
-    
+
     // Initial tooltip position check
     this.handleTooltipPosition();
 
@@ -2730,7 +2731,7 @@ class ChatWidget {
       console.error('Failed to load highlight.js theme:', error);
       return ''; // Return empty string if theme loading fails
     }
-  }  
+  }
 
   // Clean up when widget is destroyed
   destroy() {
@@ -2801,12 +2802,12 @@ class ChatWidget {
   handleClearHistory() {
     const messagesContainer = this.shadow.querySelector(".chat-messages");
     const questionInput = this.shadow.getElementById("questionInput");
-    
+
     // Blur the input to dismiss keyboard
     if (questionInput) {
         questionInput.blur();
     }
-    
+
     // Get fresh templates with current mainColor
     messagesContainer.innerHTML = this.getEmptyState();
     this.isFirstQuestion = true;
@@ -2863,14 +2864,14 @@ class ChatWidget {
 
   handleMessagesScroll(messagesContainer, event) {
     const isAtBottom = this.isUserAtBottom(messagesContainer);
-    
+
     if (this.isStreaming) {
       if (event.deltaY < 0) {
         this.shouldAutoScroll = false;
       }
       else if (isAtBottom) {
         this.shouldAutoScroll = true;
-      } 
+      }
     }
   }
 
@@ -2931,7 +2932,7 @@ class ChatWidget {
 
   handleVisualViewportChange() {
     if (!window.visualViewport) return;
-    
+
     const chatWindow = this.shadow.getElementById("chatWindow");
     const inputContainer = this.shadow.querySelector(".chat-input-container");
     const messagesContainer = this.shadow.querySelector(".chat-messages");
@@ -2939,28 +2940,28 @@ class ChatWidget {
 
     // Check if browser is Safari
     const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-    
+
     // Calculate the keyboard height
     const keyboardHeight = window.innerHeight - window.visualViewport.height;
-    
+
     if (keyboardHeight > 0) {
         // Keyboard is shown
         if (!isSafari) {
             // Apply our custom handling only for non-Safari browsers
             chatWindow.style.height = `${window.visualViewport.height}px`;
             chatWindow.style.maxHeight = `${window.visualViewport.height}px`;
-            
+
             // Adjust the input container position
             inputContainer.style.position = 'fixed';
             inputContainer.style.bottom = '0';
             inputContainer.style.left = '0';
             inputContainer.style.right = '0';
             inputContainer.style.transform = `translateY(-${keyboardHeight}px)`;
-            
+
             // Adjust messages container to make room for keyboard
             messagesContainer.style.marginBottom = `${keyboardHeight}px`;
         }
-        
+
         // Scroll to the input after a short delay
         setTimeout(() => {
             inputContainer.scrollIntoView({ behavior: 'smooth' });
@@ -2985,11 +2986,11 @@ class ChatWidget {
     // Small delay to let the framework update the DOM
     setTimeout(() => {
       this.initializeContentWrapper();
-      
+
       // Check if widget container is still in document
       if (!document.body.contains(this.container)) {
         document.body.appendChild(this.container);
-        
+
         // Reinitialize widget button styles
         const chatButton = this.shadow.querySelector(".chat-button");
         if (chatButton) {
@@ -3058,7 +3059,7 @@ class ChatWidget {
 
   initializeContentWrapper() {
     let wrapper = document.getElementById("gurubase-page-content-wrapper");
-    
+
     // If wrapper doesn't exist, create it
     if (!wrapper) {
       wrapper = document.createElement("div");
@@ -3066,19 +3067,19 @@ class ChatWidget {
       wrapper.style.position = "relative";
       wrapper.style.zIndex = "1";
       wrapper.style.width = "100%";
-      
+
       // Move all body children into wrapper except chat widget and scripts
       const bodyChildren = Array.from(document.body.children);
-      const eligibleChildren = bodyChildren.filter(child => 
-        !child.classList?.contains("chat-widget") && 
-        child.id !== "guru-widget-id" && 
+      const eligibleChildren = bodyChildren.filter(child =>
+        !child.classList?.contains("chat-widget") &&
+        child.id !== "guru-widget-id" &&
         child.tagName !== 'SCRIPT'
       );
 
       eligibleChildren.forEach(child => {
         wrapper.appendChild(child);
       });
-      
+
       document.body.insertBefore(wrapper, document.body.firstChild);
     }
   }
@@ -3094,7 +3095,7 @@ class ChatWidget {
     const hljsThemeName = this.lightMode ? 'atom-one-light' : 'atom-one-dark';
     const hljsTheme = await this.loadHljsTheme(hljsThemeName);
     this.injectStyles(hljsTheme);
-    
+
     // Update the Gurubase logo in the footer
     const gurubaseLogo = this.shadow.querySelector('.anteon-powered');
     if (gurubaseLogo) {
@@ -3116,10 +3117,10 @@ class ChatWidget {
     const maxLength = 200; // Adjust this based on your longest expected text
     const minLeft = -40;
     const maxLeft = 40;
-    
+
     // Linear interpolation between maxLeft and minLeft based on text length
     const leftPosition = maxLeft - ((textLength / maxLength) * (maxLeft - minLeft));
-    
+
     // Apply the calculated position
     const tooltipSide = chatButton.getAttribute('data-tooltip-side');
     if (tooltipSide === 'top' || tooltipSide === 'bottom') {
