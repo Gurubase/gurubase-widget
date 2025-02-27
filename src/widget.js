@@ -1464,7 +1464,7 @@ class ChatWidget {
 
         // Validate and set tooltip width
         const tooltipSide = scriptTag.getAttribute('data-tooltip-side');
-        if (tooltipSide && ['top', 'bottom', 'left', 'right'].includes(tooltipSide.toLowerCase())) {
+        if (tooltipSide && ['top', 'bottom', 'left', 'right', 'top left', 'top right', 'bottom left', 'bottom right'].includes(tooltipSide.toLowerCase())) {
             this.tooltipSide = tooltipSide.toLowerCase();
         } else {
             this.tooltipSide = 'left'; // Default side
