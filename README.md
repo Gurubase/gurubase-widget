@@ -89,3 +89,4 @@ Below are example installations of the Gurubase Widget for various technologies.
 - [Remix](https://github.com/Gurubase/gurubase-widget/tree/master/examples/remix)
 - [Sphinx](https://github.com/Gurubase/gurubase-widget/tree/master/examples/sphinx)
 - [Retype](https://github.com/Gurubase/gurubase-widget/tree/master/examples/retype)
+- [GitBook](https://www.gitbook.com/integrations/gurubase)
