@@ -122,12 +122,12 @@ class ChatWidget {
       .chat-button[data-tooltip-side^="top "]::before,
       .chat-button[data-tooltip-side^="top "]::after {
         top: auto;
-        bottom: 100%;
+        bottom: calc(100% + 4px);
       }
       .chat-button[data-tooltip-side^="bottom "]::before,
       .chat-button[data-tooltip-side^="bottom "]::after {
         bottom: auto;
-        top: 100%;
+        top: calc(100% + 4px);
       }
       .chat-button[data-tooltip-side^="top "]::before {
         margin-bottom: 4px;
