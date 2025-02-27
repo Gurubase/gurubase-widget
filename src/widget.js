@@ -118,6 +118,44 @@ class ChatWidget {
         transform: translateY(-50%) rotate(135deg);
       }
 
+      /* Top/Bottom left/right combo position */
+      .chat-button[data-tooltip-side^="top "]::before,
+      .chat-button[data-tooltip-side^="top "]::after {
+        top: auto;
+        bottom: 100%;
+      }
+      .chat-button[data-tooltip-side^="bottom "]::before,
+      .chat-button[data-tooltip-side^="bottom "]::after {
+        bottom: auto;
+        top: 100%;
+      }
+      .chat-button[data-tooltip-side^="top "]::before {
+        margin-bottom: 4px;
+      }
+      .chat-button[data-tooltip-side^="bottom "]::before {
+        margin-top: 4px;
+      }
+      .chat-button[data-tooltip-side^="top "]::after,
+      .chat-button[data-tooltip-side^="bottom "]::after {
+        transform: rotate(45deg);
+      }
+      .chat-button[data-tooltip-side$=" left"]::before {
+        left: 0.5em;
+        right: auto;
+      }
+      .chat-button[data-tooltip-side$=" left"]::after {
+        left: 1em;
+        right: auto;
+      }
+      .chat-button[data-tooltip-side$=" right"]::before {
+        right: 0.5em;
+        left: auto;
+      }
+      .chat-button[data-tooltip-side$=" right"]::after {
+        right: 1em;
+        left: auto;
+      }
+
       .chat-button[data-tooltip]:hover::before,
       .chat-button[data-tooltip]:hover::after {
         opacity: 1;
