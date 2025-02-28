@@ -61,7 +61,6 @@ The only thing you need to do is to add the widget.js to your website as follows
 
 > [!NOTE]
 > The background color of the tooltip is the inverse of the widget's background color. If `data-light-mode` is `true`, the tooltip's background color will be black, or vice versa.
-> ```
 
 ## Exposed Functions
 
