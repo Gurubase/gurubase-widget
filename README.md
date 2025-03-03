@@ -40,7 +40,7 @@ The only thing you need to do is to add the widget.js to your website as follows
 | data-widget-id | string | Your widget ID | Get it from your Guru's settings page |
 | data-text | string | Text displayed on the chat button | "Ask AI" |
 | data-margins | object | Button positioning margins | `{ bottom: "20px", right: "20px" }` |
-| data-bg-color | string | Primary color for the widget | Fetched from the Gurubase.io |
+| data-bg-color | string | Primary color for the widget. Accepts hex color values (e.g., "#0000FF") | Fetched from the Gurubase.io |
 | data-icon-url | string | URL to your company/product logo | Fetched from the Gurubase.io |
 | data-name | string | Your company/product name | Fetched from the Gurubase.io |
 | data-light-mode | boolean | Whether to use light mode | false |
