@@ -1737,7 +1737,19 @@ class ChatWidget {
             chatWindow.classList.add("open");
             document.body.classList.add("widget-open");
             chatButton.style.display = 'none';
+<<<<<<< HEAD
 
+=======
+            
+            // Focus on the input field when opening
+            const questionInput = this.shadow.getElementById("questionInput");
+            if (questionInput) {
+                setTimeout(() => {
+                    questionInput.focus();
+                }, 100); // Wait for the transition to complete
+            }
+            
+>>>>>>> 1f12e2b (Focus on the input bar when sidebar is opened)
             if (isMobile) {
                 // Save current scroll position before fixing position
                 this.savedScrollY = window.scrollY;
