@@ -382,6 +382,12 @@ class ChatWidget {
           right: 0;
           display: flex;
         }
+
+        .chat-window.open.maximized {
+          width: 100%;
+          max-width: inherit;
+          transition: width 0.3s ease;
+        }
   
         .chat-header {
           display: flex;
@@ -1499,7 +1505,6 @@ class ChatWidget {
 
     // Bind all methods that will be used as event handlers
     this.toggleChat = this.toggleChat.bind(this);
-    // this.handleClickOutside = this.handleClickOutside.bind(this);
     this.handleDragStart = this.handleDragStart.bind(this);
     this.handleDrag = this.handleDrag.bind(this);
     this.handleDragEnd = this.handleDragEnd.bind(this);
@@ -1688,6 +1693,65 @@ class ChatWidget {
     });
   }
 
+  maximizeChat() {
+    const chatWindow = this.shadow.getElementById("chatWindow");
+    // Ensure one maximization at a time
+    if (!chatWindow.classList.contains("maximized-state-changing")) {
+      chatWindow.classList.add("maximized-state-changing");
+      // Record the width before maximising to allow restoring back to it
+      chatWindow.setAttribute("data-original-width", chatWindow.clientWidth);
+      if (chatWindow.style.width) {
+        chatWindow.style.removeProperty("width");
+      }
+      // Prevent drag resizing when maximized
+      const resizeHandle = this.shadow.getElementById("chatResizeHandle");
+      resizeHandle.classList.add("hidden");
+      // Maximize
+      chatWindow.classList.add("maximized");
+      chatWindow.addEventListener("transitionend", () => {
+        // Switch maximize/minimize buttons
+        const maximizeButton = this.shadow.getElementById("maximizeChatButton");
+        const minimizeButton = this.shadow.getElementById("minimizeChatButton");
+        maximizeButton.classList.add("hidden");
+        minimizeButton.classList.remove("hidden");
+        // Cleanup
+        chatWindow.classList.remove("maximized-state-changing");
+      }, { once: true });
+    }
+  }
+
+  minimizeChat() {
+    const chatWindow = this.shadow.getElementById("chatWindow");
+    // Ensure one minimization at a time
+    if (!chatWindow.classList.contains("maximized-state-changing")) {
+      chatWindow.classList.add("maximized-state-changing");
+      // Restore the panel width from before maximizing.
+      if (chatWindow.hasAttribute("data-original-width")) {
+        chatWindow.style.width = chatWindow.getAttribute("data-original-width")+"px";
+        chatWindow.removeAttribute("data-original-width");
+      }
+      chatWindow.addEventListener("transitionend", () => {
+        // Cleanup
+        this.removeMaximization();
+      }, { once: true });
+    }
+  }
+
+  removeMaximization() {
+    // Switch maximize/minimize buttons
+    const maximizeButton = this.shadow.getElementById("maximizeChatButton");
+    const minimizeButton = this.shadow.getElementById("minimizeChatButton");
+    maximizeButton.classList.remove("hidden");
+    minimizeButton.classList.add("hidden");
+    // Remove maximized state
+    const chatWindow = this.shadow.getElementById("chatWindow");
+    chatWindow.classList.remove("maximized");
+    chatWindow.classList.remove("maximized-state-changing");
+    // Enable drag resizing (if previously disabled)
+    const resizeHandle = this.shadow.getElementById("chatResizeHandle");
+    resizeHandle.classList.remove("hidden");
+  }
+
   toggleChat() {
     const chatWindow = this.shadow.getElementById("chatWindow");
     const wrapper = document.getElementById("gurubase-page-content-wrapper");
@@ -1699,14 +1763,31 @@ class ChatWidget {
 
         if (!isOpening) {
             // Closing
-            chatWindow.classList.remove("open");
-            document.body.classList.remove("widget-open");
-            chatButton.style.display = 'flex';
-
-            // Wait for transition to complete before hiding
-            chatWindow.addEventListener('transitionend', () => {
+            if (chatWindow.classList.contains("maximized")) {
+              // The maximised chat has CSS transitions on the 'width' property
+              chatWindow.style.minWidth = "0px";
+              chatWindow.style.width = "0px";
+              // Wait for transition to complete before hiding and cleaning up
+              chatWindow.addEventListener('transitionend', () => {
+                // Clean up styles used for transition
+                chatWindow.style.removeProperty("width");
+                chatWindow.style.removeProperty("min-width");
+                chatWindow.classList.remove("open");
+                document.body.classList.remove("widget-open");
+                this.removeMaximization();
                 chatWindow.style.display = "none";
-            }, { once: true }); // Use once: true to automatically remove the listener
+              }, { once: true }); // Use once: true to automatically remove the listener
+            } else {
+              // A non-maximized chat has CSS transitions on the 'right' property
+              chatWindow.classList.remove("open");
+              document.body.classList.remove("widget-open");
+              // Wait for transition to complete before hiding
+              chatWindow.addEventListener('transitionend', () => {
+                chatWindow.style.display = "none";
+              }, { once: true }); // Use once: true to automatically remove the listener
+            }
+
+            chatButton.style.display = 'flex';
 
             if (!isMobile && chatWindow.style.width > "400px") {
                 chatWindow.style.width = "400px";
@@ -1726,6 +1807,9 @@ class ChatWidget {
                 }
             }
             wrapper.style.width = "100%";
+
+            // Remove escape key listener
+            document.removeEventListener("keydown", this.handleEscape);
         } else {
             // Opening
             chatWindow.style.display = "flex";
@@ -1759,13 +1843,24 @@ class ChatWidget {
             } else {
                 wrapper.style.width = `calc(100% - 400px)`;
             }
+
+            // Add escape key listener
+            document.addEventListener("keydown", this.handleEscape);
         }
+    }
+  }
+
+  handleEscape(event) {
+    if (event.key === "Escape") {
+      this.toggleChat();
     }
   }
 
   handleKeyPress(event) {
     if (event.key === "Enter") {
       this.validateAndSubmit();
+    } else if (event.key === "Escape") {
+      this.toggleChat();
     }
   }
 
@@ -2517,7 +2612,7 @@ class ChatWidget {
         </button>
 
         <div id="chatWindow" class="chat-window">
-          <div class="resize-handle"></div>
+          <div id="chatResizeHandle" class="resize-handle"></div>
           <div class="anteon-header">
             <div class="logo" style="display: flex; align-items: center; gap: 8px; width: 100%; text-overflow: ellipsis;">
               ${this.getLogo()}
@@ -2526,12 +2621,22 @@ class ChatWidget {
               </span>
             </div>
             <button 
+              id="maximizeChatButton"
+              class="header-button"
+              aria-label="Maximize chat">
+              <svg height="20" width="20" stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M16 4l4 0l0 4"></path><path d="M14 10l6 -6"></path><path d="M8 20l-4 0l0 -4"></path><path d="M4 20l6 -6"></path><path d="M16 20l4 0l0 -4"></path><path d="M14 14l6 6"></path><path d="M8 4l-4 0l0 4"></path><path d="M4 4l6 6"></path></svg>              
+            </button>
+            <button 
+              id="minimizeChatButton"
+              class="header-button hidden"
+              aria-label="Minimize chat">
+              <svg height="20" width="20" stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M5 9l4 0l0 -4"></path><path d="M3 3l6 6"></path><path d="M5 15l4 0l0 4"></path><path d="M3 21l6 -6"></path><path d="M19 9l-4 0l0 -4"></path><path d="M15 9l6 -6"></path><path d="M19 15l-4 0l0 4"></path><path d="M15 15l6 6"></path></svg>              
+            </button>
+            <button 
+              id="closeChatButton"
               class="header-button"
               aria-label="Close chat">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <line x1="18" y1="6" x2="6" y2="18"></line>
-                <line x1="6" y1="6" x2="18" y2="18"></line>
-              </svg>
+              <svg height="24" width="24" stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg"><path d="m289.94 256 95-95A24 24 0 0 0 351 127l-95 95-95-95a24 24 0 0 0-34 34l95 95-95 95a24 24 0 1 0 34 34l95-95 95 95a24 24 0 0 0 34-34z"></path></svg>
             </button>
           </div>
 
@@ -2588,7 +2693,17 @@ class ChatWidget {
     this.shadow.appendChild(widgetContainer);
 
     // Add event listeners for buttons that previously had inline onclick
-    const closeButton = this.shadow.querySelector('.header-button');
+    const maximizeButton = this.shadow.querySelector('#maximizeChatButton');
+    if (maximizeButton) {
+      maximizeButton.addEventListener('click', () => this.maximizeChat());
+    }
+
+    const minimizeButton = this.shadow.querySelector('#minimizeChatButton');
+    if (minimizeButton) {
+      minimizeButton.addEventListener('click', () => this.minimizeChat());
+    }
+
+    const closeButton = this.shadow.querySelector('#closeChatButton');
     if (closeButton) {
       closeButton.addEventListener('click', () => this.toggleChat());
     }
@@ -2649,6 +2764,7 @@ class ChatWidget {
     this.handleKeyPress = this.handleKeyPress.bind(this);
     this.askQuestion = this.askQuestion.bind(this);
     this.handleUrlChange = this.handleUrlChange.bind(this);
+    this.handleEscape = this.handleEscape.bind(this);
 
     await this.fetchDefaultValues();
 
@@ -2694,16 +2810,13 @@ class ChatWidget {
     }
 
     if (questionInput) {
-      questionInput.addEventListener("keypress", this.handleKeyPress);
+      questionInput.addEventListener("keydown", this.handleKeyPress);
       this.initInputListeners();
     }
 
     if (submitButton) {
       submitButton.addEventListener("click", this.submitQuestion);
     }
-
-    // Add click outside listener
-    // document.addEventListener("mousedown", this.handleClickOutside);
 
     // Add drag resize listener
     const resizeHandle = this.shadow.querySelector(".resize-handle");
@@ -2781,7 +2894,7 @@ class ChatWidget {
 
   // Clean up when widget is destroyed
   destroy() {
-    document.removeEventListener("mousedown", this.handleClickOutside);
+    document.removeEventListener("keydown", this.handleEscape);
     document.removeEventListener("mousemove", this.handleDrag);
     document.removeEventListener("mouseup", this.handleDragEnd);
     window.removeEventListener('resize', this.handleViewportHeight);
