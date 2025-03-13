@@ -1761,11 +1761,15 @@ class ChatWidget {
     resizeHandle.classList.remove("hidden");
   }
 
+  isMobile() {
+    return window.innerWidth <= 768;
+  }
+
   toggleChat() {
     const chatWindow = this.shadow.getElementById("chatWindow");
     const wrapper = document.getElementById("gurubase-page-content-wrapper");
     const chatButton = this.shadow.querySelector(".chat-button");
-    const isMobile = window.innerWidth <= 768;
+    const isMobile = this.isMobile();
 
     if (chatWindow) {
         const isOpening = !chatWindow.classList.contains("open");
@@ -2741,6 +2745,10 @@ class ChatWidget {
     const maximizeButton = this.shadow.querySelector('#maximizeChatButton');
     if (maximizeButton) {
       maximizeButton.addEventListener('click', () => this.maximizeChat());
+      if (this.isMobile()) {
+        // No maximization on small screens
+        maximizeButton.classList.add('hidden');
+      }
     }
 
     const minimizeButton = this.shadow.querySelector('#minimizeChatButton');
