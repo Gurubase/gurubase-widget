@@ -1568,6 +1568,15 @@ class ChatWidget {
     </svg>`;
   }
 
+  getInitialState() {
+    if (sessionStorage && sessionStorage.getItem("chatState")) {
+      // We have existing chat state but are reinitializing due to a refresh or full page navigation
+      return sessionStorage.getItem("chatState");
+    } else {
+      return this.getEmptyState();
+    }
+  }
+
   getEmptyState() {
     // Define templates as instance properties using current mainColor
     return `
@@ -1821,15 +1830,22 @@ class ChatWidget {
             chatWindow.classList.add("open");
             document.body.classList.add("widget-open");
             chatButton.style.display = 'none';
-            
-            // Focus on the input field when opening
-            const questionInput = this.shadow.getElementById("questionInput");
-            if (questionInput) {
-                setTimeout(() => {
-                    questionInput.focus();
-                }, 100); // Wait for the transition to complete
-            }
-            
+
+            // Scroll to the end of the current messages
+            const messagesContainer = this.shadow.querySelector(".chat-messages");
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            // If we have messages ensure the clear button is visible
+            this.resetClearButton();
+            chatWindow.addEventListener("transitionend", () => {
+              // Make sure the wrapper panel's width is applied
+              this.setWrapperPanelWidth();
+              // Focus on the input field when opening
+              const questionInput = this.shadow.getElementById("questionInput");
+              if (questionInput) {
+                questionInput.focus();
+              }
+            }, { once: true });
+
             if (isMobile) {
                 // Save current scroll position before fixing position
                 this.savedScrollY = window.scrollY;
@@ -1854,6 +1870,31 @@ class ChatWidget {
     if (event.key === "Escape") {
       this.toggleChat();
     }
+  }
+
+  saveChatState() {
+    // Store current state in session storage to avoid loss of state following refresh or full page navigation.
+    if (sessionStorage) {
+      // Save the current contents of the chat panel
+      const emptyState = this.shadow.querySelector(".empty-state");
+      if (emptyState) {
+        sessionStorage.removeItem("chatState");
+      } else {
+        const messagesContainer = this.shadow.querySelector(".chat-messages");
+        sessionStorage.setItem("chatState", messagesContainer.innerHTML);
+      }
+      // Save the chat panel's width to restore (if currently open and not maximized/maximizing)
+      const chatWindow = this.shadow.getElementById("chatWindow");
+      if (chatWindow.classList.contains("open") && !chatWindow.classList.contains("maximized") && !chatWindow.classList.contains("maximized-state-changing")) {
+        sessionStorage.setItem("chatWidth", chatWindow.clientWidth);
+      } else {
+        sessionStorage.removeItem("chatWidth");
+      }
+    }
+  }
+
+  handleUnload() {
+    this.saveChatState();
   }
 
   handleKeyPress(event) {
@@ -2552,17 +2593,21 @@ class ChatWidget {
         submitButton.style.cursor = "pointer";
       }
     }
+    this.resetClearButton();
+  }
 
-    // Add this after adding a new message to chat-messages
-    if (clearButton) {
-      clearButton.style.display = "flex";
-    }
-
+  resetClearButton() {
     // Modify the empty state check
-    if (!messagesContainer.querySelector(".empty-state")) {
-      clearButton.style.display = "flex";
-    } else {
-      clearButton.style.display = "none";
+    const clearButton = this.shadow.querySelector(".clear-button");
+    if (clearButton) {
+      const messagesContainer = this.shadow.querySelector(".chat-messages");
+      if (messagesContainer) {
+        if (!messagesContainer.querySelector(".empty-state")) {
+          clearButton.style.display = "flex";
+        } else {
+          clearButton.style.display = "none";
+        }
+      }
     }
   }
 
@@ -2641,7 +2686,7 @@ class ChatWidget {
           </div>
 
           <div class="chat-messages">
-            ${this.getEmptyState()}
+            ${this.getInitialState()}
           </div>
 
           <div class="anteon-footer">
@@ -2765,6 +2810,7 @@ class ChatWidget {
     this.askQuestion = this.askQuestion.bind(this);
     this.handleUrlChange = this.handleUrlChange.bind(this);
     this.handleEscape = this.handleEscape.bind(this);
+    this.handleUnload = this.handleUnload.bind(this);
 
     await this.fetchDefaultValues();
 
@@ -2866,6 +2912,7 @@ class ChatWidget {
 
     this.handleViewportHeight();
     window.addEventListener('resize', this.handleViewportHeight);
+    window.addEventListener('beforeunload', this.handleUnload);
 
     // Add visualViewport listeners for keyboard detection
     if (window.visualViewport) {
@@ -2879,6 +2926,11 @@ class ChatWidget {
     // Initial tooltip position check
     this.handleTooltipPosition();
 
+    // Restore panel if needed.
+    if (sessionStorage && sessionStorage.getItem("chatWidth")) {
+      this.setChatPanelWidth(sessionStorage.getItem("chatWidth"));
+      this.toggleChat();
+    }
   }
 
   async loadHljsTheme(themeName) {
@@ -2929,15 +2981,22 @@ class ChatWidget {
   handleDrag(e) {
     if (!this.isDragging) return;
 
-    const chatWindow = this.shadow.getElementById("chatWindow");
-    const wrapper = document.getElementById("gurubase-page-content-wrapper");
     const deltaX = this.startX - e.clientX;
     const newWidth = Math.min(Math.max(this.startWidth + deltaX, 400), 800);
+    this.setChatPanelWidth(newWidth);
+  }
 
+  setChatPanelWidth(newWidth) {
+    const chatWindow = this.shadow.getElementById("chatWindow");
     chatWindow.style.width = `${newWidth}px`;
-
     // Update content width while dragging
+    this.setWrapperPanelWidth(newWidth);
+  }
+
+  setWrapperPanelWidth(newWidth) {
+    if (newWidth === undefined) newWidth = this.shadow.getElementById("chatWindow").clientWidth;
     if (document.body.classList.contains("widget-open")) {
+      const wrapper = document.getElementById("gurubase-page-content-wrapper");
       wrapper.style.width = `calc(100% - ${newWidth}px)`;
     }
   }
