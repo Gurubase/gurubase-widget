@@ -382,6 +382,12 @@ class ChatWidget {
           right: 0;
           display: flex;
         }
+
+        .chat-window.open.maximized {
+          width: 100%;
+          max-width: inherit;
+          transition: width 0.3s ease;
+        }
   
         .chat-header {
           display: flex;
@@ -1489,6 +1495,12 @@ class ChatWidget {
     this.isFirstQuestion = true;
     this.currentBingeId = null;
     this.previousQuestionSlug = null;
+    // Restore state is we are coming from a page refresh
+    if (sessionStorage) {
+      if (sessionStorage.getItem("isFirstQuestion")) this.isFirstQuestion = sessionStorage.getItem("isFirstQuestion") === "true";
+      if (sessionStorage.getItem("currentBingeId")) this.currentBingeId = sessionStorage.getItem("currentBingeId");
+      if (sessionStorage.getItem("previousQuestionSlug")) this.previousQuestionSlug = sessionStorage.getItem("previousQuestionSlug");
+    }
 
     if (!this.widgetId) {
       console.error("Widget Error: Widget ID is required");
@@ -1499,7 +1511,6 @@ class ChatWidget {
 
     // Bind all methods that will be used as event handlers
     this.toggleChat = this.toggleChat.bind(this);
-    // this.handleClickOutside = this.handleClickOutside.bind(this);
     this.handleDragStart = this.handleDragStart.bind(this);
     this.handleDrag = this.handleDrag.bind(this);
     this.handleDragEnd = this.handleDragEnd.bind(this);
@@ -1561,6 +1572,15 @@ class ChatWidget {
     <path d="M12.4216 5.02371C13.0462 3.44001 15.2875 3.44001 15.9121 5.02371L17.8477 9.93147C18.0384 10.415 18.4211 10.7977 18.9046 10.9884L23.8124 12.924C25.3961 13.5486 25.3961 15.7899 23.8124 16.4145L18.9046 18.3501C18.4211 18.5408 18.0384 18.9236 17.8477 19.4071L15.9121 24.3148C15.2875 25.8985 13.0462 25.8985 12.4216 24.3148L10.486 19.4071C10.2953 18.9236 9.91254 18.5408 9.42903 18.3501L4.52127 16.4145C2.93757 15.7899 2.93757 13.5486 4.52127 12.924L9.42903 10.9884C9.91254 10.7977 10.2953 10.415 10.486 9.93147L12.4216 5.02371Z" fill="${this.mainColor}"/>
     <path d="M28.2074 22.8168C28.5506 21.9465 29.7824 21.9465 30.1256 22.8168L31.6267 26.623C31.7315 26.8887 31.9419 27.099 32.2076 27.2038L36.0138 28.7049C36.8841 29.0482 36.8841 30.2799 36.0138 30.6232L32.2076 32.1243C31.9419 32.2291 31.7315 32.4394 31.6267 32.7052L30.1256 36.5113C29.7824 37.3816 28.5506 37.3816 28.2074 36.5113L26.7063 32.7052C26.6015 32.4394 26.3911 32.2291 26.1254 32.1243L22.3192 30.6232C21.4489 30.2799 21.4489 29.0482 22.3192 28.7049L26.1254 27.2038C26.3911 27.099 26.6015 26.8887 26.7063 26.623L28.2074 22.8168Z" fill="${this.mainColor}"/>
     </svg>`;
+  }
+
+  getInitialState() {
+    if (sessionStorage && sessionStorage.getItem("chatState")) {
+      // We have existing chat state but are reinitializing due to a refresh or full page navigation
+      return sessionStorage.getItem("chatState");
+    } else {
+      return this.getEmptyState();
+    }
   }
 
   getEmptyState() {
@@ -1660,53 +1680,138 @@ class ChatWidget {
       wrapper.appendChild(button);
 
       // Add click event listener
-      button.addEventListener('click', function() {
-        // Add click effect
-        this.style.transform = 'scale(0.95)';
-        setTimeout(() => this.style.transform = 'scale(1)', 100);
+      this.addCodeBlockCopyEventListener(button);
+    });
+  }
 
-        const codeText = this.parentElement.querySelector('code').textContent;
-        navigator.clipboard.writeText(codeText).then(() => {
-          // Change button state
-          this.innerHTML = `
+  addCodeBlockCopyEventListener(button) {
+    // Add click event listener
+    button.addEventListener('click', function() {
+      // Add click effect
+      this.style.transform = 'scale(0.95)';
+      setTimeout(() => this.style.transform = 'scale(1)', 100);
+
+      const codeText = this.parentElement.querySelector('code').textContent;
+      navigator.clipboard.writeText(codeText).then(() => {
+        // Change button state
+        this.innerHTML = `
             <svg width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'>
               <polyline points='20 6 9 17 4 12'></polyline>
             </svg>
           `;
 
-          // Reset button after delay
-          setTimeout(() => {
-            this.innerHTML = `
+        // Reset button after delay
+        setTimeout(() => {
+          this.innerHTML = `
               <svg width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'>
                 <rect x='9' y='9' width='13' height='13' rx='2' ry='2'></rect>
                 <path d='M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1'></path>
               </svg>
             `;
-          }, 1000);
-        });
+        }, 1000);
       });
     });
+  }
+
+  maximizeChat() {
+    const chatWindow = this.shadow.getElementById("chatWindow");
+    // Ensure one maximization at a time
+    if (!chatWindow.classList.contains("maximized-state-changing")) {
+      chatWindow.classList.add("maximized-state-changing");
+      // Record the width before maximising to allow restoring back to it
+      chatWindow.setAttribute("data-original-width", chatWindow.clientWidth);
+      if (chatWindow.style.width) {
+        chatWindow.style.removeProperty("width");
+      }
+      // Prevent drag resizing when maximized
+      const resizeHandle = this.shadow.getElementById("chatResizeHandle");
+      resizeHandle.classList.add("hidden");
+      // Maximize
+      chatWindow.classList.add("maximized");
+      chatWindow.addEventListener("transitionend", () => {
+        // Switch maximize/minimize buttons
+        const maximizeButton = this.shadow.getElementById("maximizeChatButton");
+        const minimizeButton = this.shadow.getElementById("minimizeChatButton");
+        maximizeButton.classList.add("hidden");
+        minimizeButton.classList.remove("hidden");
+        // Cleanup
+        chatWindow.classList.remove("maximized-state-changing");
+      }, { once: true });
+    }
+  }
+
+  minimizeChat() {
+    const chatWindow = this.shadow.getElementById("chatWindow");
+    // Ensure one minimization at a time
+    if (!chatWindow.classList.contains("maximized-state-changing")) {
+      chatWindow.classList.add("maximized-state-changing");
+      // Restore the panel width from before maximizing.
+      if (chatWindow.hasAttribute("data-original-width")) {
+        chatWindow.style.width = chatWindow.getAttribute("data-original-width")+"px";
+        chatWindow.removeAttribute("data-original-width");
+      }
+      chatWindow.addEventListener("transitionend", () => {
+        // Cleanup
+        this.removeMaximization();
+      }, { once: true });
+    }
+  }
+
+  removeMaximization() {
+    // Switch maximize/minimize buttons
+    const maximizeButton = this.shadow.getElementById("maximizeChatButton");
+    const minimizeButton = this.shadow.getElementById("minimizeChatButton");
+    maximizeButton.classList.remove("hidden");
+    minimizeButton.classList.add("hidden");
+    // Remove maximized state
+    const chatWindow = this.shadow.getElementById("chatWindow");
+    chatWindow.classList.remove("maximized");
+    chatWindow.classList.remove("maximized-state-changing");
+    // Enable drag resizing (if previously disabled)
+    const resizeHandle = this.shadow.getElementById("chatResizeHandle");
+    resizeHandle.classList.remove("hidden");
+  }
+
+  isMobile() {
+    return window.innerWidth <= 768;
   }
 
   toggleChat() {
     const chatWindow = this.shadow.getElementById("chatWindow");
     const wrapper = document.getElementById("gurubase-page-content-wrapper");
     const chatButton = this.shadow.querySelector(".chat-button");
-    const isMobile = window.innerWidth <= 768;
+    const isMobile = this.isMobile();
 
     if (chatWindow) {
         const isOpening = !chatWindow.classList.contains("open");
 
         if (!isOpening) {
             // Closing
-            chatWindow.classList.remove("open");
-            document.body.classList.remove("widget-open");
-            chatButton.style.display = 'flex';
-
-            // Wait for transition to complete before hiding
-            chatWindow.addEventListener('transitionend', () => {
+            if (chatWindow.classList.contains("maximized")) {
+              // The maximised chat has CSS transitions on the 'width' property
+              chatWindow.style.minWidth = "0px";
+              chatWindow.style.width = "0px";
+              // Wait for transition to complete before hiding and cleaning up
+              chatWindow.addEventListener('transitionend', () => {
+                // Clean up styles used for transition
+                chatWindow.style.removeProperty("width");
+                chatWindow.style.removeProperty("min-width");
+                chatWindow.classList.remove("open");
+                document.body.classList.remove("widget-open");
+                this.removeMaximization();
                 chatWindow.style.display = "none";
-            }, { once: true }); // Use once: true to automatically remove the listener
+              }, { once: true }); // Use once: true to automatically remove the listener
+            } else {
+              // A non-maximized chat has CSS transitions on the 'right' property
+              chatWindow.classList.remove("open");
+              document.body.classList.remove("widget-open");
+              // Wait for transition to complete before hiding
+              chatWindow.addEventListener('transitionend', () => {
+                chatWindow.style.display = "none";
+              }, { once: true }); // Use once: true to automatically remove the listener
+            }
+
+            chatButton.style.display = 'flex';
 
             if (!isMobile && chatWindow.style.width > "400px") {
                 chatWindow.style.width = "400px";
@@ -1726,6 +1831,9 @@ class ChatWidget {
                 }
             }
             wrapper.style.width = "100%";
+
+            // Remove escape key listener
+            document.removeEventListener("keydown", this.handleEscape);
         } else {
             // Opening
             chatWindow.style.display = "flex";
@@ -1737,15 +1845,22 @@ class ChatWidget {
             chatWindow.classList.add("open");
             document.body.classList.add("widget-open");
             chatButton.style.display = 'none';
-            
-            // Focus on the input field when opening
-            const questionInput = this.shadow.getElementById("questionInput");
-            if (questionInput) {
-                setTimeout(() => {
-                    questionInput.focus();
-                }, 100); // Wait for the transition to complete
-            }
-            
+
+            // Scroll to the end of the current messages
+            const messagesContainer = this.shadow.querySelector(".chat-messages");
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            // If we have messages ensure the clear button is visible
+            this.resetClearButton();
+            chatWindow.addEventListener("transitionend", () => {
+              // Make sure the wrapper panel's width is applied
+              this.setWrapperPanelWidth();
+              // Focus on the input field when opening
+              const questionInput = this.shadow.getElementById("questionInput");
+              if (questionInput) {
+                questionInput.focus();
+              }
+            }, { once: true });
+
             if (isMobile) {
                 // Save current scroll position before fixing position
                 this.savedScrollY = window.scrollY;
@@ -1759,13 +1874,65 @@ class ChatWidget {
             } else {
                 wrapper.style.width = `calc(100% - 400px)`;
             }
+
+            // Add escape key listener
+            document.addEventListener("keydown", this.handleEscape);
         }
     }
+  }
+
+  handleEscape(event) {
+    if (event.key === "Escape") {
+      this.toggleChat();
+    }
+  }
+
+  saveChatState() {
+    // Store current state in session storage to avoid loss of state following refresh or full page navigation.
+    if (sessionStorage) {
+      // Save the current contents of the chat panel
+      const emptyState = this.shadow.querySelector(".empty-state");
+      if (emptyState) {
+        sessionStorage.removeItem("chatState");
+      } else {
+        const messagesContainer = this.shadow.querySelector(".chat-messages");
+        sessionStorage.setItem("chatState", messagesContainer.innerHTML);
+      }
+      // Save the chat panel's width to restore (if currently open and not maximized/maximizing)
+      const chatWindow = this.shadow.getElementById("chatWindow");
+      if (chatWindow.classList.contains("open") && !chatWindow.classList.contains("maximized") && !chatWindow.classList.contains("maximized-state-changing")) {
+        sessionStorage.setItem("chatWidth", chatWindow.clientWidth);
+      } else {
+        sessionStorage.removeItem("chatWidth");
+      }
+      // Save additional state relevant to questions and binges
+      if (this.previousQuestionSlug) {
+        sessionStorage.setItem("previousQuestionSlug", this.previousQuestionSlug);
+      } else {
+        sessionStorage.removeItem("previousQuestionSlug");
+      }
+      if (this.currentBingeId) {
+        sessionStorage.setItem("currentBingeId", this.currentBingeId);
+      } else {
+        sessionStorage.removeItem("currentBingeId");
+      }
+      if (!this.isFirstQuestion) {
+        sessionStorage.setItem("isFirstQuestion", this.isFirstQuestion);
+      } else {
+        sessionStorage.removeItem("isFirstQuestion");
+      }
+    }
+  }
+
+  handleUnload() {
+    this.saveChatState();
   }
 
   handleKeyPress(event) {
     if (event.key === "Enter") {
       this.validateAndSubmit();
+    } else if (event.key === "Escape") {
+      this.toggleChat();
     }
   }
 
@@ -2353,7 +2520,7 @@ class ChatWidget {
       }
 
       // Add buttons to the bot response
-      const buttons = createResponseButtons(botResponseElement, finalResponse);
+      const buttons = this.createResponseButtons(finalResponse);
       botResponseElement.appendChild(buttons);
 
       // Fetch and display follow-up examples
@@ -2366,15 +2533,7 @@ class ChatWidget {
 
         if (followUpExamples.length > 0) {
           const messagesContainer = this.shadow.querySelector(".chat-messages");
-          const exampleQuestionsContainer = this.createExampleQuestions(
-            followUpExamples,
-            (selectedQuestion) => {
-              const questionInput = this.shadow.getElementById("questionInput");
-              questionInput.value = selectedQuestion;
-              questionInput.dispatchEvent(new Event("input"));
-              this.submitQuestion(selectedQuestion);
-            }
-          );
+          const exampleQuestionsContainer = this.createExampleQuestions(followUpExamples);
 
           if (exampleQuestionsContainer) {
             // Remove any existing example questions
@@ -2457,17 +2616,21 @@ class ChatWidget {
         submitButton.style.cursor = "pointer";
       }
     }
+    this.resetClearButton();
+  }
 
-    // Add this after adding a new message to chat-messages
-    if (clearButton) {
-      clearButton.style.display = "flex";
-    }
-
+  resetClearButton() {
     // Modify the empty state check
-    if (!messagesContainer.querySelector(".empty-state")) {
-      clearButton.style.display = "flex";
-    } else {
-      clearButton.style.display = "none";
+    const clearButton = this.shadow.querySelector(".clear-button");
+    if (clearButton) {
+      const messagesContainer = this.shadow.querySelector(".chat-messages");
+      if (messagesContainer) {
+        if (!messagesContainer.querySelector(".empty-state")) {
+          clearButton.style.display = "flex";
+        } else {
+          clearButton.style.display = "none";
+        }
+      }
     }
   }
 
@@ -2517,7 +2680,7 @@ class ChatWidget {
         </button>
 
         <div id="chatWindow" class="chat-window">
-          <div class="resize-handle"></div>
+          <div id="chatResizeHandle" class="resize-handle"></div>
           <div class="anteon-header">
             <div class="logo" style="display: flex; align-items: center; gap: 8px; width: 100%; text-overflow: ellipsis;">
               ${this.getLogo()}
@@ -2526,17 +2689,27 @@ class ChatWidget {
               </span>
             </div>
             <button 
+              id="maximizeChatButton"
+              class="header-button"
+              aria-label="Maximize chat">
+              <svg height="20" width="20" stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M16 4l4 0l0 4"></path><path d="M14 10l6 -6"></path><path d="M8 20l-4 0l0 -4"></path><path d="M4 20l6 -6"></path><path d="M16 20l4 0l0 -4"></path><path d="M14 14l6 6"></path><path d="M8 4l-4 0l0 4"></path><path d="M4 4l6 6"></path></svg>              
+            </button>
+            <button 
+              id="minimizeChatButton"
+              class="header-button hidden"
+              aria-label="Minimize chat">
+              <svg height="20" width="20" stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M5 9l4 0l0 -4"></path><path d="M3 3l6 6"></path><path d="M5 15l4 0l0 4"></path><path d="M3 21l6 -6"></path><path d="M19 9l-4 0l0 -4"></path><path d="M15 9l6 -6"></path><path d="M19 15l-4 0l0 4"></path><path d="M15 15l6 6"></path></svg>              
+            </button>
+            <button 
+              id="closeChatButton"
               class="header-button"
               aria-label="Close chat">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <line x1="18" y1="6" x2="6" y2="18"></line>
-                <line x1="6" y1="6" x2="18" y2="18"></line>
-              </svg>
+              <svg height="24" width="24" stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg"><path d="m289.94 256 95-95A24 24 0 0 0 351 127l-95 95-95-95a24 24 0 0 0-34 34l95 95-95 95a24 24 0 1 0 34 34l95-95 95 95a24 24 0 0 0 34-34z"></path></svg>
             </button>
           </div>
 
           <div class="chat-messages">
-            ${this.getEmptyState()}
+            ${this.getInitialState()}
           </div>
 
           <div class="anteon-footer">
@@ -2588,7 +2761,21 @@ class ChatWidget {
     this.shadow.appendChild(widgetContainer);
 
     // Add event listeners for buttons that previously had inline onclick
-    const closeButton = this.shadow.querySelector('.header-button');
+    const maximizeButton = this.shadow.querySelector('#maximizeChatButton');
+    if (maximizeButton) {
+      maximizeButton.addEventListener('click', () => this.maximizeChat());
+      if (this.isMobile()) {
+        // No maximization on small screens
+        maximizeButton.classList.add('hidden');
+      }
+    }
+
+    const minimizeButton = this.shadow.querySelector('#minimizeChatButton');
+    if (minimizeButton) {
+      minimizeButton.addEventListener('click', () => this.minimizeChat());
+    }
+
+    const closeButton = this.shadow.querySelector('#closeChatButton');
     if (closeButton) {
       closeButton.addEventListener('click', () => this.toggleChat());
     }
@@ -2649,6 +2836,8 @@ class ChatWidget {
     this.handleKeyPress = this.handleKeyPress.bind(this);
     this.askQuestion = this.askQuestion.bind(this);
     this.handleUrlChange = this.handleUrlChange.bind(this);
+    this.handleEscape = this.handleEscape.bind(this);
+    this.handleUnload = this.handleUnload.bind(this);
 
     await this.fetchDefaultValues();
 
@@ -2676,6 +2865,9 @@ class ChatWidget {
     --chat-button-bg: ${this.mainColor};
   `;
 
+    // If we have loaded state following a page refresh attach the event listeners the restored chat panel's controls
+    this.addInitialStateEventListeners();
+
     // Set hover and active colors
     chatButton.style.setProperty(
       "--chat-button-hover-bg",
@@ -2694,16 +2886,13 @@ class ChatWidget {
     }
 
     if (questionInput) {
-      questionInput.addEventListener("keypress", this.handleKeyPress);
+      questionInput.addEventListener("keydown", this.handleKeyPress);
       this.initInputListeners();
     }
 
     if (submitButton) {
       submitButton.addEventListener("click", this.submitQuestion);
     }
-
-    // Add click outside listener
-    // document.addEventListener("mousedown", this.handleClickOutside);
 
     // Add drag resize listener
     const resizeHandle = this.shadow.querySelector(".resize-handle");
@@ -2753,6 +2942,7 @@ class ChatWidget {
 
     this.handleViewportHeight();
     window.addEventListener('resize', this.handleViewportHeight);
+    window.addEventListener('beforeunload', this.handleUnload);
 
     // Add visualViewport listeners for keyboard detection
     if (window.visualViewport) {
@@ -2766,6 +2956,42 @@ class ChatWidget {
     // Initial tooltip position check
     this.handleTooltipPosition();
 
+    // Restore panel if needed.
+    if (sessionStorage && sessionStorage.getItem("chatWidth")) {
+      this.setChatPanelWidth(sessionStorage.getItem("chatWidth"));
+      this.toggleChat();
+    }
+  }
+
+  addInitialStateEventListeners() {
+    // Add listeners for copy response buttons
+    this.shadow.querySelectorAll(".copy-response-button").forEach((button) => {
+      const textContainerId = button.getAttribute("data-text-id");
+      let textToCopy = "";
+      if (textContainerId) {
+        const textContainerDiv = this.shadow.getElementById(textContainerId);
+        if (textContainerDiv) {
+          textToCopy = textContainerDiv.innerHTML;
+        }
+      }
+      this.addResponseButtonEventListeners(button, () => this.copyResponseText(textToCopy))
+    })
+    // Add listeners for code block copy buttons
+    this.shadow.querySelectorAll(".code-block-copy-button").forEach((button) => {
+      this.addCodeBlockCopyEventListener(button);
+    });
+    // Add listeners for example questions
+    this.shadow.querySelectorAll(".example-question").forEach((button) => {
+      const questionContainerId = button.getAttribute("data-question-id");
+      let question = "";
+      if (questionContainerId) {
+        const questionContainerDiv = this.shadow.getElementById(questionContainerId);
+        if (questionContainerDiv) {
+          question = questionContainerDiv.innerHTML;
+        }
+      }
+      this.addExampleQuestionEventListener(button, question);
+    });
   }
 
   async loadHljsTheme(themeName) {
@@ -2781,7 +3007,7 @@ class ChatWidget {
 
   // Clean up when widget is destroyed
   destroy() {
-    document.removeEventListener("mousedown", this.handleClickOutside);
+    document.removeEventListener("keydown", this.handleEscape);
     document.removeEventListener("mousemove", this.handleDrag);
     document.removeEventListener("mouseup", this.handleDragEnd);
     window.removeEventListener('resize', this.handleViewportHeight);
@@ -2816,15 +3042,22 @@ class ChatWidget {
   handleDrag(e) {
     if (!this.isDragging) return;
 
-    const chatWindow = this.shadow.getElementById("chatWindow");
-    const wrapper = document.getElementById("gurubase-page-content-wrapper");
     const deltaX = this.startX - e.clientX;
     const newWidth = Math.min(Math.max(this.startWidth + deltaX, 400), 800);
+    this.setChatPanelWidth(newWidth);
+  }
 
+  setChatPanelWidth(newWidth) {
+    const chatWindow = this.shadow.getElementById("chatWindow");
     chatWindow.style.width = `${newWidth}px`;
-
     // Update content width while dragging
+    this.setWrapperPanelWidth(newWidth);
+  }
+
+  setWrapperPanelWidth(newWidth) {
+    if (newWidth === undefined) newWidth = this.shadow.getElementById("chatWindow").clientWidth;
     if (document.body.classList.contains("widget-open")) {
+      const wrapper = document.getElementById("gurubase-page-content-wrapper");
       wrapper.style.width = `calc(100% - ${newWidth}px)`;
     }
   }
@@ -2973,22 +3206,40 @@ class ChatWidget {
     }
   }
 
-  createExampleQuestions(questions, onQuestionClick) {
+  createExampleQuestions(questions) {
     if (!Array.isArray(questions) || questions.length === 0) return null;
 
     const container = document.createElement("div");
     container.className = "example-questions flex flex-wrap gap-2";
 
-    questions.forEach((question, index) => {
+    questions.forEach((question) => {
+      const questionUuid = this.createUuid();
+      // Create hidden container for the example question to ensure this persists page refreshes
+      const exampleQuestionContainer = document.createElement("div");
+      exampleQuestionContainer.className = 'hidden';
+      exampleQuestionContainer.id = questionUuid;
+      exampleQuestionContainer.innerHTML = question;
+      container.appendChild(exampleQuestionContainer);
+      // Create button
       const button = document.createElement("button");
       button.className = "example-question";
       button.textContent = question;
       button.setAttribute("aria-label", `Example question: ${question}`);
-      button.onclick = (e) => onQuestionClick(question, e);
+      button.setAttribute("data-question-id", questionUuid);
+      this.addExampleQuestionEventListener(button, question);
       container.appendChild(button);
     });
 
     return container;
+  }
+
+  addExampleQuestionEventListener(button, selectedQuestion) {
+    button.addEventListener("click", () => {
+      const questionInput = this.shadow.getElementById("questionInput");
+      questionInput.value = selectedQuestion;
+      questionInput.dispatchEvent(new Event("input"));
+      this.submitQuestion(selectedQuestion);
+    });
   }
 
   handleViewportHeight() {
@@ -3195,6 +3446,106 @@ class ChatWidget {
       chatButton.style.setProperty('--tooltip-left', `${leftPosition}%`);
     }
   }
+
+  addResponseButtonEventListeners(button, onClick) {
+    // Hover effect
+    button.addEventListener("onmouseover", (event) => {
+      event.target.style.transform = "translateY(-1px)";
+    });
+    button.addEventListener("onmouseout", (event) => {
+      event.target.style.transform = "translateY(0)";
+    });
+    // Click effect
+    button.addEventListener("onmousedown", (event) => {
+      event.target.style.transform = "translateY(0)";
+    });
+    button.addEventListener("onmouseup", (event) => {
+      event.target.style.transform = "translateY(-1px)";
+    });
+    button.addEventListener("click", () => {
+      // Call the original onClick handler
+      onClick();
+
+      const originalIcon = button.innerHTML;
+      // Show success state
+      button.innerHTML = this.getSuccessIcon();
+
+      // Reset after 1 second
+      setTimeout(() => {
+        button.style.backgroundColor = "inherit";
+        button.innerHTML = originalIcon;
+      }, 1000);
+    });
+  }
+
+  // Create response buttons
+  createResponseButtons(textToCopy) {
+    const buttonContainer = document.createElement("div");
+    buttonContainer.className = "response-buttons";
+    buttonContainer.style.display = "flex";
+    buttonContainer.style.gap = "12px";
+    buttonContainer.style.marginTop = "8px"; // Optional: to separate from the response
+
+    const containerUuid = this.createUuid();
+    // Add the response text to a hidden container so that we can restore it following a page refresh
+    const copyTextContainer = document.createElement("div");
+    copyTextContainer.className = 'hidden';
+    copyTextContainer.id = containerUuid;
+    copyTextContainer.innerHTML = textToCopy;
+    buttonContainer.appendChild(copyTextContainer);
+
+    const copyButton = this.createResponseButton(
+      `<path fill-rule="evenodd" clip-rule="evenodd" d="M10 0.832031H7.29572C6.07055 0.832021 5.10013 0.832013 4.34065 0.934122C3.55904 1.03921 2.9264 1.26062 2.4275 1.75953C1.92859 2.25844 1.70718 2.89107 1.60209 3.67268C1.49998 4.43216 1.49999 5.40258 1.5 6.62775V10.6654C1.5 11.9135 2.4147 12.9481 3.61034 13.1352C3.70232 13.6445 3.87835 14.0793 4.23223 14.4331C4.63351 14.8344 5.13876 15.007 5.73883 15.0877C6.31681 15.1654 7.05169 15.1654 7.96342 15.1654H10.0366C10.9483 15.1654 11.6832 15.1654 12.2612 15.0877C12.8612 15.007 13.3665 14.8344 13.7678 14.4331C14.169 14.0319 14.3416 13.5266 14.4223 12.9265C14.5 12.3486 14.5 11.6137 14.5 10.7019V7.29545C14.5 6.38372 14.5 5.64884 14.4223 5.07086C14.3416 4.47079 14.169 3.96554 13.7678 3.56427C13.4139 3.21038 12.9791 3.03435 12.4698 2.94237C12.2827 1.74673 11.2482 0.832031 10 0.832031ZM11.4196 2.84614C11.2177 2.25619 10.6584 1.83203 10 1.83203H7.33333C6.06212 1.83203 5.15901 1.83309 4.4739 1.9252C3.80317 2.01538 3.41674 2.18449 3.1346 2.46663C2.85246 2.74877 2.68335 3.1352 2.59317 3.80593C2.50106 4.49104 2.5 5.39415 2.5 6.66536V10.6654C2.5 11.3237 2.92416 11.883 3.51411 12.0849C3.49999 11.6783 3.49999 11.2185 3.5 10.7019V7.29545C3.49999 6.38372 3.49998 5.64884 3.57768 5.07086C3.65836 4.47079 3.83096 3.96554 4.23223 3.56427C4.63351 3.16299 5.13876 2.99039 5.73883 2.90971C6.31681 2.83201 7.05169 2.83202 7.96342 2.83203H10.0366C10.5531 2.83202 11.0129 2.83202 11.4196 2.84614ZM4.93934 4.27137C5.12385 4.08686 5.3829 3.96657 5.87208 3.9008C6.37565 3.83309 7.04306 3.83203 8 3.83203H10C10.9569 3.83203 11.6244 3.83309 12.1279 3.9008C12.6171 3.96657 12.8762 4.08686 13.0607 4.27137C13.2452 4.45588 13.3655 4.71493 13.4312 5.20411C13.4989 5.70768 13.5 6.37509 13.5 7.33203V10.6654C13.5 11.6223 13.4989 12.2897 13.4312 12.7933C13.3655 13.2825 13.2452 13.5415 13.0607 13.726C12.8762 13.9105 12.6171 14.0308 12.1279 14.0966C11.6244 14.1643 10.9569 14.1654 10 14.1654H8C7.04306 14.1654 6.37565 14.1643 5.87208 14.0966C5.3829 14.0308 5.12385 13.9105 4.93934 13.726C4.75483 13.5415 4.63453 13.2825 4.56877 12.7933C4.50106 12.2897 4.5 11.6223 4.5 10.6654V7.33203C4.5 6.37509 4.50106 5.70768 4.56877 5.20411C4.63453 4.71493 4.75483 4.45588 4.93934 4.27137Z" fill="var(--response-button-color)"/>`,
+      "",
+      () => this.copyResponseText(textToCopy),
+      "copy"
+    );
+    copyButton.setAttribute("data-text-id", containerUuid);
+    buttonContainer.appendChild(copyButton);
+
+    return buttonContainer;
+  }
+
+  copyResponseText(textToCopy) {
+    navigator.clipboard.writeText(textToCopy).then(() => {});
+  }
+
+  createUuid() {
+    return Math.random().toString(36).substr(2);
+  }
+
+  getSuccessIcon() {
+    return `
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <polyline points="20 6 9 17 4 12" stroke="var(--response-button-color)" stroke-width="2"/>
+    </svg>
+    `;
+  }
+
+  createResponseButton(icon, text, onClick, type) {
+    const button = document.createElement("button");
+    button.className = `${type}-response-button`;
+    button.style.cssText = `
+      border: none;
+      background: inherit;
+      display: flex;
+      align-items: center;
+      padding: 0;
+      cursor: pointer;
+      transition: background-color 0.2s ease, transform 0.2s ease;
+    `;
+
+    button.innerHTML = `
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+      ${icon}
+    </svg>
+    ${text}
+  `;
+    this.addResponseButtonEventListeners(button, onClick);
+
+    return button;
+  }
+
 }
 
 function loadScript(url) {
@@ -3239,115 +3590,3 @@ function loadScript(url) {
 // document.addEventListener("DOMContentLoaded", () => {
 //   window.chatWidget = new ChatWidget();
 // });
-
-// Function to create buttons
-function createResponseButtons(botResponseElement, textToCopy) {
-  function createButton(icon, text, onClick, type) {
-    const button = document.createElement("button");
-    button.className = `${type}-response-button`;
-    button.style.cssText = `
-      border: none;
-      background: inherit;
-      display: flex;
-      align-items: center;
-      padding: 0;
-      cursor: pointer;
-      transition: background-color 0.2s ease, transform 0.2s ease;
-    `;
-
-    const originalIcon = `
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-      ${icon}
-    </svg>
-    ${text}
-  `;
-
-    const successIcon = `
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <polyline points="20 6 9 17 4 12" stroke="var(--response-button-color)" stroke-width="2"/>
-    </svg>
-  `;
-
-    button.innerHTML = originalIcon;
-
-    // Hover effect
-    button.onmouseover = () => {
-      button.style.transform = "translateY(-1px)";
-    };
-
-    button.onmouseout = () => {
-      button.style.transform = "translateY(0)";
-    };
-
-    // Click effect
-    button.onmousedown = () => {
-      button.style.transform = "translateY(0)";
-    };
-
-    button.onmouseup = () => {
-      button.style.transform = "translateY(-1px)";
-    };
-
-    button.onclick = async (e) => {
-      // Call the original onClick handler
-      await onClick(e);
-
-      // Show success state
-      button.innerHTML = successIcon;
-
-      // Reset after 1 second
-      setTimeout(() => {
-        button.style.backgroundColor = "inherit";
-        button.innerHTML = originalIcon;
-      }, 1000);
-    };
-    return button;
-  }
-
-  function onClickCopy() {
-    navigator.clipboard.writeText(textToCopy).then(() => {});
-  }
-
-  function onClickLike() {
-    // TODO: Implement like functionality
-    // Mock API request
-  }
-
-  function onClickDislike() {
-    // TODO: Implement dislike functionality
-    // Mock API request
-  }
-
-  const buttonContainer = document.createElement("div");
-  buttonContainer.className = "response-buttons";
-  buttonContainer.style.display = "flex";
-  buttonContainer.style.gap = "12px";
-  buttonContainer.style.marginTop = "8px"; // Optional: to separate from the response
-
-  const copyButton = createButton(
-    `<path fill-rule="evenodd" clip-rule="evenodd" d="M10 0.832031H7.29572C6.07055 0.832021 5.10013 0.832013 4.34065 0.934122C3.55904 1.03921 2.9264 1.26062 2.4275 1.75953C1.92859 2.25844 1.70718 2.89107 1.60209 3.67268C1.49998 4.43216 1.49999 5.40258 1.5 6.62775V10.6654C1.5 11.9135 2.4147 12.9481 3.61034 13.1352C3.70232 13.6445 3.87835 14.0793 4.23223 14.4331C4.63351 14.8344 5.13876 15.007 5.73883 15.0877C6.31681 15.1654 7.05169 15.1654 7.96342 15.1654H10.0366C10.9483 15.1654 11.6832 15.1654 12.2612 15.0877C12.8612 15.007 13.3665 14.8344 13.7678 14.4331C14.169 14.0319 14.3416 13.5266 14.4223 12.9265C14.5 12.3486 14.5 11.6137 14.5 10.7019V7.29545C14.5 6.38372 14.5 5.64884 14.4223 5.07086C14.3416 4.47079 14.169 3.96554 13.7678 3.56427C13.4139 3.21038 12.9791 3.03435 12.4698 2.94237C12.2827 1.74673 11.2482 0.832031 10 0.832031ZM11.4196 2.84614C11.2177 2.25619 10.6584 1.83203 10 1.83203H7.33333C6.06212 1.83203 5.15901 1.83309 4.4739 1.9252C3.80317 2.01538 3.41674 2.18449 3.1346 2.46663C2.85246 2.74877 2.68335 3.1352 2.59317 3.80593C2.50106 4.49104 2.5 5.39415 2.5 6.66536V10.6654C2.5 11.3237 2.92416 11.883 3.51411 12.0849C3.49999 11.6783 3.49999 11.2185 3.5 10.7019V7.29545C3.49999 6.38372 3.49998 5.64884 3.57768 5.07086C3.65836 4.47079 3.83096 3.96554 4.23223 3.56427C4.63351 3.16299 5.13876 2.99039 5.73883 2.90971C6.31681 2.83201 7.05169 2.83202 7.96342 2.83203H10.0366C10.5531 2.83202 11.0129 2.83202 11.4196 2.84614ZM4.93934 4.27137C5.12385 4.08686 5.3829 3.96657 5.87208 3.9008C6.37565 3.83309 7.04306 3.83203 8 3.83203H10C10.9569 3.83203 11.6244 3.83309 12.1279 3.9008C12.6171 3.96657 12.8762 4.08686 13.0607 4.27137C13.2452 4.45588 13.3655 4.71493 13.4312 5.20411C13.4989 5.70768 13.5 6.37509 13.5 7.33203V10.6654C13.5 11.6223 13.4989 12.2897 13.4312 12.7933C13.3655 13.2825 13.2452 13.5415 13.0607 13.726C12.8762 13.9105 12.6171 14.0308 12.1279 14.0966C11.6244 14.1643 10.9569 14.1654 10 14.1654H8C7.04306 14.1654 6.37565 14.1643 5.87208 14.0966C5.3829 14.0308 5.12385 13.9105 4.93934 13.726C4.75483 13.5415 4.63453 13.2825 4.56877 12.7933C4.50106 12.2897 4.5 11.6223 4.5 10.6654V7.33203C4.5 6.37509 4.50106 5.70768 4.56877 5.20411C4.63453 4.71493 4.75483 4.45588 4.93934 4.27137Z" fill="var(--response-button-color)"/>`,
-    "",
-    onClickCopy,
-    "copy"
-  );
-
-  // const likeButton = createButton(
-  //   `<path fill-rule="evenodd" clip-rule="evenodd" d="M8.29214 1.85097C8.19543 1.81991 8.08968 1.82744 7.99985 1.87072C7.9015 1.91812 7.8365 2.00083 7.81316 2.09084L7.49602 3.31341C7.38511 3.74096 7.22363 4.15335 7.01566 4.54269C6.69277 5.14715 6.20422 5.61203 5.75098 6.0026L4.79182 6.82912C4.64317 6.95722 4.56493 7.14925 4.58188 7.34523L5.12332 13.607C5.15068 13.9233 5.41496 14.1654 5.7309 14.1654H8.82998C10.9209 14.1654 12.6825 12.7105 13.0204 10.7568L13.4908 8.03695C13.5555 7.66263 13.2676 7.3215 12.8899 7.3215H9.43579C8.78438 7.3215 8.28959 6.73707 8.39476 6.09517L8.83655 3.3988C8.89706 3.02945 8.87978 2.65152 8.78581 2.28926C8.73812 2.10542 8.59306 1.94764 8.38878 1.88202L8.29214 1.85097L8.44506 1.37493L8.29214 1.85097ZM7.56575 0.969861C7.88748 0.814829 8.25817 0.789727 8.59799 0.898894L8.69464 0.929941L8.54171 1.40598L8.69464 0.929941C9.21264 1.09635 9.6168 1.51016 9.75377 2.03817C9.8827 2.53521 9.90641 3.05374 9.82339 3.56049L9.38161 6.25686C9.37595 6.29137 9.40254 6.3215 9.43579 6.3215H12.8899C13.8894 6.3215 14.6463 7.22304 14.4761 8.20736L14.0058 10.9272C13.5805 13.3861 11.3808 15.1654 8.82998 15.1654H5.7309C4.89513 15.1654 4.19901 14.5255 4.12704 13.6932L3.5856 7.43137C3.541 6.91556 3.74681 6.40957 4.13903 6.07158L5.09819 5.24506C5.535 4.86865 5.90269 4.50381 6.13361 4.07152C6.30466 3.75131 6.43715 3.41274 6.52805 3.06231L6.84519 1.83974C6.94468 1.45621 7.21109 1.14076 7.56575 0.969861ZM1.97844 6.32196C2.24595 6.31042 2.47507 6.51166 2.49814 6.77842L3.14587 14.2694C3.18748 14.7506 2.80846 15.1654 2.32447 15.1654C1.86859 15.1654 1.5 14.7955 1.5 14.3405V6.8215C1.5 6.55374 1.71093 6.33351 1.97844 6.32196Z" fill="var(--response-button-color)"/>`,
-  //   "",
-  //   onClickLike,
-  //   "like"
-  // );
-
-  // const dislikeButton = createButton(
-  //   `<path fill-rule="evenodd" clip-rule="evenodd" d="M8.29214 14.149C8.19543 14.1801 8.08968 14.1726 7.99985 14.1293C7.9015 14.0819 7.8365 13.9992 7.81316 13.9092L7.49602 12.6866C7.38511 12.259 7.22363 11.8467 7.01566 11.4573C6.69277 10.8529 6.20422 10.388 5.75098 9.9974L4.79182 9.17088C4.64317 9.04278 4.56493 8.85075 4.58188 8.65477L5.12332 2.39299C5.15068 2.07665 5.41496 1.83464 5.7309 1.83464H8.82998C10.9209 1.83464 12.6825 3.28948 13.0204 5.24321L13.4908 7.96305C13.5555 8.33737 13.2676 8.6785 12.8899 8.6785H9.43579C8.78438 8.6785 8.28959 9.26293 8.39476 9.90483L8.83655 12.6012C8.89706 12.9705 8.87978 13.3485 8.78581 13.7107C8.73812 13.8946 8.59306 14.0524 8.38878 14.118L8.29214 14.149L8.44506 14.6251L8.29214 14.149ZM7.56575 15.0301C7.88748 15.1852 8.25817 15.2103 8.59799 15.1011L8.69464 15.0701L8.54171 14.594L8.69464 15.0701C9.21264 14.9036 9.6168 14.4898 9.75377 13.9618C9.8827 13.4648 9.90641 12.9463 9.82339 12.4395L9.38161 9.74314C9.37595 9.70863 9.40254 9.6785 9.43579 9.6785H12.8899C13.8894 9.6785 14.6463 8.77696 14.4761 7.79264L14.0058 5.0728C13.5805 2.61394 11.3808 0.834637 8.82998 0.834637H5.7309C4.89513 0.834637 4.19901 1.47447 4.12704 2.30685L3.5856 8.56863C3.541 9.08444 3.74681 9.59043 4.13903 9.92842L5.09819 10.7549C5.535 11.1314 5.90269 11.4962 6.13361 11.9285C6.30466 12.2487 6.43715 12.5873 6.52805 12.9377L6.84519 14.1603C6.94468 14.5438 7.21109 14.8592 7.56575 15.0301ZM1.97844 9.67804C2.24595 9.68958 2.47507 9.48834 2.49814 9.22158L3.14587 1.73056C3.18748 1.24937 2.80846 0.834637 2.32447 0.834637C1.86859 0.834637 1.5 1.20446 1.5 1.65948V9.1785C1.5 9.44626 1.71093 9.66649 1.97844 9.67804Z" fill="var(--response-button-color)"/>`,
-  //   "",
-  //   onClickDislike,
-  //   "dislike"
-  // );
-
-  buttonContainer.appendChild(copyButton);
-  // buttonContainer.appendChild(likeButton);
-  // buttonContainer.appendChild(dislikeButton);
-
-  return buttonContainer;
-}
