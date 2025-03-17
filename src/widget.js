@@ -1896,7 +1896,18 @@ class ChatWidget {
         sessionStorage.removeItem("chatState");
       } else {
         const messagesContainer = this.shadow.querySelector(".chat-messages");
-        sessionStorage.setItem("chatState", messagesContainer.innerHTML);
+        let messagesToSave = "";
+        if (messagesContainer) {
+          // Select only completed messages
+          messagesToSave = Array.from(messagesContainer.querySelectorAll(".completed"))
+            .map(el => el.outerHTML) // Get the messages' HTML content
+            .join(""); // Convert array to string
+        }
+        if (messagesToSave.length > 0) {
+          sessionStorage.setItem("chatState", messagesToSave);
+        } else {
+          sessionStorage.removeItem("chatState");
+        }
       }
       // Save the chat panel's width to restore (if currently open and not maximized/maximizing)
       const chatWindow = this.shadow.getElementById("chatWindow");
@@ -2615,8 +2626,17 @@ class ChatWidget {
         submitButton.style.opacity = "1";
         submitButton.style.cursor = "pointer";
       }
+      // Mark the messages produced by this question/answer as completed.
+      this.markMessagesAsCompleted();
     }
     this.resetClearButton();
+  }
+
+  markMessagesAsCompleted() {
+    // Set all direct children of the chat message panel as completed to flag them as being eligible for state saving
+    this.shadow.querySelectorAll(".chat-messages > :not(.completed)").forEach((messageBlock) => {
+      messageBlock.classList.add("completed");
+    });
   }
 
   resetClearButton() {
