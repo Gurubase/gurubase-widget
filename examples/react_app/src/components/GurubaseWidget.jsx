@@ -9,7 +9,7 @@ function GurubaseWidget({
   bgColor = null,
   iconUrl = null,
   name = null,
-  lightMode = true,
+  lightMode = "auto",
   baseUrl = null
 }) {
   useEffect(() => {

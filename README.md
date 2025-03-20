@@ -43,7 +43,7 @@ The only thing you need to do is to add the widget.js to your website as follows
 | data-bg-color | string | Primary color for the widget. Accepts hex color values (e.g., "#0000FF") | Fetched from the Gurubase.io |
 | data-icon-url | string | URL to your company/product logo | Fetched from the Gurubase.io |
 | data-name | string | Your company/product name | Fetched from the Gurubase.io |
-| data-light-mode | boolean | Whether to use light mode | false |
+| data-light-mode | string | Whether to use light mode. Possible values are `"auto"`, `"light"`, `"dark"` | false |
 | data-baseUrl | string | URL to your Gurubase backend. **Only for self-hosted Gurubase.** | Gurubase Cloud |
 | data-tooltip | string | Tooltip text | null |
 | data-tooltip-side | string | Tooltip side. 8 possible values: "top", "bottom", "left", "right", "top left", "top right", "bottom left", "bottom right" | "left" |
@@ -60,7 +60,7 @@ The only thing you need to do is to add the widget.js to your website as follows
 > ```
 
 > [!NOTE]
-> The background color of the tooltip is the inverse of the widget's background color. If `data-light-mode` is `true`, the tooltip's background color will be black, or vice versa.
+> The background color of the tooltip is the inverse of the widget's background color. If `data-light-mode` is `light`, the tooltip's background color will be black, or vice versa.
 
 ## Exposed Functions
 
@@ -74,6 +74,9 @@ The only thing you need to do is to add the widget.js to your website as follows
   This function can be accessed with `window.chatWidget.switchTheme();`
 
   An example usage is shown in the [MKDocs](https://github.com/Gurubase/gurubase-widget/tree/master/examples/mkdocs/docs/js/theme-switch.js) example in the `theme-switch.js` script. It toggles the theme of the widget based on the MkDocs website by listening for changes in the theme and using this function with each change. 
+
+  > [!NOTE] 
+  > It is advised to use `data-light-mode="auto"` instead. If this does not work for your website, feel free to contact us.
 
 ## Demos
 Below are example installations of the Gurubase Widget for various technologies. If your technology isn’t listed, we’d gladly accept a demo, feel free to submit a pull request.

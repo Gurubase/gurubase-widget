@@ -22,7 +22,7 @@ interface GurubaseWidgetProps {
   bgColor?: string;
   iconUrl?: string;
   name?: string;
-  lightMode?: boolean;
+  lightMode?: string;
 }
 
 export function GurubaseWidget({
@@ -32,7 +32,7 @@ export function GurubaseWidget({
   bgColor = null,
   iconUrl = null,
   name = null,
-  lightMode = false
+  lightMode = "auto"
 }: GurubaseWidgetProps) {
   useEffect(() => {
     if (window.chatWidget) return;
@@ -81,7 +81,7 @@ export default function App() {
           // Optional props:
           // text="Ask AI"
           // margins={{ bottom: "20px", right: "20px" }}
-          // lightMode={false}
+          // lightMode="auto"
           // bgColor="YOUR_BG_COLOR"
           // iconUrl="YOUR_ICON_URL"
           // name="YOUR_NAME"

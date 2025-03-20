@@ -22,7 +22,7 @@ function App() {
           widgetId="YOUR_WIDGET_ID"
           text="Ask AI"
           margins={{ bottom: "20px", right: "20px" }} // Optional
-          lightMode={false} // Optional
+          lightMode="auto" // Optional
           bgColor="YOUR_BG_COLOR" // Optional
           iconUrl="YOUR_ICON_URL" // Optional
           name="YOUR_NAME" // Optional

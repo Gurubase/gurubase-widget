@@ -11,7 +11,7 @@ This is a simple example of how to integrate the Gurubase Widget into your websi
     data-widget-id="YOUR_WIDGET_ID"
     data-text="Ask AI"
     data-margins='{"bottom": "20px", "right": "20px"}'
-    data-light-mode="true"
+    data-light-mode="light"
     data-bg-color="YOUR_BG_COLOR"
     data-icon-url="YOUR_ICON_URL"
     data-name="YOUR_NAME"

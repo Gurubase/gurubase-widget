@@ -29,7 +29,7 @@ export default function App() {
           // Optional props:
           // text="Ask AI"
           // margins={{ bottom: "20px", right: "20px" }}
-          // lightMode={false}
+          // lightMode="auto"
         />        
         <div className="min-h-screen">
           <Outlet />
