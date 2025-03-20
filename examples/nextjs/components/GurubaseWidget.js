@@ -13,8 +13,7 @@ export default function GurubaseWidget({
 }) {
   return (
     <Script
-      // src="https://widget.gurubase.io/widget.latest.min.js"
-      src="http://localhost:8080/src/widget.js"
+      src="https://widget.gurubase.io/widget.latest.min.js"
       strategy="lazyOnload"
       async
       id="guru-widget-id"
