@@ -6,7 +6,7 @@ export default function GurubaseWidget({
   widgetId,
   text = "Ask AI",
   margins = { bottom: "20px", right: "20px" },
-  lightMode = false,
+  lightMode = "auto",
   bgColor = null,
   iconUrl = null,
   name = null

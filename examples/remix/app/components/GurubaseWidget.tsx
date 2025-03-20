@@ -13,7 +13,7 @@ interface GurubaseWidgetProps {
   bgColor?: string;
   iconUrl?: string;
   name?: string;
-  lightMode?: boolean;
+  lightMode?: string;
 }
 
 export function GurubaseWidget({
@@ -23,7 +23,7 @@ export function GurubaseWidget({
   bgColor,
   iconUrl,
   name,
-  lightMode = false
+  lightMode = "auto"
 }: GurubaseWidgetProps) {
   useEffect(() => {
     if (window.chatWidget) return;

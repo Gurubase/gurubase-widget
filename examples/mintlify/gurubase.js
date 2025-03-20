@@ -5,7 +5,7 @@ const widgetSettings = {
   // Optional configurations:
   // text: "Ask AI",                                    // Button text
   // margins: { bottom: "20px", right: "20px" },       // Widget positioning
-  // lightMode: false,                                  // Force light mode
+  lightMode: "auto",                                  // Force light mode
   // name: "GURU_NAME",                                 // Widget name
   // iconUrl: "GURU_ICON_URL",                         // Widget icon URL
   // bgColor: "#000000",                               // Widget background color
@@ -24,30 +24,4 @@ Object.entries(widgetSettings).forEach(([key, value]) => {
   guruScript.setAttribute(dataKey, dataValue);
 });
 
-// Initialize theme handling
-guruScript.addEventListener('load', () => {
-  const initWidget = setInterval(() => {
-    if (window.chatWidget?.switchTheme) {
-      clearInterval(initWidget);
-      
-      // Handle theme changes
-      const syncTheme = () => {
-        const isDark = document.documentElement.classList.contains('dark');
-        window.chatWidget.switchTheme(!isDark);
-      };
-
-      // Watch for theme changes
-      new MutationObserver(syncTheme).observe(document.documentElement, {
-        attributes: true,
-        attributeFilter: ['class']
-      });
-      
-      // Set initial theme
-      syncTheme();
-    }
-  }, 1000);
-
-  // Stop checking after 20 seconds
-  setTimeout(() => clearInterval(initWidget), 20000);
-});
 document.body.appendChild(guruScript);
