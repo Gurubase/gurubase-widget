@@ -3620,7 +3620,7 @@ function syncWithTheme() {
       
       // Get the theme mode from data attribute
       const scriptTag = document.querySelector('script[src*="widget.js"]');
-      const themeMode = scriptTag?.getAttribute('data-light-mode')?.toLowerCase();
+      const themeMode = scriptTag?.getAttribute('data-light-mode')?.toLowerCase() || 'auto';
       
       // If theme is explicitly set to light or dark, set it once and don't sync
       if (themeMode === 'true' || themeMode === 'light') {
@@ -3631,30 +3631,27 @@ function syncWithTheme() {
         return;
       }
       
-      // Only set up auto-sync if theme mode is 'auto' or not set
-      if (themeMode === 'auto') {
-        // Handle theme changes
-        const syncTheme = () => {
-          // Check both class list and data-theme attribute
-          const isDarkClass = document.documentElement.classList.contains('dark');
-          const dataTheme = document.documentElement.getAttribute('data-theme');
-          const isDark = isDarkClass || (dataTheme === 'dark');
-          const isLight = dataTheme === 'light'; // explicit light mode check
-          
-          // If explicitly set to light, use light mode
-          // Otherwise, use the inverse of dark mode detection
-          window.chatWidget.switchTheme(isLight ? true : !isDark);
-        };
-
-        // Watch for theme changes on both class and data-theme
-        new MutationObserver(syncTheme).observe(document.documentElement, {
-          attributes: true,
-          attributeFilter: ['class', 'data-theme']
-        });
+      // Auto mode (default if not specified or explicitly set to auto)
+      const syncTheme = () => {
+        // Check both class list and data-theme attribute
+        const isDarkClass = document.documentElement.classList.contains('dark');
+        const dataTheme = document.documentElement.getAttribute('data-theme');
+        const isDark = isDarkClass || (dataTheme === 'dark');
+        const isLight = dataTheme === 'light'; // explicit light mode check
         
-        // Set initial theme
-        syncTheme();
-      }
+        // If explicitly set to light, use light mode
+        // Otherwise, use the inverse of dark mode detection
+        window.chatWidget.switchTheme(isLight ? true : !isDark);
+      };
+
+      // Watch for theme changes on both class and data-theme
+      new MutationObserver(syncTheme).observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ['class', 'data-theme']
+      });
+      
+      // Set initial theme
+      syncTheme();
     }
   }, 1000);
 
