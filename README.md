@@ -75,8 +75,8 @@ The only thing you need to do is to add the widget.js to your website as follows
 
   An example usage is shown in the [MKDocs](https://github.com/Gurubase/gurubase-widget/tree/master/examples/mkdocs/docs/js/theme-switch.js) example in the `theme-switch.js` script. It toggles the theme of the widget based on the MkDocs website by listening for changes in the theme and using this function with each change. 
 
-  > [!NOTE] 
-  > It is advised to use `data-light-mode="auto"` instead. If this does not work for your website, feel free to contact us.
+> [!NOTE] 
+> It is advised to use `data-light-mode="auto"` instead. If this does not work for your website, feel free to contact us.
 
 ## Demos
 Below are example installations of the Gurubase Widget for various technologies. If your technology isn’t listed, we’d gladly accept a demo, feel free to submit a pull request.
