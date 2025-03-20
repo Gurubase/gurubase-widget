@@ -3635,14 +3635,21 @@ function syncWithTheme() {
       if (themeMode === 'auto') {
         // Handle theme changes
         const syncTheme = () => {
-          const isDark = document.documentElement.classList.contains('dark');
-          window.chatWidget.switchTheme(!isDark);
+          // Check both class list and data-theme attribute
+          const isDarkClass = document.documentElement.classList.contains('dark');
+          const dataTheme = document.documentElement.getAttribute('data-theme');
+          const isDark = isDarkClass || (dataTheme === 'dark');
+          const isLight = dataTheme === 'light'; // explicit light mode check
+          
+          // If explicitly set to light, use light mode
+          // Otherwise, use the inverse of dark mode detection
+          window.chatWidget.switchTheme(isLight ? true : !isDark);
         };
 
-        // Watch for theme changes
+        // Watch for theme changes on both class and data-theme
         new MutationObserver(syncTheme).observe(document.documentElement, {
           attributes: true,
-          attributeFilter: ['class']
+          attributeFilter: ['class', 'data-theme']
         });
         
         // Set initial theme
