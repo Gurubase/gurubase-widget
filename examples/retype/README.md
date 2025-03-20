@@ -53,7 +53,7 @@ The Gurubase Widget is integrated into the documentation using the following con
     data-baseUrl="http://localhost:8018"
     data-text="Ask about Pagy"
     data-margins='{"bottom": "20px", "right": "20px"}'
-    data-light-mode="true">
+    data-light-mode="light">
 </script>
 ```
 

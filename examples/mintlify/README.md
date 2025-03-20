@@ -14,7 +14,7 @@ const widgetSettings = {
   // Optional configurations:
   // text: "Ask AI",                                    // Button text
   // margins: { bottom: "20px", right: "20px" },       // Widget positioning
-  lightMode: "auto",                                  // Force light mode
+  lightMode: "auto",                                  // Set to auto to use the website's theme
   // name: "GURU_NAME",                                 // Widget name
   // iconUrl: "GURU_ICON_URL",                         // Widget icon URL
   // bgColor: "#000000",                               // Widget background color
