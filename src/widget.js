@@ -3624,14 +3624,14 @@ function getThemeState() {
   return isLight ? true : !isDark;
 }
 
-// Add GitBook theme sync function
+// Add theme sync function
 function syncWithTheme() {
   const initWidget = setInterval(() => {
     if (window.chatWidget?.switchTheme) {
       clearInterval(initWidget);
       
       // Get the theme mode from data attribute
-      const scriptTag = document.querySelector('script[src*="widget.js"]');
+      const scriptTag = document.querySelector('script#guru-widget-id');
       const themeMode = scriptTag?.getAttribute('data-light-mode')?.toLowerCase();
       
       // If theme is explicitly set to light or dark, set it once and don't sync
