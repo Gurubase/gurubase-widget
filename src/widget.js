@@ -2982,6 +2982,10 @@ class ChatWidget {
       this.setChatPanelWidth(sessionStorage.getItem("chatWidth"));
       this.toggleChat();
     }
+    // If an in-page anchor was referenced, make sure we respect it rather than reset the scroll position.
+    if (window.location.hash) {
+      window.location.href = window.location.hash;
+    }
   }
 
   addInitialStateEventListeners() {
