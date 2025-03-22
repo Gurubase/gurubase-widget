@@ -1451,8 +1451,12 @@ class ChatWidget {
         }
 
         const lightMode = scriptTag.getAttribute('data-light-mode')?.toLowerCase();
-        // Validate and set light mode
-        this.lightMode = (lightMode === 'true' || lightMode === 'light') || false;
+
+        if (lightMode === 'auto') {
+          this.lightMode = getThemeState();
+        } else {
+          this.lightMode = (lightMode === 'true' || lightMode === 'light') || false;
+        }
 
         // Validate and set margins
         try {
@@ -3612,14 +3616,22 @@ function loadScript(url) {
 //   window.chatWidget = new ChatWidget();
 // });
 
-// Add GitBook theme sync function
+function getThemeState() {
+  const isDarkClass = document.documentElement.classList.contains('dark');
+  const dataTheme = document.documentElement.getAttribute('data-theme');
+  const isDark = isDarkClass || (dataTheme === 'dark');
+  const isLight = dataTheme === 'light';
+  return isLight ? true : !isDark;
+}
+
+// Add theme sync function
 function syncWithTheme() {
   const initWidget = setInterval(() => {
     if (window.chatWidget?.switchTheme) {
       clearInterval(initWidget);
       
       // Get the theme mode from data attribute
-      const scriptTag = document.querySelector('script[src*="widget.js"]');
+      const scriptTag = document.querySelector('script#guru-widget-id');
       const themeMode = scriptTag?.getAttribute('data-light-mode')?.toLowerCase();
       
       // If theme is explicitly set to light or dark, set it once and don't sync
@@ -3636,14 +3648,7 @@ function syncWithTheme() {
         // Handle theme changes
         const syncTheme = () => {
           // Check both class list and data-theme attribute
-          const isDarkClass = document.documentElement.classList.contains('dark');
-          const dataTheme = document.documentElement.getAttribute('data-theme');
-          const isDark = isDarkClass || (dataTheme === 'dark');
-          const isLight = dataTheme === 'light'; // explicit light mode check
-          
-          // If explicitly set to light, use light mode
-          // Otherwise, use the inverse of dark mode detection
-          window.chatWidget.switchTheme(isLight ? true : !isDark);
+          window.chatWidget.switchTheme(getThemeState());
         };
 
         // Watch for theme changes on both class and data-theme
