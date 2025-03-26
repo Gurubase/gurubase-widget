@@ -1877,7 +1877,7 @@ class ChatWidget {
                 wrapper.style.overflow = 'hidden';
                 wrapper.style.height = '100%';
             } else {
-                wrapper.style.width = `calc(100% - 400px)`;
+                this.setWrapperPanelWidth(400);
             }
 
             // Add escape key listener
@@ -3363,7 +3363,7 @@ class ChatWidget {
       const wrapper = document.getElementById("gurubase-page-content-wrapper");
       if (chatWindow && wrapper && chatWindow.classList.contains("open")) {
         const chatWidth = chatWindow.style.width || "400px";
-        wrapper.style.width = `calc(100% - ${chatWidth})`;
+        this.setChatPanelWidth(chatWidth);
       }
     }, 100);
   }
