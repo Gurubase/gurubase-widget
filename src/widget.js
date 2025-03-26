@@ -1422,6 +1422,9 @@ class ChatWidget {
         // Validate and set tooltip text
         this.tooltipText = scriptTag.getAttribute('data-tooltip');
 
+        this.overlapContentStr = scriptTag.getAttribute('data-overlap-content') || "false";
+        this.overlapContent = this.overlapContentStr.toLowerCase() === "true";
+
         // Validate and set main color
         const mainColor = scriptTag.getAttribute('data-bg-color');
         if (mainColor && /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(mainColor)) {
@@ -3084,6 +3087,9 @@ class ChatWidget {
   }
 
   setWrapperPanelWidth(newWidth) {
+    if (this.overlapContent) {
+      return;
+    }
     if (newWidth === undefined) newWidth = this.shadow.getElementById("chatWindow").clientWidth;
     if (document.body.classList.contains("widget-open")) {
       const wrapper = document.getElementById("gurubase-page-content-wrapper");

@@ -9,7 +9,8 @@ export default function GurubaseWidget({
   lightMode = "auto",
   bgColor = null,
   iconUrl = null,
-  name = null
+  name = null,
+  overlapContent = false
 }) {
   return (
     <Script
@@ -24,6 +25,7 @@ export default function GurubaseWidget({
       {...(bgColor && { "data-bg-color": bgColor })}
       {...(iconUrl && { "data-icon-url": iconUrl })}
       {...(name && { "data-name": name })}
+      {...(overlapContent && { "data-overlap-content": overlapContent })}
     />
   )
 }

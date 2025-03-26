@@ -26,6 +26,7 @@ function App() {
           bgColor="YOUR_BG_COLOR" // Optional
           iconUrl="YOUR_ICON_URL" // Optional
           name="YOUR_NAME" // Optional
+          overlapContent="false" // Optional
         />
       </div>
     </Router>

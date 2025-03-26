@@ -48,12 +48,17 @@ retype build
 The Gurubase Widget is integrated into the documentation using the following configuration in the HTML template:
 
 ```html
-<script async src="../../src/widget.js" 
-    data-widget-id="oSvtckI5zuBVLOXWJNSW2rJe3o7FlcbkTDXt5n2WmUw"
-    data-baseUrl="http://localhost:8018"
-    data-text="Ask about Pagy"
-    data-margins='{"bottom": "20px", "right": "20px"}'
-    data-light-mode="light">
+<script async src="https://widget.gurubase.io/widget.latest.min.js"
+data-widget-id="YOUR_WIDGET_ID"
+data-text="Ask AI"
+data-margins='{"bottom": "1rem", "right": "1rem"}'
+data-light-mode="light"
+data-bg-color="YOUR_BG_COLOR" 
+data-icon-url="YOUR_ICON_URL"
+data-name="YOUR_NAME"
+data-baseUrl="YOUR_BASE_URL"
+data-overlap-content="false"
+id="guru-widget-id">
 </script>
 ```
 

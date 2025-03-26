@@ -9,6 +9,7 @@ const widgetSettings = {
   // name: "GURU_NAME",                                 // Widget name
   // iconUrl: "GURU_ICON_URL",                         // Widget icon URL
   // bgColor: "#000000",                               // Widget background color
+  overlapContent: "false",                            // Sidebar overlaps main content or shrinks it
 };
 
 // Load the GuruBase widget

@@ -7,7 +7,8 @@ document.addEventListener('DOMContentLoaded', function() {
         lightMode: "dark", // Optional - Force light mode
         bgColor: "YOUR_BG_COLOR", // Optional - Widget background color
         iconUrl: "YOUR_ICON_URL", // Optional - Widget icon URL
-        name: "YOUR_NAME" // Optional - Widget name
+        name: "YOUR_NAME", // Optional - Widget name
+        overlapContent: "false" // Optional - Whether to overlap the main content or shrink its width with the sidebar
     };
 
     // Load the GuruBase widget
@@ -24,7 +25,8 @@ document.addEventListener('DOMContentLoaded', function() {
         "data-light-mode": widgetSettings.lightMode,
         "data-bg-color": widgetSettings.bgColor,
         "data-icon-url": widgetSettings.iconUrl,
-        "data-name": widgetSettings.name
+        "data-name": widgetSettings.name,
+        "data-overlap-content": widgetSettings.overlapContent
     }).forEach(([key, value]) => {
         guruScript.setAttribute(key, value);
     });

@@ -10,7 +10,8 @@ function GurubaseWidget({
   iconUrl = null,
   name = null,
   lightMode = "auto",
-  baseUrl = null
+  baseUrl = null,
+  overlapContent = false
 }) {
   useEffect(() => {
     // Check if widget is already initialized
@@ -52,6 +53,9 @@ function GurubaseWidget({
       if (baseUrl) {
         script.setAttribute('data-baseUrl', baseUrl);
       }
+      if (overlapContent) {
+        script.setAttribute('data-overlap-content', overlapContent);
+      }
 
       script.setAttribute('id', 'guru-widget-id');
 
@@ -72,7 +76,7 @@ function GurubaseWidget({
         widgetContainer.remove();
       }
     };
-  }, [widgetId, text, margins, bgColor, iconUrl, name, lightMode]);
+  }, [widgetId, text, margins, bgColor, iconUrl, name, lightMode, overlapContent]);
 
   return null;
 }

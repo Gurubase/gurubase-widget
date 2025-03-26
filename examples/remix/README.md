@@ -23,6 +23,7 @@ interface GurubaseWidgetProps {
   iconUrl?: string;
   name?: string;
   lightMode?: string;
+  overlapContent?: string;
 }
 
 export function GurubaseWidget({
@@ -32,7 +33,8 @@ export function GurubaseWidget({
   bgColor = null,
   iconUrl = null,
   name = null,
-  lightMode = "auto"
+  lightMode = "auto",
+  overlapContent = "false"
 }: GurubaseWidgetProps) {
   useEffect(() => {
     if (window.chatWidget) return;
@@ -47,6 +49,7 @@ export function GurubaseWidget({
     if (bgColor) script.setAttribute('data-bg-color', bgColor);
     if (iconUrl) script.setAttribute('data-icon-url', iconUrl);
     if (name) script.setAttribute('data-name', name);
+    if (overlapContent) script.setAttribute('data-overlap-content', overlapContent)
     script.setAttribute('data-light-mode', String(lightMode));
 
     document.body.appendChild(script);
@@ -57,7 +60,7 @@ export function GurubaseWidget({
       const widgetContainer = document.querySelector('.chat-widget');
       if (widgetContainer) widgetContainer.remove();
     };
-  }, [widgetId, text, margins, bgColor, iconUrl, name, lightMode]);
+  }, [widgetId, text, margins, bgColor, iconUrl, name, lightMode, overlapContent]);
 
   return null;
 }
@@ -85,6 +88,7 @@ export default function App() {
           // bgColor="YOUR_BG_COLOR"
           // iconUrl="YOUR_ICON_URL"
           // name="YOUR_NAME"
+          // overlapContent="false"
         />
         <Scripts />
       </body>

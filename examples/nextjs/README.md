@@ -18,7 +18,8 @@ export default function GurubaseWidget({
   lightMode,
   bgColor,
   iconUrl,
-  name
+  name,
+  overlapContent
 }) {
   return (
     <Script
@@ -33,6 +34,7 @@ export default function GurubaseWidget({
       {...(name && { "data-name": name })}
       {...(iconUrl && { "data-icon-url": iconUrl })}
       {...(bgColor && { "data-bg-color": bgColor })}
+      {...(overlapContent && { "data-overlap-content": overlapContent })}
     />
   )
 }
@@ -55,6 +57,7 @@ export default function Home() {
         // bgColor="YOUR_BG_COLOR"
         // iconUrl="YOUR_ICON_URL"
         // name="YOUR_NAME"
+        // overlapContent="false"
       />
     </>
   )
