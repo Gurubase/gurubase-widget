@@ -46,8 +46,8 @@ The only thing you need to do is to add the widget.js to your website as follows
 | data-light-mode | string | Whether to use light mode. Possible values are `"auto"`, `"light"`, `"dark"` | "dark" |
 | data-baseUrl | string | URL to your Gurubase backend. **Only for self-hosted Gurubase.** | Gurubase Cloud |
 | data-tooltip | string | Tooltip text | null |
-| data-tooltip-side | string | Tooltip side. 8 possible values: "top", "bottom", "left", "right", "top left", "top right", "bottom left", "bottom right" | "left" |
-| data-overlap-content | string | Whether to overlap the main content or shrink its width with the sidebar | "false" |
+| data-tooltip-side | string | Tooltip side. 8 possible values: `"top"`, `"bottom"`, `"left"`, `"right"`, `"top left"`, `"top right"`, `"bottom left"`, `"bottom right"` | `"left"` |
+| data-overlap-content | string | Whether to overlap the main content or shrink its width with the sidebar | `"false"` |
 
 
 > [!NOTE]
