@@ -1422,6 +1422,9 @@ class ChatWidget {
         // Validate and set tooltip text
         this.tooltipText = scriptTag.getAttribute('data-tooltip');
 
+        this.overlapContentStr = scriptTag.getAttribute('data-overlap-content') || "false";
+        this.overlapContent = this.overlapContentStr.toLowerCase() === "true";
+
         // Validate and set main color
         const mainColor = scriptTag.getAttribute('data-bg-color');
         if (mainColor && /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(mainColor)) {
@@ -1877,7 +1880,7 @@ class ChatWidget {
                 wrapper.style.overflow = 'hidden';
                 wrapper.style.height = '100%';
             } else {
-                wrapper.style.width = `calc(100% - 400px)`;
+                this.setWrapperPanelWidth(400);
             }
 
             // Add escape key listener
@@ -3084,6 +3087,9 @@ class ChatWidget {
   }
 
   setWrapperPanelWidth(newWidth) {
+    if (this.overlapContent) {
+      return;
+    }
     if (newWidth === undefined) newWidth = this.shadow.getElementById("chatWindow").clientWidth;
     if (document.body.classList.contains("widget-open")) {
       const wrapper = document.getElementById("gurubase-page-content-wrapper");
@@ -3363,7 +3369,7 @@ class ChatWidget {
       const wrapper = document.getElementById("gurubase-page-content-wrapper");
       if (chatWindow && wrapper && chatWindow.classList.contains("open")) {
         const chatWidth = chatWindow.style.width || "400px";
-        wrapper.style.width = `calc(100% - ${chatWidth})`;
+        this.setChatPanelWidth(chatWidth);
       }
     }, 100);
   }

@@ -20,6 +20,7 @@ head: [
             'data-icon-url': 'YOUR_ICON_URL', // Optional
             'data-light-mode': 'light', // Optional
             'data-bg-color': '#000000', // Optional
+            'data-overlap-content': "false" // Optional
             defer: true,
         },
     },

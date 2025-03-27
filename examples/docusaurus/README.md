@@ -24,6 +24,7 @@ module.exports = function (context) {
                 "data-name": "YOUR_NAME", // Optional
                 "data-icon-url": "YOUR_ICON_URL", // Optional
                 "data-bg-color": "#000000", // Optional
+                "data-overlap-content": "false" // Optional
                 defer: true,
                 id: "guru-widget-id", // Do not change this
               },
