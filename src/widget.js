@@ -2715,7 +2715,7 @@ class ChatWidget {
             <div class="logo" style="display: flex; align-items: center; gap: 8px; width: 100%; text-overflow: ellipsis;">
               ${this.getLogo()}
               <span style="min-width: 0; overflow: hidden; text-overflow: ellipsis;">
-                Ask ${this.name} Guru
+                ${this.name} Guru
               </span>
             </div>
             <button 
