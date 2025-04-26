@@ -750,7 +750,7 @@ class ChatWidget {
         }
   
         .trust-score-info:hover::after {
-          content: "Trust score reflects confidence in this answer. Always double-check references, as AI can make mistakes.";
+          content: "Güven skoru, bu cevabın doğruluğuna olan güven derecesini yansıtır. Yapay zekâ hatalar yapabileceği için, her zaman referansları ayrıca kontrol edin.";
           position: absolute;
           bottom: 100%;
           left: 50%;
