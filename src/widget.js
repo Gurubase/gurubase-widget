@@ -1596,8 +1596,8 @@ class ChatWidget {
     return `
       <div class='empty-state'>
         <div class='sparkles'>${this.getLargeSparkle()}</div>
-        <h2>Ask anything about ${this.name}</h2>
-        <p>${this.name} Guru uses the latest data in the documentation to answer your questions.</p>
+        <h2>${this.name} hakkında herhangi bir soru sor</h2>
+        <p>${this.name} Guru, yapay zeka desteğiyle sorularınıza cevap verir.</p>
       </div>
     `;
   }
@@ -2014,7 +2014,7 @@ class ChatWidget {
       <div class="trust-score-card">
         <div class="trust-score-header">
           <div class="trust-score-left">
-            <span class="trust-score-label">Trust Score</span>
+            <span class="trust-score-label">Güven Skoru</span>
             <span class="trust-score-value" style="color: ${text}">%${trustScore}</span>
             <button class="trust-score-info">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -2114,7 +2114,7 @@ class ChatWidget {
               <line x1="6" y1="6" x2="18" y2="18"></line>
             </svg>
           </div>
-          <span class="stage-text">Finding the best contexts from sources.</span>
+          <span class="stage-text">En iyi referansları buluyoruz.</span>
         </div>
       </div>
     `;
@@ -2144,7 +2144,7 @@ class ChatWidget {
 
       // Instead of showing a new stage, update the text of the existing stage
       const stageText = contextStage.querySelector(".stage-text");
-      stageText.textContent = "Evaluating sources to prevent hallucinations";
+      stageText.textContent = "Referansları değerlendiriyoruz.";
 
       // Reset the loading animation
       contextStage.querySelector(".loading-dots").classList.remove("hidden");
@@ -2312,7 +2312,7 @@ class ChatWidget {
                   referencesContainer.className = "references-container";
                   referencesContainer.innerHTML = `
                     <header style="font-size: 1rem; font-weight: 600;">
-                      Sources
+                      Referanslar
                     </header>
                   `;
 
@@ -2472,7 +2472,7 @@ class ChatWidget {
 
             referencesContainer.innerHTML = `
               <header style="font-size: 1rem; font-weight: 600;">
-                Sources
+                Referanslar
               </header>
             `;
 
@@ -2542,6 +2542,7 @@ class ChatWidget {
       const buttons = this.createResponseButtons(finalResponse);
       botResponseElement.appendChild(buttons);
 
+      /* Commented out follow-up examples functionality
       // Fetch and display follow-up examples
       if (data && data.slug) {
         const followUpExamples = await this.fetchFollowUpExamples(
@@ -2567,6 +2568,7 @@ class ChatWidget {
           }
         }
       }
+      */
 
       messagesContainer.scrollTop = messagesContainer.scrollHeight;
       this.isFirstQuestion = false;
@@ -2590,9 +2592,9 @@ class ChatWidget {
       // Update the text to show the error stage
       const stageText = failedStage.querySelector(".stage-text");
       if (firstStageComplete) {
-        stageText.textContent = "Error evaluating sources";
+        stageText.textContent = "Referansları değerlendirirken hata oluştu";
       } else {
-        stageText.textContent = "Error finding contexts";
+        stageText.textContent = "Referansları bulurken hata oluştu";
       }
 
       await new Promise((resolve) => setTimeout(resolve, 700));
@@ -2749,8 +2751,8 @@ class ChatWidget {
                     type="text"
                     id="questionInput"
                     class="search-bar"
-                    placeholder="Ask anything about ${this.name}..."
-                    aria-label="Ask a question"
+                    placeholder="${this.name} hakkında herhangi bir soru sor..."
+                    aria-label="Soru sor"
                   />
                   ${this.getSubmitButton()}
                 </div>
@@ -2768,14 +2770,6 @@ class ChatWidget {
             <div class="footer-info">
               <a href="https://gurubase.io" target="_blank" class="powered-by">
                 <div class="anteon-powered">powered by ${this.getGurubaseLogo()}</div>
-              </a>
-              <a href="https://gurubase.io/g/${this.guruSlug}" target="_blank" class="visit-link">
-                Ask on <span class="guru-text">Guru</span>base for a better UX
-                <span>
-                  <svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path fill-rule="evenodd" clip-rule="evenodd" d="M3 1.5C2.72386 1.5 2.5 1.27614 2.5 1C2.5 0.723858 2.72386 0.5 3 0.5H9C9.27614 0.5 9.5 0.723858 9.5 1V7C9.5 7.27614 9.27614 7.5 9 7.5C8.72386 7.5 8.5 7.27614 8.5 7V2.20711L1.35355 9.35355C1.15829 9.54882 0.841709 9.54882 0.646447 9.35355C0.451184 9.15829 0.451184 8.84171 0.646447 8.64645L7.79289 1.5H3Z" fill="#6D6D6D"/>
-                  </svg>
-                </span>
               </a>
             </div>
           </div>
@@ -3371,7 +3365,7 @@ class ChatWidget {
         const chatWidth = chatWindow.style.width || "400px";
         this.setChatPanelWidth(chatWidth);
       }
-    }, 100);
+    }, 10);
   }
 
   setupUrlChangeDetection() {
