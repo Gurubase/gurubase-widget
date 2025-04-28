@@ -3222,7 +3222,7 @@ class ChatWidget {
       });
 
       if (!response.ok) {
-        throw new Error("Failed to fetch follow-up examples");
+        throw new Error("Failed to fetch follow-up examples. Binge ID: " + bingeId + " Slug: " + slug + " Question Text: " + questionText);
       }
 
       const data = await response.json();
