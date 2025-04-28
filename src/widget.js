@@ -2542,6 +2542,7 @@ class ChatWidget {
       const buttons = this.createResponseButtons(finalResponse);
       botResponseElement.appendChild(buttons);
 
+      /* Commented out follow-up examples functionality
       // Fetch and display follow-up examples
       if (data && data.slug) {
         const followUpExamples = await this.fetchFollowUpExamples(
@@ -2567,6 +2568,7 @@ class ChatWidget {
           }
         }
       }
+      */
 
       messagesContainer.scrollTop = messagesContainer.scrollHeight;
       this.isFirstQuestion = false;
