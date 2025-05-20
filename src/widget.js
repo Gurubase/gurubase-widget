@@ -135,7 +135,7 @@ class ChatWidget {
         width: max-content;
         pointer-events: none;
         white-space: pre-wrap;
-        z-index: 1000;
+        z-index: 2147483646; /* Just below the main widget z-index */
       }
 
       .chat-button[data-tooltip]::after {
@@ -147,7 +147,7 @@ class ChatWidget {
         opacity: 0;
         visibility: hidden;
         pointer-events: none;
-        z-index: 1000;
+        z-index: 2147483646; /* Just below the main widget z-index */
       }
 
       /* Top position */
@@ -306,14 +306,14 @@ class ChatWidget {
         .chat-input-container {
           background: var(--header-bg);
           padding-bottom: env(safe-area-inset-bottom);
-          z-index: 10000;
+          z-index: 2147483647; /* Maximum z-index value */
         }
       }
 
     .chat-widget {
       /* Add these properties */
       position: fixed;
-      z-index: 9999;
+      z-index: 2147483647; /* Maximum z-index value */
       pointer-events: none; /* Allow clicks to pass through the container */
     }
 
@@ -347,7 +347,7 @@ class ChatWidget {
       right: -400px;
       width: 400px;
       height: 100vh;
-      z-index: 9999; /* Match container z-index */
+      z-index: 2147483647; /* Maximum z-index value */
     }      
 
       #questionInput {
@@ -605,7 +605,7 @@ class ChatWidget {
           align-items: center;
           justify-content: center;
           transition: all 0.2s;
-          z-index: 1000;        
+          z-index: 2147483646;        
           background-color: var(--bg-primary);
           color: var(--text-primary);
           border: 1px solid var(--border-color);
@@ -847,7 +847,7 @@ class ChatWidget {
           border-radius: 6px;
           width: 240px;
           text-align: center;
-          z-index: 100;
+          z-index: 2147483645;
         }
   
         /* Adjust pointer to overlap with tooltip */
@@ -860,7 +860,7 @@ class ChatWidget {
           width: 8px;
           height: 8px;
           background: #1b242d;
-          z-index: 99;
+          z-index: 2147483644;
         }
   
         /* Add styles for date updated section */
@@ -1530,7 +1530,7 @@ class ChatWidget {
         border-radius: 6px;
         width: 240px;
         text-align: left;
-        z-index: 100;
+        z-index: 2147483645;
         opacity: 0;
         visibility: hidden;
         transition: opacity 0.2s ease, visibility 0.2s ease;
@@ -1549,7 +1549,7 @@ class ChatWidget {
         width: 8px;
         height: 8px;
         background: var(--tooltip-bg);
-        z-index: 99;
+        z-index: 2147483644;
         opacity: 0;
         visibility: hidden;
         transition: opacity 0.2s ease, visibility 0.2s ease;
@@ -3823,7 +3823,7 @@ class ChatWidget {
       wrapper = document.createElement("div");
       wrapper.id = "gurubase-page-content-wrapper";
       wrapper.style.position = "relative";
-      wrapper.style.zIndex = "1";
+      wrapper.style.zIndex = "1"; // Keep this low to ensure widget stays on top
       wrapper.style.width = "100%";
 
       // Move all body children into wrapper except chat widget and scripts
