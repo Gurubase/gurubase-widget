@@ -2898,13 +2898,12 @@ class ChatWidget {
             }
             // Append example questions to messages container
             messagesContainer.appendChild(exampleQuestionsContainer);
-            // Scroll to show the new examples
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            // Don't auto-scroll when adding follow-up questions
           }
         }
       }
 
-      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+      // We no longer automatically scroll to bottom after adding follow-up questions
       this.isFirstQuestion = false;
 
       // Store the slug from the response for the next question
