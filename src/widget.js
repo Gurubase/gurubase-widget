@@ -1346,6 +1346,136 @@ class ChatWidget {
       @keyframes l38 {
         100% {background-position: 100% 0,100% 100%,0 100%,0 0}
       }
+
+      /* Disclaimer styles */
+      .disclaimer-container {
+        margin-top: 20px;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+      }
+      
+      .disclaimer-box {
+        background-color: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 16px;
+        margin-bottom: 16px;
+        width: 90%;
+        max-width: 500px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+      
+      .disclaimer-box p {
+        color: var(--text-primary);
+        font-size: 14px;
+        margin: 0 0 16px 0;
+        line-height: 1.5;
+        text-align: center;
+      }
+      
+      .disclaimer-button {
+        background-color: ${this.mainColor};
+        color: white;
+        border: none;
+        border-radius: 4px;
+        padding: 8px 16px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: block;
+        margin: 0 auto;
+        width: 100%;
+        max-width: 200px;
+      }
+      
+      .disclaimer-button:hover {
+        background-color: ${this.darkenColor(this.mainColor, 0.1)};
+      }
+      
+      .disclaimer-button:active {
+        background-color: ${this.darkenColor(this.mainColor, 0.2)};
+        transform: scale(0.98);
+      }
+      
+      /* Style for disabled input when disclaimer not accepted */
+      .search-bar.disclaimer-pending {
+        opacity: 0.7;
+        cursor: not-allowed;
+      }
+      
+      .submit-button.disclaimer-pending {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      
+      /* Footer links */
+      .footer-links {
+        margin-bottom: 5px;
+        text-align: center;
+      }
+      
+      .footer-link-button {
+        background: none;
+        border: none;
+        color: var(--text-accent-color);
+        font-size: 12px;
+        padding: 2px 5px;
+        cursor: pointer;
+        text-decoration: underline;
+        position: relative;
+      }
+      
+      .footer-link-button:hover {
+        color: var(--link-color);
+      }
+      
+      /* Tooltip for disclaimer */
+      .footer-link-button::after {
+        content: "Bu asistan yapay zekâ desteklidir. Verilen yanıtlar yalnızca bilgilendirme amaçlıdır ve tıbbi tavsiye yerine geçmez.";
+        position: absolute;
+        top: 50%;
+        left: 100%;
+        transform: translateY(-50%);
+        margin-left: 8px;
+        padding: 8px 12px;
+        background: var(--tooltip-bg);
+        color: var(--tooltip-text);
+        font-size: 12px;
+        border-radius: 6px;
+        width: 240px;
+        text-align: left;
+        z-index: 100;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.2s ease, visibility 0.2s ease;
+        pointer-events: none;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        line-height: 1.4;
+      }
+      
+      /* Pointer for tooltip */
+      .footer-link-button::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 100%;
+        transform: translateY(-50%) translateX(-4px) rotate(45deg);
+        width: 8px;
+        height: 8px;
+        background: var(--tooltip-bg);
+        z-index: 99;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.2s ease, visibility 0.2s ease;
+      }
+      
+      .footer-link-button:hover::after,
+      .footer-link-button:hover::before {
+        opacity: 1;
+        visibility: visible;
+      }
     `;
 
     // document.head.appendChild(styleElement);
@@ -1558,6 +1688,9 @@ class ChatWidget {
     this.shouldAutoScroll = true;
     this.handleViewportHeight = this.handleViewportHeight.bind(this);
     this.handleVisualViewportChange = this.handleVisualViewportChange.bind(this);
+    
+    // Always start with disclaimer not accepted for each new chat
+    this.disclaimerAccepted = false;
   }
 
   getLogo(maxWidth = 24, maxHeight = 24) {
@@ -1598,8 +1731,46 @@ class ChatWidget {
         <div class='sparkles'>${this.getLargeSparkle()}</div>
         <h2>${this.name} hakkında herhangi bir soru sor</h2>
         <p>${this.name} Guru, yapay zeka desteğiyle sorularınıza cevap verir.</p>
+        ${this.getDisclaimerComponent()}
       </div>
     `;
+  }
+
+  getDisclaimerComponent() {
+    return `
+      <div class="disclaimer-container">
+        <div class="disclaimer-box">
+          <p>Bu asistan yapay zekâ desteklidir. Verilen yanıtlar yalnızca bilgilendirme amaçlıdır ve tıbbi tavsiye yerine geçmez. Devam ederek bunu kabul etmiş olursunuz.</p>
+          <button id="acceptDisclaimer" class="disclaimer-button">Kabul Ediyorum</button>
+        </div>
+      </div>
+    `;
+  }
+  
+  acceptDisclaimer() {
+    this.disclaimerAccepted = true;
+    
+    // Remove or hide the disclaimer
+    const disclaimerContainer = this.shadow.querySelector(".disclaimer-container");
+    if (disclaimerContainer) {
+      disclaimerContainer.style.display = "none";
+    }
+    
+    // Enable input
+    const questionInput = this.shadow.getElementById("questionInput");
+    if (questionInput) {
+      questionInput.classList.remove("disclaimer-pending");
+      questionInput.disabled = false;
+      questionInput.focus();
+      questionInput.setAttribute("placeholder", `${this.name} hakkında herhangi bir soru sor...`);
+    }
+    
+    // Enable submit button
+    const submitButton = this.shadow.querySelector(".submit-button");
+    if (submitButton) {
+      submitButton.classList.remove("disclaimer-pending");
+      submitButton.disabled = false;
+    }
   }
 
   getSubmitButton() {
@@ -1853,6 +2024,27 @@ class ChatWidget {
             chatWindow.classList.add("open");
             document.body.classList.add("widget-open");
             chatButton.style.display = 'none';
+            
+            // Reset disclaimer status - show disclaimer for every new chat
+            this.disclaimerAccepted = false;
+            
+            // Update UI to reflect the disclaimer not being accepted
+            const disclaimerContainer = this.shadow.querySelector(".disclaimer-container");
+            if (disclaimerContainer) {
+              disclaimerContainer.style.display = "block";
+            }
+            
+            const questionInput = this.shadow.getElementById("questionInput");
+            if (questionInput) {
+              questionInput.classList.add("disclaimer-pending");
+              questionInput.setAttribute("placeholder", "Devam etmek için sorumluluk reddi beyanını kabul edin...");
+            }
+            
+            const submitButton = this.shadow.querySelector(".submit-button");
+            if (submitButton) {
+              submitButton.classList.add("disclaimer-pending");
+              submitButton.disabled = true;
+            }
 
             // Scroll to the end of the current messages
             const messagesContainer = this.shadow.querySelector(".chat-messages");
@@ -1968,6 +2160,14 @@ class ChatWidget {
       errorElement.className = "search-error";
       const searchWrapper = questionInput.parentElement;
       searchWrapper.appendChild(errorElement);
+    }
+
+    // Check if disclaimer has been accepted
+    if (!this.disclaimerAccepted) {
+      errorElement.style.display = "block";
+      inputContainer.style.paddingBottom = "24px";
+      errorElement.textContent = "* Lütfen önce sorumluluk reddi beyanını kabul edin.";
+      return;
     }
 
     if (question.length < 10) {
@@ -2765,11 +2965,14 @@ class ChatWidget {
                 </button>
               </div>
             </div>
-            <div class="footer-info">
-              <a href="https://gurubase.io" target="_blank" class="powered-by">
-                <div class="anteon-powered">powered by ${this.getGurubaseLogo()}</div>
-              </a>
+                      <div class="footer-info">
+            <div class="footer-links">
+              <button id="viewDisclaimerButton" class="footer-link-button">Yasal Uyarı</button>
             </div>
+            <a href="https://gurubase.io" target="_blank" class="powered-by">
+              <div class="anteon-powered">powered by ${this.getGurubaseLogo()}</div>
+            </a>
+          </div>
           </div>
         </div>
       </div>
@@ -2847,6 +3050,37 @@ class ChatWidget {
         event.stopPropagation();
       }
     }, { passive: false });
+
+    // Handle disclaimer UI state
+    setTimeout(() => {
+      const questionInput = this.shadow.getElementById("questionInput");
+      const submitButton = this.shadow.querySelector(".submit-button");
+      const disclaimerContainer = this.shadow.querySelector(".disclaimer-container");
+      
+      // Add event listener for the disclaimer accept button
+      const acceptDisclaimerBtn = this.shadow.querySelector("#acceptDisclaimer");
+      if (acceptDisclaimerBtn) {
+        acceptDisclaimerBtn.addEventListener("click", () => this.acceptDisclaimer());
+      }
+      
+      if (this.disclaimerAccepted) {
+        // If disclaimer was already accepted, hide it
+        if (disclaimerContainer) {
+          disclaimerContainer.style.display = "none";
+        }
+      } else {
+        // If disclaimer hasn't been accepted, disable inputs
+        if (questionInput) {
+          questionInput.classList.add("disclaimer-pending");
+          questionInput.setAttribute("placeholder", "Devam etmek için sorumluluk reddi beyanını kabul edin...");
+        }
+        
+        if (submitButton) {
+          submitButton.classList.add("disclaimer-pending");
+          submitButton.disabled = true;
+        }
+      }
+    }, 100);
   }
 
   async init() {
@@ -2858,6 +3092,7 @@ class ChatWidget {
     this.handleUrlChange = this.handleUrlChange.bind(this);
     this.handleEscape = this.handleEscape.bind(this);
     this.handleUnload = this.handleUnload.bind(this);
+    this.acceptDisclaimer = this.acceptDisclaimer.bind(this);
 
     await this.fetchDefaultValues();
 
@@ -3016,6 +3251,16 @@ class ChatWidget {
       }
       this.addExampleQuestionEventListener(button, question);
     });
+
+    // Add event listener for disclaimer button
+    const disclaimerButton = this.shadow.querySelector("#acceptDisclaimer");
+    if (disclaimerButton) {
+      disclaimerButton.addEventListener("click", this.acceptDisclaimer);
+    }
+
+    // The disclaimer button now uses CSS tooltip instead of modal
+    const viewDisclaimerButton = this.shadow.querySelector("#viewDisclaimerButton");
+    // No event listener needed as the tooltip is shown via CSS
   }
 
   async loadHljsTheme(themeName) {
@@ -3119,6 +3364,37 @@ class ChatWidget {
     this.isFirstQuestion = true;
     this.currentBingeId = null;
     this.previousQuestionSlug = null;
+    
+    // Reset disclaimer status - require acceptance again
+    this.disclaimerAccepted = false;
+    
+    // Update UI to reflect the disclaimer not being accepted
+    const disclaimerContainer = this.shadow.querySelector(".disclaimer-container");
+    if (disclaimerContainer) {
+      disclaimerContainer.style.display = "block";
+    }
+    
+    if (questionInput) {
+      questionInput.classList.add("disclaimer-pending");
+      questionInput.setAttribute("placeholder", "Devam etmek için sorumluluk reddi beyanını kabul edin...");
+    }
+    
+    const submitButton = this.shadow.querySelector(".submit-button");
+    if (submitButton) {
+      submitButton.classList.add("disclaimer-pending");
+      submitButton.disabled = true;
+    }
+    
+    // Re-add event listener for the accept disclaimer button
+    const acceptDisclaimerBtn = this.shadow.querySelector("#acceptDisclaimer");
+    if (acceptDisclaimerBtn) {
+      // Remove existing listeners first
+      const newAcceptBtn = acceptDisclaimerBtn.cloneNode(true);
+      acceptDisclaimerBtn.parentNode.replaceChild(newAcceptBtn, acceptDisclaimerBtn);
+      
+      // Add fresh event listener
+      newAcceptBtn.addEventListener("click", () => this.acceptDisclaimer());
+    }
 
     // Hide the edit button
     const editButton = this.shadow.querySelector(".edit-button");
