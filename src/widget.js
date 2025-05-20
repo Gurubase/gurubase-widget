@@ -4,6 +4,90 @@ class ChatWidget {
   injectStyles = (hljsTheme) => {
     const styleElement = document.createElement("style");
     styleElement.textContent = `
+      /* Appointment Form Styles */
+      .appointment-form-container {
+        margin-top: 16px;
+        padding: 16px;
+        border-radius: 8px;
+        background-color: var(--bg-primary, #fff);
+        border: 1px solid var(--border-color, #e0e0e0);
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+        overflow: hidden;
+      }
+      
+      .appointment-form-container h3 {
+        margin-top: 0;
+        font-size: 16px;
+        margin-bottom: 16px;
+        color: var(--text-primary, #333);
+        font-weight: 600;
+      }
+      
+      .appointment-form-container form {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+      
+      .appointment-form-container form > div {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        width: 100%;
+        box-sizing: border-box;
+        margin-bottom: 16px;
+      }
+      
+      .phone-input-container .helper-text {
+        font-size: 12px;
+        color: var(--text-accent-color, #666);
+        margin: 4px 0 0 0;
+      }
+      
+      .appointment-form-container label {
+        color: var(--text-primary, #333);
+        font-size: 14px;
+        font-weight: 500;
+        display: block;
+      }
+      
+      .appointment-form-container input {
+        width: 100%;
+        padding: 10px;
+        border-radius: 4px;
+        border: 1px solid var(--border-color, #e0e0e0);
+        font-size: 14px;
+        background-color: var(--search-bar-bg, #fff);
+        color: var(--text-primary, #333);
+        transition: border-color 0.2s ease;
+        box-sizing: border-box;
+        max-width: 100%;
+      }
+      
+      .appointment-form-container input:focus {
+        outline: none;
+        border-color: #FF0000;
+      }
+      
+      .appointment-form-container button {
+        background-color: #FF0000;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        padding: 10px 20px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 600;
+        align-self: flex-start;
+        transition: background-color 0.2s ease;
+      }
+      
+      .appointment-form-container button:hover {
+        background-color: #e60000;
+      }
+      
       /* Base theme colors */
       :host {
         --bg-primary: ${this.lightMode ? 'white' : '#141526'};
@@ -2551,14 +2635,14 @@ class ChatWidget {
                 }
 
                 // Add trust score if it exists
-                if (data.trust_score !== undefined) {
-                  const trustScoreHtml = this.createTrustScore(
-                    data.trust_score
-                  );
-                  const trustScoreDiv = document.createElement("div");
-                  trustScoreDiv.innerHTML = trustScoreHtml;
-                  botResponseElement.appendChild(trustScoreDiv);
-                }
+                // if (data.trust_score !== undefined) {
+                //   const trustScoreHtml = this.createTrustScore(
+                //     data.trust_score
+                //   );
+                //   const trustScoreDiv = document.createElement("div");
+                //   trustScoreDiv.innerHTML = trustScoreHtml;
+                //   botResponseElement.appendChild(trustScoreDiv);
+                // }
 
                 finalResponse = data.content;
 
@@ -2616,6 +2700,29 @@ class ChatWidget {
               link.setAttribute('rel', 'noopener noreferrer');
             });
             this.processCodeBlocks(botResponseElement);
+            
+            // Check for appointment intent and add form only when streaming is complete
+            if (done) {
+              const hasAppointmentIntent = this.checkForAppointmentIntent(bufferedContent) || 
+                                          this.checkForAppointmentIntent(botResponseElement.innerHTML);
+              
+              // Add a hidden marker in the HTML to ensure we can detect it later
+              if (hasAppointmentIntent && !botResponseElement.querySelector('.appointment-intent-marker')) {
+                const marker = document.createElement('div');
+                marker.className = 'appointment-intent-marker';
+                marker.style.display = 'none';
+                marker.dataset.intent = 'Randevu';
+                botResponseElement.appendChild(marker);
+              }
+              
+              // Check both original content and DOM for markers
+              if (hasAppointmentIntent || botResponseElement.querySelector('.appointment-intent-marker')) {
+                if (!botResponseElement.querySelector('.appointment-form-container')) {
+                  const appointmentForm = this.createAppointmentForm();
+                  botResponseElement.appendChild(appointmentForm);
+                }
+              }
+            }
 
             // Update wasAtBottom based on current position
             wasAtBottom = this.isUserAtBottom(messagesContainer);
@@ -2664,6 +2771,29 @@ class ChatWidget {
           });
           this.processCodeBlocks(markdownContent);
           messageContent.appendChild(markdownContent);
+          
+          // Check for appointment intent in both raw content and parsed HTML
+          const hasAppointmentIntent = this.checkForAppointmentIntent(displayContent);
+          
+          // Add a hidden marker in the HTML to ensure we can detect it
+          if (hasAppointmentIntent && !markdownContent.querySelector('.appointment-intent-marker')) {
+            const marker = document.createElement('div');
+            marker.className = 'appointment-intent-marker';
+            marker.style.display = 'none';
+            marker.dataset.intent = 'Randevu';
+            markdownContent.appendChild(marker);
+          }
+
+          // Variables to store appointment form if needed
+          let appointmentForm = null;
+          if (hasAppointmentIntent || markdownContent.querySelector('.appointment-intent-marker')) {
+            appointmentForm = this.createAppointmentForm();
+          }
+
+          // Add appointment form before references if it exists
+          if (appointmentForm) {
+            messageContent.appendChild(appointmentForm);
+          }
 
           // Add references if they exist
           if (data.references && data.references.length > 0) {
@@ -2711,9 +2841,9 @@ class ChatWidget {
           }
 
           // Add trust score last if it exists
-          if (data.trust_score !== undefined) {
-            messageContent.innerHTML += this.createTrustScore(data.trust_score);
-          }
+          // if (data.trust_score !== undefined) {
+          //   messageContent.innerHTML += this.createTrustScore(data.trust_score);
+          // }
 
           finalResponse = data.content;
 
@@ -2738,9 +2868,15 @@ class ChatWidget {
         }
       }
 
+      // Final check for appointment intent before adding buttons
+      if (this.checkForAppointmentIntent(finalResponse) && !botResponseElement.querySelector('.appointment-form-container')) {
+        const appointmentForm = this.createAppointmentForm();
+        botResponseElement.appendChild(appointmentForm);
+      }
+      
       // Add buttons to the bot response
-      const buttons = this.createResponseButtons(finalResponse);
-      botResponseElement.appendChild(buttons);
+      // const buttons = this.createResponseButtons(finalResponse);
+      // botResponseElement.appendChild(buttons);
 
       // Fetch and display follow-up examples
       if (data && data.slug) {
@@ -3847,6 +3983,123 @@ class ChatWidget {
     this.addResponseButtonEventListeners(button, onClick);
 
     return button;
+  }
+
+  checkForAppointmentIntent(responseContent) {
+    // Check both for the raw comment marker and a backup text marker
+    const hasIntent = responseContent && (
+      responseContent.includes("<!-- Intent:Randevu -->") || 
+      responseContent.includes("Intent:Randevu")
+    );
+    
+    // Debug logging - can be removed once confirmed working
+    if (hasIntent) {
+      console.log("Appointment intent detected in content");
+    }
+    
+    return hasIntent;
+  }
+
+  createAppointmentForm() {
+    const formContainer = document.createElement("div");
+    formContainer.className = "appointment-form-container";
+
+    formContainer.innerHTML = `
+      <h3>Randevu Talebi</h3>
+      <form id="appointment-form">
+        <div>
+          <label for="name">İsim</label>
+          <input type="text" id="name" name="name" required>
+        </div>
+        <div class="phone-input-container">
+          <label for="phone">Telefon Numarası</label>
+          <input type="tel" id="phone" name="phone" required placeholder="Örn: 537 124 12 25" maxlength="13">
+          <p class="error-message" style="display: none; color: #ff0000; font-size: 12px; margin-top: 4px;">Lütfen geçerli bir telefon numarası girin.</p>
+        </div>
+        <button type="submit">Gönder</button>
+        <p style="font-size: 12px; color: var(--text-accent-color, #666); margin-top: 12px;">
+          *Bilgileriniz yalnızca randevu amacıyla kullanılacak ve ${this.name} tarafından gizli tutulacaktır.
+        </p>
+      </form>
+    `;
+
+    // Add event listener to the form
+    const form = formContainer.querySelector("#appointment-form");
+    form.addEventListener("submit", (e) => this.handleAppointmentFormSubmit(e, formContainer));
+    
+    // Add phone input validation and formatting
+    const phoneInput = formContainer.querySelector("#phone");
+    const errorMessage = formContainer.querySelector(".error-message");
+    
+    phoneInput.addEventListener("input", (e) => {
+      // Only allow numbers and spaces
+      e.target.value = e.target.value
+        .replace(/[^\d\s]/g, '') // Only keep digits and spaces
+        .replace(/\s{2,}/g, ' '); // Remove multiple spaces
+      
+      // Auto-format phone number as user types
+      let value = e.target.value.replace(/\s/g, ''); // Remove all spaces
+      if (value.length > 0) {
+        // Format with spaces
+        let formattedValue = '';
+        for (let i = 0; i < value.length; i++) {
+          if (i === 3 || i === 6 || i === 8) {
+            formattedValue += ' ';
+          }
+          formattedValue += value[i];
+        }
+        e.target.value = formattedValue.trim();
+      }
+      
+      // Validate phone number format
+      const isValid = this.validatePhoneNumber(e.target.value);
+      if (e.target.value && !isValid) {
+        errorMessage.style.display = 'block';
+      } else {
+        errorMessage.style.display = 'none';
+      }
+    });
+
+    return formContainer;
+  }
+
+  validatePhoneNumber(phoneNumber) {
+    // Remove all spaces to count digits
+    const digitsOnly = phoneNumber.replace(/\s/g, '');
+    
+    // Turkish mobile numbers should have 10 digits (without country code)
+    // The first digit should be 5 for mobile numbers
+    return digitsOnly.length === 10 && digitsOnly[0] === '5';
+  }
+  
+  handleAppointmentFormSubmit(e, formContainer) {
+    e.preventDefault();
+    
+    // Get form values
+    const name = e.target.elements.name.value;
+    const phone = e.target.elements.phone.value;
+    
+    // Validate phone before submission
+    if (!this.validatePhoneNumber(phone)) {
+      const errorMessage = formContainer.querySelector(".error-message");
+      errorMessage.style.display = 'block';
+      return; // Prevent form submission
+    }
+    
+    // Show success message
+    formContainer.innerHTML = `
+      <div style="text-align: center; padding: 16px;">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin: 0 auto 16px; display: block;">
+          <circle cx="12" cy="12" r="10" stroke="#4CAF50" stroke-width="2" fill="none"/>
+          <path d="M8 12L11 15L16 9" stroke="#4CAF50" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <h3 style="margin: 0 0 8px; color: #4CAF50; font-size: 18px;">Randevu Talebiniz Alındı</h3>
+        <p style="margin: 0; font-size: 14px; color: var(--text-primary);">Kısa süre içinde sizinle iletişime geçilecektir.</p>
+      </div>
+    `;
+    
+    // Log form data (for demonstration purposes)
+    console.log("Appointment request:", { name, phone });
   }
 
 }
