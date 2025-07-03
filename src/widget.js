@@ -1946,11 +1946,13 @@ class ChatWidget {
             const bingeData = await bingeResponse.json();
             this.currentBingeId = bingeData.id;
           } else {
-            throw new Error("Error creating binge");
+            const bingeData = await bingeResponse.json();
+            let errorMessage = bingeData.msg || "Error creating binge";
+            throw new Error(errorMessage);
           }
         } catch (bingeError) {
           console.error("Error creating binge:", bingeError);
-          throw new Error("Error creating binge");
+          throw new Error(bingeError.message);
         }
       }
 
