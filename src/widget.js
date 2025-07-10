@@ -4012,7 +4012,7 @@ class ChatWidget {
     // Create buttons container
     const buttonsContainer = document.createElement("div");
     buttonsContainer.style.display = "flex";
-    buttonsContainer.style.gap = "4px";
+    buttonsContainer.style.gap = "8px";
     buttonsContainer.style.alignItems = "center";
     buttonsContainer.style.height = "16px"; // Match copy button height
 
