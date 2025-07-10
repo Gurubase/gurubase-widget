@@ -193,7 +193,7 @@ class ChatWidget {
           position: fixed;
         }
         
-        .chat-window {
+        .chat-window:not(.floating) {
           position: fixed !important;
           min-width: 360px !important;
           width: 100vw !important;
@@ -209,6 +209,21 @@ class ChatWidget {
           bottom: 0;
           left: auto; // Remove left positioning
           box-sizing: border-box;
+        }
+        
+        .chat-window.floating {
+          width: 90vw !important;
+          height: 90vh !important;
+          max-width: none !important;
+          max-height: none !important;
+          top: 50% !important;
+          left: 50% !important;
+          transform: translate(-50%, -50%) scale(0);
+          border-radius: 12px !important;
+        }
+        
+        .chat-window.floating.open {
+          transform: translate(-50%, -50%) scale(1);
         }
         
         .chat-messages {
@@ -264,6 +279,50 @@ class ChatWidget {
       width: 400px;
       height: 100vh;
       z-index: 9999; /* Match container z-index */
+    }
+    
+    /* Floating window mode styles */
+    .chat-window.floating {
+      top: 50%;
+      left: 50%;
+      right: auto;
+      transform: translate(-50%, -50%) scale(0);
+      width: 600px;
+      height: 80vh;
+      max-height: 800px;
+      max-width: 90vw;
+      border-radius: 16px;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      transition: transform 0.3s ease, opacity 0.3s ease;
+      opacity: 0;
+    }
+    
+    .chat-window.floating.open {
+      transform: translate(-50%, -50%) scale(1);
+      opacity: 1;
+    }
+    
+    /* Overlay for floating mode */
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      z-index: 9998;
+      display: none;
+      opacity: 0;
+      transition: opacity 0.3s ease, backdrop-filter 0.3s ease;
+      pointer-events: auto;
+      cursor: pointer;
+    }
+    
+    .overlay.visible {
+      display: block;
+      opacity: 1;
     }      
 
       #questionInput {
@@ -360,7 +419,7 @@ class ChatWidget {
           text-color: #191919;
         }
   
-        .chat-window {
+        .chat-window:not(.floating) {
           position: fixed;
           top: 0;
           right: -400px;
@@ -378,9 +437,16 @@ class ChatWidget {
           background-color: var(--bg-primary);
         }
   
-        .chat-window.open {
+        .chat-window:not(.floating).open {
           right: 0;
           display: flex;
+        }
+        
+        .chat-window.floating {
+          display: flex;
+          flex-direction: column;
+          overflow: hidden;
+          background-color: var(--bg-primary);
         }
 
         .chat-window.open.maximized {
@@ -1422,7 +1488,7 @@ class ChatWidget {
         // Validate and set tooltip text
         this.tooltipText = scriptTag.getAttribute('data-tooltip');
 
-        this.overlapContentStr = scriptTag.getAttribute('data-overlap-content') || "false";
+        this.overlapContentStr = scriptTag.getAttribute('data-overlap-content') || "true";
         this.overlapContent = this.overlapContentStr.toLowerCase() === "true";
 
         // Validate and set main color
@@ -1486,6 +1552,14 @@ class ChatWidget {
 
         // Set max tooltip width
         this.maxTooltipWidth = 300; // Maximum width in pixels
+        
+        // Validate and set window mode
+        const windowMode = scriptTag.getAttribute('data-window-mode');
+        if (windowMode && ['sidebar', 'floating'].includes(windowMode.toLowerCase())) {
+            this.windowMode = windowMode.toLowerCase();
+        } else {
+            this.windowMode = 'sidebar'; // Default mode
+        }
     } else {
         // Fallback values if script tag not found
         this.widgetId = "";
@@ -1495,6 +1569,7 @@ class ChatWidget {
         this.mainColor = null;
         this.logoUrl = null;
         this.name = null;
+        this.windowMode = 'sidebar';
     }
 
     this.askUrl = this.baseUrl + "/widget/ask/";
@@ -1527,6 +1602,9 @@ class ChatWidget {
     this.isDragging = false;
     this.startWidth = 0;
     this.startX = 0;
+    
+    // Store overlay click handler reference
+    this.overlayClickHandler = null;
 
     // Add Speed Highlight CSS
     const speedHighlightCSS = document.createElement("link");
@@ -1788,6 +1866,7 @@ class ChatWidget {
     const chatWindow = this.shadow.getElementById("chatWindow");
     const wrapper = document.getElementById("gurubase-page-content-wrapper");
     const chatButton = this.shadow.querySelector(".chat-button");
+    const overlay = this.shadow.querySelector(".overlay");
     const isMobile = this.isMobile();
 
     if (chatWindow) {
@@ -1795,7 +1874,23 @@ class ChatWidget {
 
         if (!isOpening) {
             // Closing
-            if (chatWindow.classList.contains("maximized")) {
+            if (this.windowMode === 'floating') {
+              // Handle floating window close
+              chatWindow.classList.remove("open");
+              if (overlay) {
+                overlay.classList.remove("visible");
+                // Remove click handler
+                if (this.overlayClickHandler) {
+                  overlay.removeEventListener('click', this.overlayClickHandler);
+                  this.overlayClickHandler = null;
+                }
+                setTimeout(() => {
+                  overlay.style.display = "none";
+                }, 300);
+              }
+              document.body.classList.remove("widget-open");
+              chatButton.style.display = 'flex';
+            } else if (chatWindow.classList.contains("maximized")) {
               // The maximised chat has CSS transitions on the 'width' property
               chatWindow.style.minWidth = "0px";
               chatWindow.style.width = "0px";
@@ -1844,15 +1939,44 @@ class ChatWidget {
             document.removeEventListener("keydown", this.handleEscape);
         } else {
             // Opening
-            chatWindow.style.display = "flex";
+            if (this.windowMode === 'floating') {
+              // Handle floating window open
+              if (overlay) {
+                overlay.style.display = "block";
+                // Force reflow
+                overlay.offsetHeight;
+                overlay.classList.add("visible");
+                
+                // Create and store click handler
+                if (!this.overlayClickHandler) {
+                  this.overlayClickHandler = (e) => {
+                    // Check if clicked on overlay itself (not on chat window)
+                    if (e.target === overlay) {
+                      this.toggleChat();
+                    }
+                  };
+                }
+                
+                // Add click listener
+                overlay.addEventListener('click', this.overlayClickHandler);
+              }
+              chatWindow.style.display = "flex";
+              // Force reflow
+              chatWindow.offsetHeight;
+              chatWindow.classList.add("open");
+              document.body.classList.add("widget-open");
+              chatButton.style.display = 'none';
+            } else {
+              chatWindow.style.display = "flex";
 
-            // Force a reflow to ensure the display: flex is applied
-            chatWindow.offsetHeight;
+              // Force a reflow to ensure the display: flex is applied
+              chatWindow.offsetHeight;
 
-            // Add open class to trigger transition
-            chatWindow.classList.add("open");
-            document.body.classList.add("widget-open");
-            chatButton.style.display = 'none';
+              // Add open class to trigger transition
+              chatWindow.classList.add("open");
+              document.body.classList.add("widget-open");
+              chatButton.style.display = 'none';
+            }
 
             // Scroll to the end of the current messages
             const messagesContainer = this.shadow.querySelector(".chat-messages");
@@ -2707,8 +2831,10 @@ class ChatWidget {
           ${this.buttonText}
         </button>
 
-        <div id="chatWindow" class="chat-window">
-          <div id="chatResizeHandle" class="resize-handle"></div>
+        ${this.windowMode === 'floating' ? '<div class="overlay"></div>' : ''}
+        
+        <div id="chatWindow" class="chat-window ${this.windowMode === 'floating' ? 'floating' : ''}">
+          ${this.windowMode !== 'floating' ? '<div id="chatResizeHandle" class="resize-handle"></div>' : ''}
           <div class="anteon-header">
             <div class="logo" style="display: flex; align-items: center; gap: 8px; width: 100%; text-overflow: ellipsis;">
               ${this.getLogo()}
@@ -2784,8 +2910,8 @@ class ChatWidget {
     const maximizeButton = this.shadow.querySelector('#maximizeChatButton');
     if (maximizeButton) {
       maximizeButton.addEventListener('click', () => this.maximizeChat());
-      if (this.isMobile()) {
-        // No maximization on small screens
+      if (this.isMobile() || this.windowMode === 'floating') {
+        // No maximization on small screens or floating mode
         maximizeButton.classList.add('hidden');
       }
     }
