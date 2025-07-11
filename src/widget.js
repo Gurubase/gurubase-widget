@@ -22,6 +22,22 @@ class ChatWidget {
         --tooltip-bg: ${this.lightMode ? '#1B242D' : '#FFF'};
         --tooltip-text: ${this.lightMode ? '#FFF' : '#1B242D'};
         --max-tooltip-width: ${this.maxTooltipWidth}px;
+        --vote-button-color: ${this.lightMode ? '#6D6D6D' : '#A1A1A1'};
+        --vote-button-hover: ${this.lightMode ? '#4B5563' : '#C1C1C1'};
+        --vote-button-active-upvote: #10B981;
+        --vote-button-active-downvote: #EF4444;
+        --vote-button-disabled: ${this.lightMode ? '#D1D5DB' : '#4B5563'};
+        --feedback-form-bg: ${this.lightMode ? '#F9FAFB' : '#1F2937'};
+        --feedback-form-border: ${this.lightMode ? '#E5E7EB' : '#374151'};
+        --feedback-textarea-bg: ${this.lightMode ? 'white' : '#111827'};
+        --feedback-textarea-border: ${this.lightMode ? '#D1D5DB' : '#4B5563'};
+        --feedback-textarea-focus: ${this.lightMode ? '#3B82F6' : '#60A5FA'};
+        --feedback-button-bg: ${this.lightMode ? '#3B82F6' : '#2563EB'};
+        --feedback-button-hover: ${this.lightMode ? '#2563EB' : '#1D4ED8'};
+        --feedback-button-text: white;
+        --feedback-cancel-bg: ${this.lightMode ? '#F3F4F6' : '#374151'};
+        --feedback-cancel-hover: ${this.lightMode ? '#E5E7EB' : '#4B5563'};
+        --feedback-cancel-text: ${this.lightMode ? '#374151' : '#D1D5DB'};
       }
 
       .chat-button[data-tooltip] {
@@ -1412,12 +1428,133 @@ class ChatWidget {
       @keyframes l38 {
         100% {background-position: 100% 0,100% 100%,0 100%,0 0}
       }
-    `;
 
+      /* Vote button styles */
+      .vote-button {
+        border: none;
+        background: inherit;
+        padding: 0;
+        cursor: pointer;
+        transition: background-color 0.2s ease, transform 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--response-button-color);
+      }
+
+      .vote-button:hover:not(:disabled) {
+        color: var(--response-button-color);
+        opacity: 0.8;
+      }
+
+      .vote-button:disabled {
+        cursor: not-allowed;
+        color: var(--vote-button-disabled);
+        opacity: 0.5;
+      }
+
+      .vote-button.upvote.selected svg path {
+        stroke: var(--vote-button-active-upvote) !important;
+      }
+
+      .vote-button.downvote.selected svg path {
+        stroke: var(--vote-button-active-downvote) !important;
+      }
+
+      .vote-feedback-form {
+        margin-top: 8px;
+        padding: 12px;
+        background: var(--feedback-form-bg);
+        border: 1px solid var(--feedback-form-border);
+        border-radius: 8px;
+        display: none;
+      }
+
+      .vote-feedback-form.show {
+        display: block;
+      }
+
+      .vote-feedback-form textarea {
+        width: 100%;
+        min-height: 60px;
+        max-height: 120px;
+        padding: 8px;
+        border: 1px solid var(--feedback-textarea-border);
+        border-radius: 4px;
+        background: var(--feedback-textarea-bg);
+        color: var(--text-primary);
+        resize: vertical;
+        font-family: inherit;
+        font-size: 14px;
+        line-height: 1.4;
+        box-sizing: border-box;
+      }
+
+      .vote-feedback-form textarea:focus {
+        outline: none;
+        border-color: var(--feedback-textarea-focus);
+      }
+
+      .vote-feedback-form textarea::placeholder {
+        color: var(--text-accent-color);
+      }
+
+      .feedback-char-count {
+        font-size: 12px;
+        color: var(--text-accent-color);
+        margin-top: 4px;
+        text-align: right;
+      }
+
+      .feedback-char-count.over-limit {
+        color: var(--error-red-color);
+      }
+
+      .feedback-actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 8px;
+        justify-content: flex-end;
+      }
+
+      .feedback-button {
+        padding: 6px 12px;
+        border: none;
+        border-radius: 4px;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-weight: 500;
+      }
+
+      .feedback-button.submit {
+        background: var(--feedback-button-bg);
+        color: var(--feedback-button-text);
+      }
+
+      .feedback-button.submit:hover:not(:disabled) {
+        background: var(--feedback-button-hover);
+      }
+
+      .feedback-button.submit:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+
+      .feedback-button.cancel {
+        background: var(--feedback-cancel-bg);
+        color: var(--feedback-cancel-text);
+      }
+
+      .feedback-button.cancel:hover {
+        background: var(--feedback-cancel-hover);
+      }
+    `;
+  
     // document.head.appendChild(styleElement);
     this.shadow.appendChild(styleElement);
   };
-
+  
   darkenColor(color, percent) {
     const num = parseInt(color.replace("#", ""), 16);
     const amt = Math.round(2.55 * percent * 100);
@@ -1425,7 +1562,7 @@ class ChatWidget {
     const G = ((num >> 8) & 0x00ff) - amt;
     const B = (num & 0x0000ff) - amt;
     return `#${(0x1000000 + (R < 255 ? (R < 1 ? 0 : R) : 255) * 0x10000 + (G < 255 ? (G < 1 ? 0 : G) : 255) * 0x100 + (B < 255 ? (B < 1 ? 0 : B) : 255)).toString(16).slice(1)}`;
-  }
+  }  
 
   async fetchDefaultValues() {
     try {
@@ -1435,7 +1572,7 @@ class ChatWidget {
           origin: window.location.href
         }
       });
-
+      
       if (!response.ok) {
         throw new Error('Failed to fetch default values');
       }
@@ -1455,15 +1592,15 @@ class ChatWidget {
       this.name = this.name || "";
       this.guruSlug = "";
     }
-  }
+  }  
 
   constructor() {
     // Find the widget script tag
     const scriptTag = document.querySelector('script#guru-widget-id');
-
+    
     // Default values
     const defaultBaseUrl = "https://api.gurubase.io";
-
+    
     if (scriptTag) {
         // Read attributes from script tag
         const widgetId = scriptTag.getAttribute('data-widget-id');
@@ -1530,9 +1667,9 @@ class ChatWidget {
         // Validate and set margins
         try {
             const margins = JSON.parse(scriptTag.getAttribute('data-margins'));
-            if (margins &&
-                typeof margins === 'object' &&
-                /^\d+(\.\d+)?(px|rem|em|vh|vw)$/.test(margins.bottom) &&
+            if (margins && 
+                typeof margins === 'object' && 
+                /^\d+(\.\d+)?(px|rem|em|vh|vw)$/.test(margins.bottom) && 
                 /^\d+(\.\d+)?(px|rem|em|vh|vw)$/.test(margins.right)) {
                 this.margins = margins;
             } else {
@@ -1575,6 +1712,7 @@ class ChatWidget {
     this.askUrl = this.baseUrl + "/widget/ask/";
     this.bingeUrl = this.baseUrl + "/widget/binge/";
     this.guruUrl = this.baseUrl + "/widget/guru/";
+    this.guruSlug = this.widgetId;
     this.isFirstQuestion = true;
     this.currentBingeId = null;
     this.previousQuestionSlug = null;
@@ -1627,7 +1765,7 @@ class ChatWidget {
     this.container = document.createElement('div');
     this.container.id = 'gurubase-chat-widget-container';
     this.shadow = this.container.attachShadow({ mode: 'open' });
-
+  
     this.init();
 
     // Add these properties
@@ -1771,31 +1909,163 @@ class ChatWidget {
   }
 
   addCodeBlockCopyEventListener(button) {
-    // Add click event listener
-    button.addEventListener('click', function() {
-      // Add click effect
-      this.style.transform = 'scale(0.95)';
-      setTimeout(() => this.style.transform = 'scale(1)', 100);
+      // Add click event listener
+      button.addEventListener('click', function() {
+        // Add click effect
+        this.style.transform = 'scale(0.95)';
+        setTimeout(() => this.style.transform = 'scale(1)', 100);
 
-      const codeText = this.parentElement.querySelector('code').textContent;
-      navigator.clipboard.writeText(codeText).then(() => {
-        // Change button state
-        this.innerHTML = `
+        const codeText = this.parentElement.querySelector('code').textContent;
+        navigator.clipboard.writeText(codeText).then(() => {
+          // Change button state
+          this.innerHTML = `
             <svg width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'>
               <polyline points='20 6 9 17 4 12'></polyline>
             </svg>
           `;
-
-        // Reset button after delay
-        setTimeout(() => {
-          this.innerHTML = `
+          
+          // Reset button after delay
+          setTimeout(() => { 
+            this.innerHTML = `
               <svg width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'>
                 <rect x='9' y='9' width='13' height='13' rx='2' ry='2'></rect>
                 <path d='M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1'></path>
               </svg>
             `;
-        }, 1000);
+          }, 1000);
+        });
       });
+  }
+
+  processVoteButtons(container) {
+    if (!container) return;
+
+    const voteContainers = container.querySelectorAll('.vote-container');
+    voteContainers.forEach((voteContainer) => {
+      const upvoteButton = voteContainer.querySelector('.vote-button.upvote');
+      const downvoteButton = voteContainer.querySelector('.vote-button.downvote');
+      const feedbackForm = voteContainer.querySelector('.vote-feedback-form');
+      
+      if (!upvoteButton || !downvoteButton || !feedbackForm) return;
+      
+      // Skip if already processed (has event listeners)
+      if (upvoteButton.hasAttribute('data-processed')) return;
+      
+      const textarea = feedbackForm.querySelector("textarea");
+      const charCount = feedbackForm.querySelector(".feedback-char-count");
+      const cancelBtn = feedbackForm.querySelector(".cancel");
+      const submitBtn = feedbackForm.querySelector(".submit");
+      
+      if (!textarea || !charCount || !cancelBtn || !submitBtn) return;
+
+      // Get question data from button attributes
+      const slug = upvoteButton.getAttribute('data-slug');
+      const bingeId = upvoteButton.getAttribute('data-binge-id');
+      let userVote = upvoteButton.getAttribute('data-user-vote');
+      
+      // Skip vote containers without slug (not ready yet)
+      if (!slug) {
+        return;
+      }
+
+      // Vote state - stored in DOM attributes for persistence
+      let selectedVote = userVote || null;
+      let isSubmitting = false;
+
+      // Character count handler
+      textarea.addEventListener("input", () => {
+        const count = textarea.value.length;
+        charCount.textContent = `${count}/200`;
+        charCount.classList.toggle("over-limit", count > 200);
+        submitBtn.disabled = count > 200;
+      });
+
+      // Update button states based on current state
+      const updateButtonStates = () => {
+        // Get current vote state from DOM
+        selectedVote = upvoteButton.getAttribute('data-user-vote') || null;
+        
+        upvoteButton.classList.toggle("selected", selectedVote === 'upvote');
+        downvoteButton.classList.toggle("selected", selectedVote === 'downvote');
+        upvoteButton.disabled = isSubmitting || selectedVote !== null;
+        downvoteButton.disabled = isSubmitting || selectedVote !== null;
+      };
+
+      // Update vote state in DOM
+      const setVoteState = (voteType) => {
+        upvoteButton.setAttribute('data-user-vote', voteType || '');
+        downvoteButton.setAttribute('data-user-vote', voteType || '');
+        selectedVote = voteType;
+      };
+
+      // Handle vote submission
+      const handleVote = async (voteType) => {
+        const currentVote = upvoteButton.getAttribute('data-user-vote');
+        if (isSubmitting || currentVote) return;
+        
+        if (voteType === 'downvote') {
+          setVoteState('downvote');
+          updateButtonStates();
+          feedbackForm.classList.add("show");
+          textarea.focus();
+          return;
+        }
+
+        isSubmitting = true;
+        setVoteState(voteType);
+        updateButtonStates();
+        
+        try {
+          await this.recordVote(slug, bingeId, voteType, null);
+        } catch (error) {
+          console.error("Failed to record vote:", error);
+          setVoteState(null);
+        } finally {
+          isSubmitting = false;
+          updateButtonStates();
+        }
+      };
+
+      // Event listeners
+      upvoteButton.addEventListener("click", () => handleVote('upvote'));
+      downvoteButton.addEventListener("click", () => handleVote('downvote'));
+      
+      cancelBtn.addEventListener("click", () => {
+        setVoteState(null);
+        feedbackForm.classList.remove("show");
+        textarea.value = "";
+        charCount.textContent = "0/200";
+        charCount.classList.remove("over-limit");
+        updateButtonStates();
+      });
+
+      submitBtn.addEventListener("click", async () => {
+        if (isSubmitting || textarea.value.trim().length > 200) return;
+        
+        isSubmitting = true;
+        updateButtonStates();
+        
+        try {
+          const feedback = textarea.value.trim();
+          await this.recordVote(slug, bingeId, 'downvote', feedback);
+          feedbackForm.classList.remove("show");
+          textarea.value = "";
+          charCount.textContent = "0/200";
+          charCount.classList.remove("over-limit");
+        } catch (error) {
+          console.error("Failed to record vote:", error);
+          setVoteState(null);
+          feedbackForm.classList.remove("show");
+        } finally {
+          isSubmitting = false;
+          updateButtonStates();
+        }
+      });
+
+      // Mark as processed and set initial state
+      upvoteButton.setAttribute('data-processed', 'true');
+      downvoteButton.setAttribute('data-processed', 'true');
+      updateButtonStates();
     });
   }
 
@@ -1871,12 +2141,12 @@ class ChatWidget {
 
     if (chatWindow) {
         const isOpening = !chatWindow.classList.contains("open");
-
+        
         if (!isOpening) {
             // Closing
             if (this.windowMode === 'floating') {
               // Handle floating window close
-              chatWindow.classList.remove("open");
+            chatWindow.classList.remove("open");
               if (overlay) {
                 overlay.classList.remove("visible");
                 // Remove click handler
@@ -1888,8 +2158,8 @@ class ChatWidget {
                   overlay.style.display = "none";
                 }, 300);
               }
-              document.body.classList.remove("widget-open");
-              chatButton.style.display = 'flex';
+            document.body.classList.remove("widget-open");
+            chatButton.style.display = 'flex';
             } else if (chatWindow.classList.contains("maximized")) {
               // The maximised chat has CSS transitions on the 'width' property
               chatWindow.style.minWidth = "0px";
@@ -1908,14 +2178,14 @@ class ChatWidget {
               // A non-maximized chat has CSS transitions on the 'right' property
               chatWindow.classList.remove("open");
               document.body.classList.remove("widget-open");
-              // Wait for transition to complete before hiding
-              chatWindow.addEventListener('transitionend', () => {
+            // Wait for transition to complete before hiding
+            chatWindow.addEventListener('transitionend', () => {
                 chatWindow.style.display = "none";
-              }, { once: true }); // Use once: true to automatically remove the listener
+            }, { once: true }); // Use once: true to automatically remove the listener
             }
 
             chatButton.style.display = 'flex';
-
+            
             if (!isMobile && chatWindow.style.width > "400px") {
                 chatWindow.style.width = "400px";
             }
@@ -1967,15 +2237,15 @@ class ChatWidget {
               document.body.classList.add("widget-open");
               chatButton.style.display = 'none';
             } else {
-              chatWindow.style.display = "flex";
-
-              // Force a reflow to ensure the display: flex is applied
-              chatWindow.offsetHeight;
-
-              // Add open class to trigger transition
-              chatWindow.classList.add("open");
-              document.body.classList.add("widget-open");
-              chatButton.style.display = 'none';
+            chatWindow.style.display = "flex";
+            
+            // Force a reflow to ensure the display: flex is applied
+            chatWindow.offsetHeight;
+            
+            // Add open class to trigger transition
+            chatWindow.classList.add("open");
+            document.body.classList.add("widget-open");
+            chatButton.style.display = 'none';
             }
 
             // Scroll to the end of the current messages
@@ -1992,7 +2262,7 @@ class ChatWidget {
                 questionInput.focus();
               }
             }, { once: true });
-
+            
             if (isMobile) {
                 // Save current scroll position before fixing position
                 this.savedScrollY = window.scrollY;
@@ -2269,7 +2539,7 @@ class ChatWidget {
       // Instead of showing a new stage, update the text of the existing stage
       const stageText = contextStage.querySelector(".stage-text");
       stageText.textContent = "Evaluating sources to prevent hallucinations";
-
+      
       // Reset the loading animation
       contextStage.querySelector(".loading-dots").classList.remove("hidden");
       contextStatusContainer.classList.remove("visible");
@@ -2540,7 +2810,7 @@ class ChatWidget {
               link.setAttribute('rel', 'noopener noreferrer');
             });
             this.processCodeBlocks(botResponseElement);
-
+            
             // Update wasAtBottom based on current position
             wasAtBottom = this.isUserAtBottom(messagesContainer);
 
@@ -2663,7 +2933,12 @@ class ChatWidget {
       }
 
       // Add buttons to the bot response
-      const buttons = this.createResponseButtons(finalResponse);
+      const questionData = data ? {
+        slug: data.slug,
+        bingeId: this.currentBingeId,
+        userVote: data.user_vote || null
+      } : null;
+      const buttons = this.createResponseButtons(finalResponse, questionData);
       botResponseElement.appendChild(buttons);
 
       // Fetch and display follow-up examples
@@ -2705,7 +2980,7 @@ class ChatWidget {
 
       const failedStage = loadingMessage.querySelector("#context-stage");
       const failedStatusContainer = failedStage.querySelector(".stage-status-container");
-
+      
       failedStage.querySelector(".loading-dots").classList.add("hidden");
       failedStatusContainer.classList.add("visible");
       failedStatusContainer.querySelector(".success-tick").classList.add("hidden");
@@ -2777,10 +3052,10 @@ class ChatWidget {
     if (clearButton) {
       const messagesContainer = this.shadow.querySelector(".chat-messages");
       if (messagesContainer) {
-        if (!messagesContainer.querySelector(".empty-state")) {
-          clearButton.style.display = "flex";
-        } else {
-          clearButton.style.display = "none";
+    if (!messagesContainer.querySelector(".empty-state")) {
+      clearButton.style.display = "flex";
+    } else {
+      clearButton.style.display = "none";
         }
       }
     }
@@ -2938,14 +3213,14 @@ class ChatWidget {
 
     // Add event listener to prevent scroll propagation
     const chatMessages = this.shadow.querySelector('.chat-messages');
-
+    
     // Prevent scroll propagation for both mouse wheel and touch events
     chatMessages.addEventListener('wheel', (event) => {
       const { scrollTop, scrollHeight, clientHeight } = chatMessages;
       const threshold = 1;
-
+      
       if (
-        (scrollTop <= 0 && event.deltaY < 0) ||
+        (scrollTop <= 0 && event.deltaY < 0) || 
         (Math.abs(scrollHeight - scrollTop - clientHeight) <= threshold && event.deltaY > 0)
       ) {
         event.preventDefault();
@@ -2963,7 +3238,7 @@ class ChatWidget {
       const touchY = event.touches[0].pageY;
       const touchDelta = this.touchStartY - touchY;
       const { scrollTop, scrollHeight, clientHeight } = chatMessages;
-
+      
       // Prevent scrolling when at the boundaries
       if (
         (scrollTop <= 0 && touchDelta < 0) || // At top and scrolling up
@@ -3089,7 +3364,7 @@ class ChatWidget {
     this.handleViewportHeight();
     window.addEventListener('resize', this.handleViewportHeight);
     window.addEventListener('beforeunload', this.handleUnload);
-
+    
     // Add visualViewport listeners for keyboard detection
     if (window.visualViewport) {
       window.visualViewport.addEventListener('resize', this.handleVisualViewportChange);
@@ -3098,7 +3373,7 @@ class ChatWidget {
 
     // Add event listener for window resize to handle tooltip positioning
     window.addEventListener('resize', () => this.handleTooltipPosition());
-
+    
     // Initial tooltip position check
     this.handleTooltipPosition();
 
@@ -3142,6 +3417,9 @@ class ChatWidget {
       }
       this.addExampleQuestionEventListener(button, question);
     });
+    // Add listeners for vote buttons
+    const messagesContainer = this.shadow.querySelector(".chat-messages");
+    this.processVoteButtons(messagesContainer);
   }
 
   async loadHljsTheme(themeName) {
@@ -3153,7 +3431,7 @@ class ChatWidget {
       console.error('Failed to load highlight.js theme:', error);
       return ''; // Return empty string if theme loading fails
     }
-  }
+  }  
 
   // Clean up when widget is destroyed
   destroy() {
@@ -3234,12 +3512,12 @@ class ChatWidget {
   handleClearHistory() {
     const messagesContainer = this.shadow.querySelector(".chat-messages");
     const questionInput = this.shadow.getElementById("questionInput");
-
+    
     // Blur the input to dismiss keyboard
     if (questionInput) {
         questionInput.blur();
     }
-
+    
     // Get fresh templates with current mainColor
     messagesContainer.innerHTML = this.getEmptyState();
     this.isFirstQuestion = true;
@@ -3318,14 +3596,14 @@ class ChatWidget {
 
   handleMessagesScroll(messagesContainer, event) {
     const isAtBottom = this.isUserAtBottom(messagesContainer);
-
+    
     if (this.isStreaming) {
       if (event.deltaY < 0) {
         this.shouldAutoScroll = false;
       }
       else if (isAtBottom) {
         this.shouldAutoScroll = true;
-      }
+      } 
     }
   }
 
@@ -3356,6 +3634,35 @@ class ChatWidget {
     } catch (error) {
       console.error("Error fetching follow-up examples:", error);
       return [];
+    }
+  }
+
+  async recordVote(contentSlug, bingeId, voteType, feedback = null) {
+    try {
+      const response = await fetch(`${this.baseUrl}/${this.guruSlug}/record_vote/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: this.widgetId,
+          origin: window.location.href
+        },
+        body: JSON.stringify({
+          content_slug: contentSlug,
+          binge_id: bingeId === 'initial' ? null : bingeId,
+          vote_type: voteType,
+          feedback: feedback
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to record vote");
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error("Error recording vote:", error);
+      throw error;
     }
   }
 
@@ -3404,7 +3711,7 @@ class ChatWidget {
 
   handleVisualViewportChange() {
     if (!window.visualViewport) return;
-
+    
     const chatWindow = this.shadow.getElementById("chatWindow");
     const inputContainer = this.shadow.querySelector(".chat-input-container");
     const messagesContainer = this.shadow.querySelector(".chat-messages");
@@ -3412,28 +3719,28 @@ class ChatWidget {
 
     // Check if browser is Safari
     const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-
+    
     // Calculate the keyboard height
     const keyboardHeight = window.innerHeight - window.visualViewport.height;
-
+    
     if (keyboardHeight > 0) {
         // Keyboard is shown
         if (!isSafari) {
             // Apply our custom handling only for non-Safari browsers
             chatWindow.style.height = `${window.visualViewport.height}px`;
             chatWindow.style.maxHeight = `${window.visualViewport.height}px`;
-
+            
             // Adjust the input container position
             inputContainer.style.position = 'fixed';
             inputContainer.style.bottom = '0';
             inputContainer.style.left = '0';
             inputContainer.style.right = '0';
             inputContainer.style.transform = `translateY(-${keyboardHeight}px)`;
-
+            
             // Adjust messages container to make room for keyboard
             messagesContainer.style.marginBottom = `${keyboardHeight}px`;
         }
-
+        
         // Scroll to the input after a short delay
         setTimeout(() => {
             inputContainer.scrollIntoView({ behavior: 'smooth' });
@@ -3458,11 +3765,11 @@ class ChatWidget {
     // Small delay to let the framework update the DOM
     setTimeout(() => {
       this.initializeContentWrapper();
-
+      
       // Check if widget container is still in document
       if (!document.body.contains(this.container)) {
         document.body.appendChild(this.container);
-
+        
         // Reinitialize widget button styles
         const chatButton = this.shadow.querySelector(".chat-button");
         if (chatButton) {
@@ -3531,7 +3838,7 @@ class ChatWidget {
 
   initializeContentWrapper() {
     let wrapper = document.getElementById("gurubase-page-content-wrapper");
-
+    
     // If wrapper doesn't exist, create it
     if (!wrapper) {
       wrapper = document.createElement("div");
@@ -3539,19 +3846,19 @@ class ChatWidget {
       wrapper.style.position = "relative";
       wrapper.style.zIndex = "1";
       wrapper.style.width = "100%";
-
+      
       // Move all body children into wrapper except chat widget and scripts
       const bodyChildren = Array.from(document.body.children);
-      const eligibleChildren = bodyChildren.filter(child =>
-        !child.classList?.contains("chat-widget") &&
-        child.id !== "guru-widget-id" &&
+      const eligibleChildren = bodyChildren.filter(child => 
+        !child.classList?.contains("chat-widget") && 
+        child.id !== "guru-widget-id" && 
         child.tagName !== 'SCRIPT'
       );
 
       eligibleChildren.forEach(child => {
         wrapper.appendChild(child);
       });
-
+      
       document.body.insertBefore(wrapper, document.body.firstChild);
     }
   }
@@ -3567,7 +3874,7 @@ class ChatWidget {
     const hljsThemeName = this.lightMode ? 'atom-one-light' : 'atom-one-dark';
     const hljsTheme = await this.loadHljsTheme(hljsThemeName);
     this.injectStyles(hljsTheme);
-
+    
     // Update the Gurubase logo in the footer
     const gurubaseLogo = this.shadow.querySelector('.anteon-powered');
     if (gurubaseLogo) {
@@ -3589,10 +3896,10 @@ class ChatWidget {
     const maxLength = 200; // Adjust this based on your longest expected text
     const minLeft = -40;
     const maxLeft = 40;
-
+    
     // Linear interpolation between maxLeft and minLeft based on text length
     const leftPosition = maxLeft - ((textLength / maxLength) * (maxLeft - minLeft));
-
+    
     // Apply the calculated position
     const tooltipSide = chatButton.getAttribute('data-tooltip-side');
     if (tooltipSide === 'top' || tooltipSide === 'bottom') {
@@ -3632,15 +3939,15 @@ class ChatWidget {
   }
 
   // Create response buttons
-  createResponseButtons(textToCopy) {
+  createResponseButtons(textToCopy, questionData = null) {
     const buttonContainer = document.createElement("div");
     buttonContainer.className = "response-buttons";
     buttonContainer.style.display = "flex";
-    buttonContainer.style.gap = "12px";
-    buttonContainer.style.marginTop = "8px"; // Optional: to separate from the response
+    buttonContainer.style.alignItems = "flex-start";
+    buttonContainer.style.gap = "8px";
+    buttonContainer.style.marginTop = "8px";
 
     const containerUuid = this.createUuid();
-    // Add the response text to a hidden container so that we can restore it following a page refresh
     const copyTextContainer = document.createElement("div");
     copyTextContainer.className = 'hidden';
     copyTextContainer.id = containerUuid;
@@ -3655,6 +3962,70 @@ class ChatWidget {
     );
     copyButton.setAttribute("data-text-id", containerUuid);
     buttonContainer.appendChild(copyButton);
+
+    // Always add vote buttons - use questionData if available
+    const voteContainer = document.createElement("div");
+    voteContainer.className = "vote-container";
+    voteContainer.style.display = "flex";
+    voteContainer.style.flexDirection = "column";
+    voteContainer.style.gap = "8px";
+
+    // Get question data or use defaults
+    const slug = questionData ? questionData.slug : '';
+    const bingeId = questionData ? questionData.bingeId : '';
+    const userVote = questionData ? questionData.userVote : null;
+
+    // Create upvote button
+    const upvoteButton = document.createElement("button");
+    upvoteButton.className = `vote-button upvote ${userVote === 'upvote' ? 'selected' : ''}`;
+    upvoteButton.setAttribute('data-slug', slug);
+    upvoteButton.setAttribute('data-binge-id', bingeId || '');
+    upvoteButton.setAttribute('data-user-vote', userVote || '');
+    upvoteButton.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3" stroke="var(--response-button-color)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>`;
+    upvoteButton.disabled = !slug || userVote !== null;
+
+    // Create downvote button
+    const downvoteButton = document.createElement("button");
+    downvoteButton.className = `vote-button downvote ${userVote === 'downvote' ? 'selected' : ''}`;
+    downvoteButton.setAttribute('data-slug', slug);
+    downvoteButton.setAttribute('data-binge-id', bingeId || '');
+    downvoteButton.setAttribute('data-user-vote', userVote || '');
+    downvoteButton.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h2.67A2.31 2.31 0 0 1 22 4v7a2 2 0 0 1-2 2H17" stroke="var(--response-button-color)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>`;
+    downvoteButton.disabled = !slug || userVote !== null;
+
+    // Create feedback form
+    const feedbackForm = document.createElement("div");
+    feedbackForm.className = "vote-feedback-form";
+    feedbackForm.innerHTML = `
+      <textarea placeholder="Please tell us what could be improved..." maxlength="200"></textarea>
+      <div class="feedback-char-count">0/200</div>
+      <div class="feedback-actions">
+        <button type="button" class="feedback-button cancel">Cancel</button>
+        <button type="button" class="feedback-button submit">Submit</button>
+      </div>
+    `;
+
+    // Create buttons container
+    const buttonsContainer = document.createElement("div");
+    buttonsContainer.style.display = "flex";
+    buttonsContainer.style.gap = "8px";
+    buttonsContainer.style.alignItems = "center";
+    buttonsContainer.style.height = "16px"; // Match copy button height
+
+    buttonsContainer.appendChild(upvoteButton);
+    buttonsContainer.appendChild(downvoteButton);
+    voteContainer.appendChild(buttonsContainer);
+    voteContainer.appendChild(feedbackForm);
+    buttonContainer.appendChild(voteContainer);
+
+    // Process vote buttons for this container
+    setTimeout(() => {
+      this.processVoteButtons(buttonContainer);
+    }, 0);
 
     return buttonContainer;
   }
