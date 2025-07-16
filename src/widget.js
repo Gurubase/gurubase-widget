@@ -2745,7 +2745,7 @@ class ChatWidget {
                 }
 
                 // Add trust score if it exists
-                if (data.trust_score !== undefined) {
+                if (data.trust_score !== undefined && data.trust_score !== null) {
                   const trustScoreHtml = this.createTrustScore(
                     data.trust_score
                   );
@@ -2905,7 +2905,7 @@ class ChatWidget {
           }
 
           // Add trust score last if it exists
-          if (data.trust_score !== undefined) {
+          if (data.trust_score !== undefined && data.trust_score !== null) {
             messageContent.innerHTML += this.createTrustScore(data.trust_score);
           }
 
