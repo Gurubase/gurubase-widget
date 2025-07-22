@@ -495,15 +495,6 @@ class ChatWidget {
           gap: 8px;
         }
   
-        .search-bar {
-          flex: 1;
-          padding: 8px 12px;
-          border: 1px solid #e5e7eb;
-          border-radius: 12px;
-          font-size: 16px;
-          color: #191919;
-        }
-  
         .chat-messages {
           flex: 1;
           overflow-y: auto;
@@ -1123,10 +1114,11 @@ class ChatWidget {
       .search-bar {
         flex: 1;
         height: 100%;
-        padding: 0 60px 0 40px; /* Right padding for button */
+        padding: 0 100px 0 40px; /* Right padding for button */
         border: none;
         font-size: 16px;
         background: transparent;
+        border-radius: 12px;
       }
   
       .search-bar:focus {
@@ -1166,6 +1158,62 @@ class ChatWidget {
       .submit-button svg {
         width: 24px;
         height: 24px;
+      }
+
+      .voice-record-button {
+        position: absolute;
+        right: 56px;
+        display: flex;
+        width: 32px;
+        height: 32px;
+        justify-content: center;
+        align-items: center;
+        padding: 0;
+        border-radius: 8px;
+        border: none;
+        color: var(--text-secondary);
+        cursor: pointer;
+        transition: all 0.2s;
+        background-color: transparent;
+      }
+
+      .voice-record-button:hover {
+        background-color: var(--button-passive-bg);
+        color: var(--text-primary);
+      }
+
+      .voice-record-button.recording {
+        background-color: #ef4444;
+        color: white;
+        animation: pulse 1.5s infinite;
+      }
+
+      .voice-record-button.processing {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .voice-record-button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        pointer-events: none;
+      }
+
+      .voice-record-button svg {
+        width: 16px;
+        height: 16px;
+      }
+
+      @keyframes pulse {
+        0% {
+          box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+        }
+        70% {
+          box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
+        }
+        100% {
+          box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+        }
       }
   
       .clear-button {
@@ -1583,6 +1631,7 @@ class ChatWidget {
       this.logoUrl = this.logoUrl || data.icon_url;
       this.name = this.name || data.name;
       this.guruSlug = data.slug || ""; // Add guru slug
+      this.voiceRecordingEnabled = data.voice_recording_enabled || false;
 
     } catch (error) {
       console.error('Error fetching default values:', error);
@@ -1591,6 +1640,7 @@ class ChatWidget {
       this.logoUrl = this.logoUrl || "";
       this.name = this.name || "";
       this.guruSlug = "";
+      this.voiceRecordingEnabled = false;
     }
   }  
 
@@ -1712,6 +1762,7 @@ class ChatWidget {
     this.askUrl = this.baseUrl + "/widget/ask/";
     this.bingeUrl = this.baseUrl + "/widget/binge/";
     this.guruUrl = this.baseUrl + "/widget/guru/";
+    this.transcribeUrl = this.baseUrl + "/widget/transcribe/";
     this.guruSlug = this.widgetId;
     this.isFirstQuestion = true;
     this.currentBingeId = null;
@@ -1829,6 +1880,195 @@ class ChatWidget {
         </svg>
       </button>
     `;
+  }
+
+  getVoiceRecordButton() {
+    if (!this.voiceRecordingEnabled) {
+      return '';
+    }
+    
+    return `
+      <button 
+        class="voice-record-button"
+        aria-label="Start voice recording"
+        title="Start voice recording (will ask for microphone permission)"
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" fill="var(--text-primary)"/>
+          <path d="M19 10v2a7 7 0 0 1-14 0v-2a1 1 0 0 0-2 0v2a9 9 0 0 0 18 0v-2a1 1 0 0 0-2 0z" fill="var(--text-primary)"/>
+        </svg>
+      </button>
+    `;
+  }
+
+  // Voice recording functionality
+  initVoiceRecording() {
+    if (!this.voiceRecordingEnabled) return;
+
+    this.isRecording = false;
+    this.isProcessing = false;
+    this.mediaRecorder = null;
+    this.audioChunks = [];
+    this.permissionStatus = 'prompt';
+
+    // Check microphone permission status
+    this.checkMicrophonePermission();
+  }
+
+  async checkMicrophonePermission() {
+    if (navigator.permissions && navigator.permissions.query) {
+      try {
+        const result = await navigator.permissions.query({ name: 'microphone' });
+        this.permissionStatus = result.state;
+
+        result.addEventListener('change', () => {
+          this.permissionStatus = result.state;
+        });
+      } catch (error) {
+        this.permissionStatus = 'prompt';
+      }
+    }
+  }
+
+  async toggleVoiceRecording() {
+    if (this.isRecording) {
+      this.stopVoiceRecording();
+    } else {
+      await this.startVoiceRecording();
+    }
+  }
+
+  async startVoiceRecording() {
+    try {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        alert('Your browser does not support audio recording. Please use a modern browser.');
+        return;
+      }
+
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      this.mediaRecorder = new MediaRecorder(stream);
+      this.audioChunks = [];
+
+      this.mediaRecorder.ondataavailable = (event) => {
+        this.audioChunks.push(event.data);
+      };
+
+      this.mediaRecorder.onstop = async () => {
+        const audioBlob = new Blob(this.audioChunks, { type: 'audio/webm' });
+        await this.processAudio(audioBlob);
+      };
+
+      this.mediaRecorder.start();
+      this.isRecording = true;
+      this.updateVoiceRecordButton();
+
+    } catch (error) {
+      if (error.name === 'NotAllowedError') {
+        alert('Microphone access was denied. Please allow microphone access and try again.');
+      } else if (error.name === 'NotFoundError') {
+        alert('No microphone found. Please connect a microphone and try again.');
+      } else if (error.name === 'NotReadableError') {
+        alert('Microphone is already in use by another application.');
+      } else {
+        alert('Unable to access microphone. Please try again.');
+      }
+    }
+  }
+
+  stopVoiceRecording() {
+    if (this.mediaRecorder && this.isRecording) {
+      this.mediaRecorder.stop();
+      this.mediaRecorder.stream.getTracks().forEach(track => track.stop());
+      this.isRecording = false;
+      this.updateVoiceRecordButton();
+    }
+  }
+
+  async processAudio(audioBlob) {
+    this.isProcessing = true;
+    this.updateVoiceRecordButton();
+
+    try {
+      const result = await this.transcribeAudio(audioBlob);
+      if (result.text) {
+        const questionInput = this.shadow.getElementById('questionInput');
+        if (questionInput) {
+          questionInput.value = result.text;
+          questionInput.dispatchEvent(new Event('input'));
+        }
+      }
+    } catch (error) {
+      alert('Failed to transcribe audio. ' + error.message);
+      this.stopVoiceRecording();
+    } finally {
+      this.isProcessing = false;
+      this.updateVoiceRecordButton();
+    }
+  }
+
+  async transcribeAudio(audioBlob) {
+    const formData = new FormData();
+    formData.append("audio", audioBlob, "recording.webm");
+
+    const response = await fetch(`${this.transcribeUrl}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': this.widgetId,
+        'origin': window.location.href
+      },
+      body: formData
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.msg || 'Failed to transcribe audio');
+    }
+
+    return await response.json();
+  }
+
+  updateVoiceRecordButton() {
+    const button = this.shadow.querySelector('.voice-record-button');
+    if (!button) return;
+
+    // Remove all state classes
+    button.classList.remove('recording', 'processing');
+
+    if (this.isProcessing) {
+      button.classList.add('processing');
+      button.disabled = true; // İşleme sırasında butonu devre dışı bırak
+      button.innerHTML = `
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83" stroke="var(--text-primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <animateTransform attributeName="transform" type="rotate" values="0 12 12;360 12 12" dur="1s" repeatCount="indefinite"/>
+          </svg>
+        </svg>
+      `;
+      button.setAttribute('aria-label', 'Processing audio...');
+      button.title = 'Processing audio...';
+    } else if (this.isRecording) {
+      button.classList.add('recording');
+      button.disabled = false; // Kayıt sırasında buton aktif
+      button.innerHTML = `
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="6" y="6" width="12" height="12" rx="2" fill="currentColor"/>
+        </svg>
+      `;
+      button.setAttribute('aria-label', 'Stop recording');
+      button.title = 'Stop recording';
+    } else {
+      button.disabled = false; // Normal durumda buton aktif
+      button.innerHTML = `
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" fill="var(--text-primary)"/>
+          <path d="M19 10v2a7 7 0 0 1-14 0v-2a1 1 0 0 0-2 0v2a9 9 0 0 0 18 0v-2a1 1 0 0 0-2 0z" fill="var(--text-primary)"/>
+        </svg>
+      `;
+      button.setAttribute('aria-label', 'Start voice recording');
+      button.title = this.permissionStatus === 'denied' 
+        ? 'Microphone access blocked. Click to see how to enable it.'
+        : 'Start voice recording (will ask for microphone permission)';
+    }
   }
 
   getSearchIcon() {
@@ -3153,6 +3393,7 @@ class ChatWidget {
                     placeholder="Ask anything about ${this.name}..."
                     aria-label="Ask a question"
                   />
+                  ${this.getVoiceRecordButton()}
                   ${this.getSubmitButton()}
                 </div>
                 <button 
@@ -3204,11 +3445,6 @@ class ChatWidget {
     const clearButton = this.shadow.querySelector('.clear-button');
     if (clearButton) {
       clearButton.addEventListener('click', () => this.handleClearHistory());
-    }
-
-    const submitButton = this.shadow.querySelector('.submit-button');
-    if (submitButton) {
-      submitButton.addEventListener('click', () => this.validateAndSubmit());
     }
 
     // Add event listener to prevent scroll propagation
@@ -3300,7 +3536,7 @@ class ChatWidget {
     );
 
     const questionInput = this.shadow.getElementById("questionInput");
-    const submitButton = this.shadow.querySelector(".chat-footer button");
+    const submitButton = this.shadow.querySelector(".submit-button");
 
     if (chatButton) {
       chatButton.addEventListener("click", this.toggleChat);
@@ -3312,7 +3548,18 @@ class ChatWidget {
     }
 
     if (submitButton) {
-      submitButton.addEventListener("click", this.submitQuestion);
+      submitButton.addEventListener("click", () => this.validateAndSubmit());
+    }
+
+    // Initialize voice recording functionality
+    this.initVoiceRecording();
+
+    // Add voice record button event listener
+    if (this.voiceRecordingEnabled) {
+      const voiceRecordButton = this.shadow.querySelector('.voice-record-button');
+      if (voiceRecordButton) {
+        voiceRecordButton.addEventListener('click', () => this.toggleVoiceRecording());
+      }
     }
 
     // Add drag resize listener
@@ -3442,6 +3689,11 @@ class ChatWidget {
     if (window.visualViewport) {
       window.visualViewport.removeEventListener('resize', this.handleVisualViewportChange);
       window.visualViewport.removeEventListener('scroll', this.handleVisualViewportChange);
+    }
+
+    // Clean up voice recording
+    if (this.mediaRecorder && this.isRecording) {
+      this.stopVoiceRecording();
     }
   }
 
