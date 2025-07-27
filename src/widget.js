@@ -1160,9 +1160,15 @@ class ChatWidget {
         height: 24px;
       }
 
-      .voice-record-button {
+      .voice-record-container {
         position: absolute;
         right: 56px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .voice-record-button {
         display: flex;
         width: 32px;
         height: 32px;
@@ -1183,9 +1189,7 @@ class ChatWidget {
       }
 
       .voice-record-button.recording {
-        background-color: #ef4444;
-        color: white;
-        animation: pulse 1.5s infinite;
+        /* Recording state - no background animation */
       }
 
       .voice-record-button.processing {
@@ -1890,16 +1894,19 @@ class ChatWidget {
     }
     
     return `
-      <button 
-        class="voice-record-button"
-        aria-label="Start voice recording"
-        title="Start voice recording (will ask for microphone permission)"
-      >
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" fill="var(--text-primary)"/>
-          <path d="M19 10v2a7 7 0 0 1-14 0v-2a1 1 0 0 0-2 0v2a9 9 0 0 0 18 0v-2a1 1 0 0 0-2 0z" fill="var(--text-primary)"/>
-        </svg>
-      </button>
+      <div class="voice-record-container">
+        <button 
+          class="voice-record-button"
+          aria-label="Start voice recording"
+          title="Start voice recording"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 19v3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <rect x="9" y="2" width="6" height="13" rx="3" stroke="currentColor" stroke-width="2" fill="none"/>
+          </svg>
+        </button>
+      </div>
     `;
   }
 
@@ -1912,6 +1919,8 @@ class ChatWidget {
     this.mediaRecorder = null;
     this.audioChunks = [];
     this.permissionStatus = 'prompt';
+    this.recordingTime = 0;
+    this.recordingTimer = null;
 
     // Check microphone permission status
     this.checkMicrophonePermission();
@@ -1962,6 +1971,14 @@ class ChatWidget {
 
       this.mediaRecorder.start();
       this.isRecording = true;
+      
+      // Start recording timer
+      this.recordingTime = 0;
+      this.recordingTimer = setInterval(() => {
+        this.recordingTime++;
+        this.updateVoiceRecordButton();
+      }, 1000);
+      
       this.updateVoiceRecordButton();
 
     } catch (error) {
@@ -1982,6 +1999,14 @@ class ChatWidget {
       this.mediaRecorder.stop();
       this.mediaRecorder.stream.getTracks().forEach(track => track.stop());
       this.isRecording = false;
+      
+      // Clear recording timer
+      if (this.recordingTimer) {
+        clearInterval(this.recordingTimer);
+        this.recordingTimer = null;
+      }
+      this.recordingTime = 0;
+      
       this.updateVoiceRecordButton();
     }
   }
@@ -2029,47 +2054,61 @@ class ChatWidget {
     return await response.json();
   }
 
-  updateVoiceRecordButton() {
-    const button = this.shadow.querySelector('.voice-record-button');
-    if (!button) return;
+  formatTime(seconds) {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  }
 
-    // Remove all state classes
-    button.classList.remove('recording', 'processing');
+  updateVoiceRecordButton() {
+    const container = this.shadow.querySelector('.voice-record-container');
+    if (!container) return;
 
     if (this.isProcessing) {
-      button.classList.add('processing');
-      button.disabled = true; // İşleme sırasında butonu devre dışı bırak
-      button.innerHTML = `
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83" stroke="var(--text-primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <animateTransform attributeName="transform" type="rotate" values="0 12 12;360 12 12" dur="1s" repeatCount="indefinite"/>
+      container.innerHTML = `
+        <button 
+          class="voice-record-button processing"
+          disabled
+          aria-label="Processing audio..."
+          title="Processing audio..."
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M21 12a9 9 0 11-6.219-8.56" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <animateTransform attributeName="transform" type="rotate" values="0 12 12;360 12 12" dur="1s" repeatCount="indefinite"/>
+            </path>
           </svg>
-        </svg>
+        </button>
       `;
-      button.setAttribute('aria-label', 'Processing audio...');
-      button.title = 'Processing audio...';
     } else if (this.isRecording) {
-      button.classList.add('recording');
-      button.disabled = false; // Kayıt sırasında buton aktif
-      button.innerHTML = `
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <rect x="6" y="6" width="12" height="12" rx="2" fill="currentColor"/>
-        </svg>
+      container.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 4px; font-size: 12px; color: #374151;">
+          <span style="font-family: monospace; font-weight: 500;">${this.formatTime(this.recordingTime)}</span>
+        </div>
+        <button 
+          class="voice-record-button recording"
+          aria-label="Stop recording"
+          title="Stop recording"
+          style="border-radius: 50%; background-color: #374151; color: white;"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check-icon lucide-check"><path d="M20 6 9 17l-5-5"/></svg>
+        </button>
       `;
-      button.setAttribute('aria-label', 'Stop recording');
-      button.title = 'Stop recording';
     } else {
-      button.disabled = false; // Normal durumda buton aktif
-      button.innerHTML = `
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" fill="var(--text-primary)"/>
-          <path d="M19 10v2a7 7 0 0 1-14 0v-2a1 1 0 0 0-2 0v2a9 9 0 0 0 18 0v-2a1 1 0 0 0-2 0z" fill="var(--text-primary)"/>
-        </svg>
+      container.innerHTML = `
+        <button 
+          class="voice-record-button"
+          aria-label="Start voice recording"
+          title="${this.permissionStatus === 'denied' 
+            ? 'Microphone access blocked. Click to see how to enable it.'
+            : 'Start voice recording'}"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 19v3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <rect x="9" y="2" width="6" height="13" rx="3" stroke="currentColor" stroke-width="2" fill="none"/>
+          </svg>
+        </button>
       `;
-      button.setAttribute('aria-label', 'Start voice recording');
-      button.title = this.permissionStatus === 'denied' 
-        ? 'Microphone access blocked. Click to see how to enable it.'
-        : 'Start voice recording (will ask for microphone permission)';
     }
   }
 
@@ -2715,6 +2754,21 @@ class ChatWidget {
       submitButton.style.cursor = "not-allowed";
     }
 
+    // Disable voice recording button during answer generation
+    const voiceRecordContainer = this.shadow.querySelector(".voice-record-container");
+    if (voiceRecordContainer) {
+      voiceRecordContainer.style.opacity = "0.5";
+      voiceRecordContainer.style.pointerEvents = "none";
+      voiceRecordContainer.style.cursor = "not-allowed";
+      
+      // Also disable any buttons inside the container
+      const voiceButtons = voiceRecordContainer.querySelectorAll("button");
+      voiceButtons.forEach(btn => {
+        btn.disabled = true;
+        btn.style.cursor = "not-allowed";
+      });
+    }
+
     // Remove empty state if it exists
     const emptyState = this.shadow.querySelector(".empty-state");
     if (emptyState) {
@@ -3275,6 +3329,21 @@ class ChatWidget {
         submitButton.style.opacity = "1";
         submitButton.style.cursor = "pointer";
       }
+
+      // Re-enable voice recording button when answer generation is complete
+      const voiceRecordContainer = this.shadow.querySelector(".voice-record-container");
+      if (voiceRecordContainer) {
+        voiceRecordContainer.style.opacity = "1";
+        voiceRecordContainer.style.pointerEvents = "auto";
+        voiceRecordContainer.style.cursor = "auto";
+        
+        // Also re-enable any buttons inside the container
+        const voiceButtons = voiceRecordContainer.querySelectorAll("button");
+        voiceButtons.forEach(btn => {
+          btn.disabled = false;
+          btn.style.cursor = "pointer";
+        });
+      }
       // Mark the messages produced by this question/answer as completed.
       this.markMessagesAsCompleted();
     }
@@ -3554,11 +3623,21 @@ class ChatWidget {
     // Initialize voice recording functionality
     this.initVoiceRecording();
 
-    // Add voice record button event listener
+    // Add voice record button event listener using delegation
     if (this.voiceRecordingEnabled) {
-      const voiceRecordButton = this.shadow.querySelector('.voice-record-button');
-      if (voiceRecordButton) {
-        voiceRecordButton.addEventListener('click', () => this.toggleVoiceRecording());
+      const voiceRecordContainer = this.shadow.querySelector('.voice-record-container');
+      if (voiceRecordContainer) {
+        voiceRecordContainer.addEventListener('click', (e) => {
+          // Check if container is disabled (during answer generation)
+          if (voiceRecordContainer.style.pointerEvents === "none") {
+            return;
+          }
+          
+          const button = e.target.closest('.voice-record-button');
+          if (button && !button.disabled) {
+            this.toggleVoiceRecording();
+          }
+        });
       }
     }
 
@@ -3694,6 +3773,12 @@ class ChatWidget {
     // Clean up voice recording
     if (this.mediaRecorder && this.isRecording) {
       this.stopVoiceRecording();
+    }
+    
+    // Clean up recording timer
+    if (this.recordingTimer) {
+      clearInterval(this.recordingTimer);
+      this.recordingTimer = null;
     }
   }
 
