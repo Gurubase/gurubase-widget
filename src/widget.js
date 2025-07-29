@@ -1177,7 +1177,7 @@ class ChatWidget {
         padding: 0;
         border-radius: 8px;
         border: none;
-        color: var(--text-secondary);
+        color: var(--text-accent-color);
         cursor: pointer;
         transition: all 0.2s;
         background-color: transparent;
@@ -3461,7 +3461,7 @@ class ChatWidget {
                     type="text"
                     id="questionInput"
                     class="search-bar"
-                    placeholder="Ask anything about ${this.name}..."
+                    placeholder="Ask anything"
                     aria-label="Ask a question"
                   />
                   ${this.getVoiceRecordButton()}
