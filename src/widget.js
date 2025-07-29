@@ -2996,6 +2996,16 @@ class ChatWidget {
               // Only proceed if we got a valid response with additional details
               if (response.ok) {
                 data = await response.json();
+
+                // Add buttons right after the content and before references
+                const questionData = data ? {
+                  slug: data.slug,
+                  bingeId: this.currentBingeId,
+                  userVote: data.user_vote || null
+                } : null;
+                const buttons = this.createResponseButtons(data.content, questionData);
+                botResponseElement.appendChild(buttons);
+
                 // Add references if they exist
                 if (data.references && data.references.length > 0) {
                   const referencesContainer = document.createElement("div");
@@ -3120,15 +3130,13 @@ class ChatWidget {
         // Remove scroll listener after streaming ends
         messagesContainer.removeEventListener('wheel', boundScrollHandler);
       } else {
+        // Unused if streaming
         data = await response.json();
 
         if (!response.ok) {
           throw new Error(
             data.error || "An error occurred while processing your request."
           );
-        }
-        if (!response.ok) {
-          botResponseElement.textContent = data.error || "An error occurred";
         } else {
           const messageContent = document.createElement("div");
 
@@ -3154,6 +3162,15 @@ class ChatWidget {
           });
           this.processCodeBlocks(markdownContent);
           messageContent.appendChild(markdownContent);
+
+          // Add buttons right after the content and before references
+          const questionData = data ? {
+            slug: data.slug,
+            bingeId: this.currentBingeId,
+            userVote: data.user_vote || null
+          } : null;
+          const buttons = this.createResponseButtons(data.content, questionData);
+          messageContent.appendChild(buttons);
 
           // Add references if they exist
           if (data.references && data.references.length > 0) {
@@ -3227,15 +3244,6 @@ class ChatWidget {
           botResponseElement.appendChild(messageContent);
         }
       }
-
-      // Add buttons to the bot response
-      const questionData = data ? {
-        slug: data.slug,
-        bingeId: this.currentBingeId,
-        userVote: data.user_vote || null
-      } : null;
-      const buttons = this.createResponseButtons(finalResponse, questionData);
-      botResponseElement.appendChild(buttons);
 
       // Fetch and display follow-up examples
       if (data && data.slug) {
