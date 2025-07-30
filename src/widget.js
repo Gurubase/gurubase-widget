@@ -1921,6 +1921,8 @@ class ChatWidget {
     this.permissionStatus = 'prompt';
     this.recordingTime = 0;
     this.recordingTimer = null;
+    this.recordingTimeout = null;
+    this.maxRecordingDuration = 30; // 30 seconds limit
 
     // Check microphone permission status
     this.checkMicrophonePermission();
@@ -1979,6 +1981,13 @@ class ChatWidget {
         this.updateVoiceRecordButton();
       }, 1000);
       
+      // Set timeout to automatically stop recording after maxRecordingDuration seconds
+      this.recordingTimeout = setTimeout(() => {
+        if (this.isRecording) {
+          this.stopVoiceRecording();
+        }
+      }, this.maxRecordingDuration * 1000);
+      
       this.updateVoiceRecordButton();
 
     } catch (error) {
@@ -2005,6 +2014,13 @@ class ChatWidget {
         clearInterval(this.recordingTimer);
         this.recordingTimer = null;
       }
+      
+      // Clear recording timeout
+      if (this.recordingTimeout) {
+        clearTimeout(this.recordingTimeout);
+        this.recordingTimeout = null;
+      }
+      
       this.recordingTime = 0;
       
       this.updateVoiceRecordButton();
@@ -2081,8 +2097,8 @@ class ChatWidget {
       `;
     } else if (this.isRecording) {
       container.innerHTML = `
-        <div style="display: flex; align-items: center; gap: 4px; font-size: 12px; color: #374151;">
-          <span style="font-family: monospace; font-weight: 500;">${this.formatTime(this.recordingTime)}</span>
+        <div style="display: flex; align-items: center; gap: 4px; font-size: 12px; color: var(--text-primary);">
+          <span style="font-family: monospace; font-weight: 500;">${this.formatTime(this.recordingTime)}/${this.formatTime(this.maxRecordingDuration)}</span>
         </div>
         <button 
           class="voice-record-button recording"
@@ -3787,6 +3803,12 @@ class ChatWidget {
     if (this.recordingTimer) {
       clearInterval(this.recordingTimer);
       this.recordingTimer = null;
+    }
+    
+    // Clean up recording timeout
+    if (this.recordingTimeout) {
+      clearTimeout(this.recordingTimeout);
+      this.recordingTimeout = null;
     }
   }
 
