@@ -1921,6 +1921,8 @@ class ChatWidget {
     this.permissionStatus = 'prompt';
     this.recordingTime = 0;
     this.recordingTimer = null;
+    this.recordingTimeout = null;
+    this.maxRecordingDuration = 30; // 30 seconds limit
 
     // Check microphone permission status
     this.checkMicrophonePermission();
@@ -1979,6 +1981,13 @@ class ChatWidget {
         this.updateVoiceRecordButton();
       }, 1000);
       
+      // Set timeout to automatically stop recording after maxRecordingDuration seconds
+      this.recordingTimeout = setTimeout(() => {
+        if (this.isRecording) {
+          this.stopVoiceRecording();
+        }
+      }, this.maxRecordingDuration * 1000);
+      
       this.updateVoiceRecordButton();
 
     } catch (error) {
@@ -2005,6 +2014,13 @@ class ChatWidget {
         clearInterval(this.recordingTimer);
         this.recordingTimer = null;
       }
+      
+      // Clear recording timeout
+      if (this.recordingTimeout) {
+        clearTimeout(this.recordingTimeout);
+        this.recordingTimeout = null;
+      }
+      
       this.recordingTime = 0;
       
       this.updateVoiceRecordButton();
@@ -2081,8 +2097,8 @@ class ChatWidget {
       `;
     } else if (this.isRecording) {
       container.innerHTML = `
-        <div style="display: flex; align-items: center; gap: 4px; font-size: 12px; color: #374151;">
-          <span style="font-family: monospace; font-weight: 500;">${this.formatTime(this.recordingTime)}</span>
+        <div style="display: flex; align-items: center; gap: 4px; font-size: 12px; color: var(--text-primary);">
+          <span style="font-family: monospace; font-weight: 500;">${this.formatTime(this.recordingTime)}/${this.formatTime(this.maxRecordingDuration)}</span>
         </div>
         <button 
           class="voice-record-button recording"
@@ -2996,6 +3012,16 @@ class ChatWidget {
               // Only proceed if we got a valid response with additional details
               if (response.ok) {
                 data = await response.json();
+
+                // Add buttons right after the content and before references
+                const questionData = data ? {
+                  slug: data.slug,
+                  bingeId: this.currentBingeId,
+                  userVote: data.user_vote || null
+                } : null;
+                const buttons = this.createResponseButtons(data.content, questionData);
+                botResponseElement.appendChild(buttons);
+
                 // Add references if they exist
                 if (data.references && data.references.length > 0) {
                   const referencesContainer = document.createElement("div");
@@ -3120,15 +3146,13 @@ class ChatWidget {
         // Remove scroll listener after streaming ends
         messagesContainer.removeEventListener('wheel', boundScrollHandler);
       } else {
+        // Unused if streaming
         data = await response.json();
 
         if (!response.ok) {
           throw new Error(
             data.error || "An error occurred while processing your request."
           );
-        }
-        if (!response.ok) {
-          botResponseElement.textContent = data.error || "An error occurred";
         } else {
           const messageContent = document.createElement("div");
 
@@ -3154,6 +3178,15 @@ class ChatWidget {
           });
           this.processCodeBlocks(markdownContent);
           messageContent.appendChild(markdownContent);
+
+          // Add buttons right after the content and before references
+          const questionData = data ? {
+            slug: data.slug,
+            bingeId: this.currentBingeId,
+            userVote: data.user_vote || null
+          } : null;
+          const buttons = this.createResponseButtons(data.content, questionData);
+          messageContent.appendChild(buttons);
 
           // Add references if they exist
           if (data.references && data.references.length > 0) {
@@ -3227,15 +3260,6 @@ class ChatWidget {
           botResponseElement.appendChild(messageContent);
         }
       }
-
-      // Add buttons to the bot response
-      const questionData = data ? {
-        slug: data.slug,
-        bingeId: this.currentBingeId,
-        userVote: data.user_vote || null
-      } : null;
-      const buttons = this.createResponseButtons(finalResponse, questionData);
-      botResponseElement.appendChild(buttons);
 
       // Fetch and display follow-up examples
       if (data && data.slug) {
@@ -3779,6 +3803,12 @@ class ChatWidget {
     if (this.recordingTimer) {
       clearInterval(this.recordingTimer);
       this.recordingTimer = null;
+    }
+    
+    // Clean up recording timeout
+    if (this.recordingTimeout) {
+      clearTimeout(this.recordingTimeout);
+      this.recordingTimeout = null;
     }
   }
 
