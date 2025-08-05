@@ -2168,6 +2168,10 @@ class ChatWidget {
   stopTextToSpeechForButton(button) {
     const audioState = button.audioState;
     if (audioState.audioRef) {
+      // Revoke the object URL before clearing the source
+      if (audioState.audioRef.src && audioState.audioRef.src.startsWith('blob:')) {
+        URL.revokeObjectURL(audioState.audioRef.src);
+      }      
       audioState.audioRef.pause();
       audioState.audioRef.src = "";
       audioState.audioRef = null;
