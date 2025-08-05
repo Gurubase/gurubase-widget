@@ -1638,6 +1638,7 @@ class ChatWidget {
       this.name = this.name || data.name;
       this.guruSlug = data.slug || ""; // Add guru slug
       this.voiceRecordingEnabled = data.voice_recording_enabled || false;
+      this.textToSpeechEnabled = data.text_to_speech_enabled || false;
 
     } catch (error) {
       console.error('Error fetching default values:', error);
@@ -1647,6 +1648,7 @@ class ChatWidget {
       this.name = this.name || "";
       this.guruSlug = "";
       this.voiceRecordingEnabled = false;
+      this.textToSpeechEnabled = false;
     }
   }  
 
@@ -1769,6 +1771,7 @@ class ChatWidget {
     this.bingeUrl = this.baseUrl + "/widget/binge/";
     this.guruUrl = this.baseUrl + "/widget/guru/";
     this.transcribeUrl = this.baseUrl + "/widget/transcribe/";
+    this.textToSpeechUrl = this.baseUrl + "/widget/text-to-speech/stream/";
     this.guruSlug = this.widgetId;
     this.isFirstQuestion = true;
     this.currentBingeId = null;
@@ -1831,6 +1834,8 @@ class ChatWidget {
     this.shouldAutoScroll = true;
     this.handleViewportHeight = this.handleViewportHeight.bind(this);
     this.handleVisualViewportChange = this.handleVisualViewportChange.bind(this);
+    
+    this.currentlyPlayingButton = null;
   }
 
   getLogo(maxWidth = 24, maxHeight = 24) {
@@ -2126,6 +2131,339 @@ class ChatWidget {
         </button>
       `;
     }
+  }
+
+  // Text-to-speech methods
+  processQueuedChunksForButton(button) {
+    const audioState = button.audioState;
+    if (
+      audioState.isProcessingRef ||
+      !audioState.sourceBufferRef ||
+      audioState.queuedChunksRef.length === 0
+    ) {
+      return;
+    }
+
+    audioState.isProcessingRef = true;
+
+    while (
+      audioState.queuedChunksRef.length > 0 &&
+      !audioState.sourceBufferRef.updating
+    ) {
+      const chunk = audioState.queuedChunksRef.shift();
+
+      try {
+        audioState.sourceBufferRef.appendBuffer(chunk);
+      } catch (error) {
+        console.error("Error appending buffer:", error);
+        // Buffer might be full or other error
+        audioState.queuedChunksRef.unshift(chunk); // Put it back
+        break;
+      }
+    }
+
+    audioState.isProcessingRef = false;
+  }
+
+  stopTextToSpeechForButton(button) {
+    const audioState = button.audioState;
+    if (audioState.audioRef) {
+      audioState.audioRef.pause();
+      audioState.audioRef.src = "";
+      audioState.audioRef = null;
+    }
+
+    if (
+      audioState.mediaSourceRef &&
+      audioState.mediaSourceRef.readyState === "open" // Can be closed, open, ended
+    ) {
+      try {
+        audioState.mediaSourceRef.endOfStream();
+      } catch (e) {
+        // Ignore errors during cleanup
+      }
+    }
+
+    audioState.mediaSourceRef = null;
+    audioState.sourceBufferRef = null;
+    audioState.queuedChunksRef = [];
+    audioState.isProcessingRef = false;
+    audioState.isPlaying = false;
+    audioState.isGeneratingAudio = false;
+    audioState.hasAudio = false;
+    audioState.abortController = null;
+    
+    // Clear global reference when audio is stopped (not paused)
+    if (this.currentlyPlayingButton === button) {
+      this.currentlyPlayingButton = null;
+    }
+    
+    this.updateTextToSpeechButton();
+  }
+
+  togglePlayPauseForButton(button) {
+    const audioState = button.audioState;
+    if (!audioState.audioRef || !audioState.hasAudio) return;
+
+    if (audioState.isPlaying) {
+      audioState.audioRef.pause();
+      audioState.isPlaying = false;
+    } else {
+      audioState.audioRef.play().then(() => {
+        audioState.isPlaying = true;
+      }).catch((error) => {
+        console.error("Error playing audio:", error);
+      });
+    }
+    this.updateTextToSpeechButton();
+  }
+
+    cleanTextForSpeech(text) {
+    // Remove only the first line that starts with # (initial header)
+    let cleaned = text.replace(/^#+\s+.*$/m, '');
+    
+    return cleaned;
+  }
+
+  handleTextToSpeechClick(text, button) {
+    // Get or create audio state for this specific button
+    if (!button.audioState) {
+      button.audioState = {
+        audioRef: null,
+        mediaSourceRef: null,
+        sourceBufferRef: null,
+        queuedChunksRef: [],
+        isProcessingRef: false,
+        isGeneratingAudio: false,
+        isPlaying: false,
+        hasAudio: false,
+        abortController: null
+      };
+    }
+
+    const audioState = button.audioState;
+
+    // If this button has audio and it's the currently playing button, toggle play/pause
+    if (audioState.audioRef && audioState.hasAudio && this.currentlyPlayingButton === button) {
+      this.togglePlayPauseForButton(button);
+    } else {
+      // Otherwise, generate new speech (restart from beginning)
+      this.generateSpeechForButton(text, button);
+    }
+  }
+
+  async generateSpeechForButton(text, button) {
+    if (!text) return;
+
+    const audioState = button.audioState;
+
+    // Stop any currently playing audio from other buttons
+    if (this.currentlyPlayingButton && this.currentlyPlayingButton !== button) {
+      this.stopTextToSpeechForButton(this.currentlyPlayingButton);
+    }
+
+    // Stop any existing audio for this button before starting new one
+    if (audioState.hasAudio || audioState.audioRef) {
+      this.stopTextToSpeechForButton(button);
+    }
+
+    // Cancel any ongoing fetch request for this button
+    if (audioState.abortController) {
+      audioState.abortController.abort();
+    }
+
+    // Clean the text before sending to TTS
+    const cleanedText = this.cleanTextForSpeech(text);
+
+    audioState.isGeneratingAudio = true;
+    this.updateTextToSpeechButton();
+
+    // Create abort controller for this request
+    audioState.abortController = new AbortController();
+
+    try {
+      // Create audio element and MediaSource
+      const audio = document.createElement("audio");
+      const mediaSource = new MediaSource();
+
+      audioState.audioRef = audio;
+      audioState.mediaSourceRef = mediaSource;
+
+      audio.src = URL.createObjectURL(mediaSource);
+      audio.volume = 1.0;
+      audioState.hasAudio = true;
+
+      // Handle audio events
+      audio.addEventListener("play", () => {
+        audioState.isPlaying = true;
+        this.currentlyPlayingButton = button;
+        this.updateTextToSpeechButton();
+      });
+      audio.addEventListener("pause", () => {
+        audioState.isPlaying = false;
+        // Don't clear currentlyPlayingButton on pause - keep it for resume
+        this.updateTextToSpeechButton();
+      });
+      audio.addEventListener("ended", () => {
+        audioState.isPlaying = false;
+        if (this.currentlyPlayingButton === button) {
+          this.currentlyPlayingButton = null;
+        }
+        this.stopTextToSpeechForButton(button);
+      });
+
+      // Wait for MediaSource to open
+      await new Promise((resolve, reject) => {
+        mediaSource.addEventListener("sourceopen", () => {
+          resolve();
+        }, { once: true });
+        mediaSource.addEventListener("error", (error) => {
+          console.error("MediaSource error:", error);
+          reject(error);
+        }, { once: true });
+      });
+
+      // Create audio buffer - try different formats
+      let sourceBuffer;
+      try {
+        sourceBuffer = mediaSource.addSourceBuffer("audio/mpeg");
+      } catch (e) {
+        try {
+          sourceBuffer = mediaSource.addSourceBuffer("audio/mp4");
+        } catch (e2) {
+          try {
+            sourceBuffer = mediaSource.addSourceBuffer("audio/webm");
+          } catch (e3) {
+            console.error("No supported audio format found:", e3);
+            throw e3;
+          }
+        }
+      }
+      audioState.sourceBufferRef = sourceBuffer;
+
+      // Triggered when a buffer update is finished
+      audioState.sourceBufferRef.addEventListener("updateend", () => {
+        this.processQueuedChunksForButton(button);
+      });
+
+      audioState.sourceBufferRef.addEventListener("error", (e) => {
+        console.error("SourceBuffer error:", e);
+      });
+
+      // Get the stream response
+      const response = await fetch(this.textToSpeechUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: this.widgetId,
+          origin: window.location.href
+        },
+        body: JSON.stringify({ text: cleanedText }),
+        signal: audioState.abortController.signal
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      // Get reader from response
+      const reader = response.body.getReader();
+      let chunkCount = 0;
+      let firstChunkReceived = false;
+
+      // Read and process chunks
+      while (true) {
+        // Check if request was aborted
+        if (audioState.abortController.signal.aborted) {
+          break;
+        }
+
+        const { done, value } = await reader.read();
+
+        if (done) {
+          // Signal end of stream when all chunks are processed
+          if (mediaSource.readyState === "open") {
+            // Wait for any pending updates
+            if (audioState.sourceBufferRef && audioState.sourceBufferRef.updating) {
+              await new Promise((resolve) => {
+                audioState.sourceBufferRef.addEventListener("updateend", resolve, { once: true });
+              });
+            }
+
+            // Process remaining chunks
+            while (audioState.queuedChunksRef.length > 0) {
+              await this.processQueuedChunksForButton(button);
+              await new Promise((resolve) => setTimeout(resolve, 100));
+            }
+
+            mediaSource.endOfStream();
+          }
+          break;
+        }
+
+        chunkCount++;
+
+        // Queue the chunk
+        audioState.queuedChunksRef.push(value);
+        await this.processQueuedChunksForButton(button);
+
+        // Start playing after first chunk
+        if (!firstChunkReceived) {
+          audioState.isGeneratingAudio = false;
+          firstChunkReceived = true;
+          this.updateTextToSpeechButton();
+          
+          // Small delay to ensure buffer has enough data
+          setTimeout(() => {
+            if (audioState.audioRef) {
+              audioState.audioRef.play().then(() => {
+              }).catch((error) => {
+                console.error("Error playing audio:", error);
+              });
+            }
+          }, 100);
+        }
+      }
+    } catch (error) {
+      if (error.name === 'AbortError') {
+      } else {
+        console.error("Text-to-speech error:", error);
+      }
+      this.stopTextToSpeechForButton(button);
+      this.updateTextToSpeechButton();
+    }
+  }
+
+  updateTextToSpeechButton() {
+    const textToSpeechButtons = this.shadow.querySelectorAll('.text-to-speech-response-button');
+    textToSpeechButtons.forEach(button => {
+      const icon = button.querySelector('svg');
+      const audioState = button.audioState || {};
+      
+      if (audioState.isGeneratingAudio) {
+        // Show loading spinner
+        icon.innerHTML = `
+          <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8z" fill="var(--response-button-color)" opacity="0.3"/>
+          <path d="M12 2a10 10 0 0 1 10 10" stroke="var(--response-button-color)" stroke-width="2" fill="none" stroke-linecap="round">
+            <animateTransform attributeName="transform" type="rotate" values="0 12 12;360 12 12" dur="1s" repeatCount="indefinite"/>
+          </path>
+        `;
+        button.disabled = true;
+      } else {
+        // Show speaker icon
+        icon.innerHTML = `<path d="M11 5L6 9H2v6h4l5 4V5z" stroke="var(--response-button-color)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+         <path d="M15.54 8.46a5 5 0 0 1 0 7.07" stroke="var(--response-button-color)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+         <path d="M19.07 4.93a10 10 0 0 1 0 14.14" stroke="var(--response-button-color)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>`;
+        button.disabled = false;
+        
+        // Add blue fill only when playing
+        if (audioState.isPlaying) {
+          icon.innerHTML = `<path d="M11 5L6 9H2v6h4l5 4V5z" stroke="#3b82f6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+           <path d="M15.54 8.46a5 5 0 0 1 0 7.07" stroke="#3b82f6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+           <path d="M19.07 4.93a10 10 0 0 1 0 14.14" stroke="#3b82f6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>`;
+        }
+      }
+    });
   }
 
   getSearchIcon() {
@@ -4293,15 +4631,18 @@ class ChatWidget {
       // Call the original onClick handler
       onClick();
 
-      const originalIcon = button.innerHTML;
-      // Show success state
-      button.innerHTML = this.getSuccessIcon();
+      // Don't show success icon for text-to-speech buttons
+      if (!button.classList.contains('text-to-speech-response-button')) {
+        const originalIcon = button.innerHTML;
+        // Show success state
+        button.innerHTML = this.getSuccessIcon();
 
-      // Reset after 1 second
-      setTimeout(() => {
-        button.style.backgroundColor = "inherit";
-        button.innerHTML = originalIcon;
-      }, 1000);
+        // Reset after 1 second
+        setTimeout(() => {
+          button.style.backgroundColor = "inherit";
+          button.innerHTML = originalIcon;
+        }, 1000);
+      }
     });
   }
 
@@ -4329,6 +4670,22 @@ class ChatWidget {
     );
     copyButton.setAttribute("data-text-id", containerUuid);
     buttonContainer.appendChild(copyButton);
+
+    // Add text-to-speech button if enabled
+    if (this.textToSpeechEnabled) {
+      const textToSpeechButton = this.createResponseButton(
+        `<path d="M11 5L6 9H2v6h4l5 4V5z" stroke="var(--response-button-color)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+         <path d="M15.54 8.46a5 5 0 0 1 0 7.07" stroke="var(--response-button-color)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+         <path d="M19.07 4.93a10 10 0 0 1 0 14.14" stroke="var(--response-button-color)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>`,
+        "",
+        () => {
+          this.handleTextToSpeechClick(textToCopy, textToSpeechButton);
+        },
+        "text-to-speech"
+      );
+      textToSpeechButton.setAttribute("data-text-id", containerUuid);
+      buttonContainer.appendChild(textToSpeechButton);
+    }
 
     // Always add vote buttons - use questionData if available
     const voteContainer = document.createElement("div");
@@ -4427,7 +4784,7 @@ class ChatWidget {
     `;
 
     button.innerHTML = `
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
       ${icon}
     </svg>
     ${text}
