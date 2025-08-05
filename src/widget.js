@@ -71,7 +71,7 @@ class ChatWidget {
     },
     tr: {
       // Button and input text
-      askAI: "AI'ya Sor",
+      askAI: "AI'a Sor",
       askAnything: "Herhangi bir şey sor",
       askAnythingAbout: "{name} hakkında herhangi bir şey sor",
       askGuru: "{name} Guru'ya Sor",
@@ -1929,6 +1929,11 @@ class ChatWidget {
     this.isFirstQuestion = true;
     this.currentBingeId = null;
     this.previousQuestionSlug = null;
+    
+    // Update button text with proper translation after language is set
+    if (!this.buttonText || this.buttonText === "Ask AI") {
+      this.buttonText = this.t('askAI');
+    }
     // Restore state is we are coming from a page refresh
     if (sessionStorage) {
       if (sessionStorage.getItem("isFirstQuestion")) this.isFirstQuestion = sessionStorage.getItem("isFirstQuestion") === "true";
