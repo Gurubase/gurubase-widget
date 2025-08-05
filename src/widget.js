@@ -1,6 +1,153 @@
 // Widget class to handle all functionality
 class ChatWidget {
 
+  // Translation system
+  translations = {
+    en: {
+      // Button and input text
+      askAI: "Ask AI",
+      askAnything: "Ask anything",
+      askAnythingAbout: "Ask anything about {name}",
+      askGuru: "Ask {name} Guru",
+      
+      // Empty state messages
+      emptyStateHeading: "Ask anything about {name}",
+      emptyStateDescription: "{name} Guru uses the latest data in the documentation to answer your questions.",
+      
+      // Loading/processing messages
+      findingContexts: "Finding the best contexts from sources.",
+      evaluatingSources: "Evaluating sources",
+      errorFindingContexts: "Error finding contexts",
+      errorEvaluatingSources: "Error evaluating sources",
+      
+      // Error messages
+      genericError: "An error occurred while processing your request.",
+      errorPrefix: "An error occurred: ",
+      validationError: "At least 10 characters required!",
+      browserNotSupported: "Your browser does not support audio recording. Please use a modern browser.",
+      microphoneDenied: "Microphone access was denied. Please allow microphone access and try again.",
+      noMicrophone: "No microphone found. Please connect a microphone and try again.",
+      microphoneInUse: "Microphone is already in use by another application.",
+      microphoneError: "Unable to access microphone. Please try again.",
+      transcriptionError: "Failed to transcribe audio. ",
+      
+      // Voice recording text
+      startVoiceRecording: "Start voice recording",
+      stopRecording: "Stop recording",
+      processingAudio: "Processing audio...",
+      microphoneBlocked: "Microphone access blocked. Click to see how to enable it.",
+      
+      // Trust score text
+      trustScore: "Trust Score",
+      trustScoreTooltip: "Trust score reflects confidence in this answer. Always double-check references, as AI can make mistakes.",
+      
+      // Vote/feedback text
+      feedbackPlaceholder: "Please tell us what could be improved...",
+      cancel: "Cancel",
+      submit: "Submit",
+      
+      // References/sources text
+      sources: "Sources",
+      
+      // Footer text
+      poweredBy: "powered by",
+      clear: "Clear",
+      
+      // Accessibility labels
+      sendMessage: "Send message",
+      maximizeChat: "Maximize chat",
+      minimizeChat: "Minimize chat",
+      closeChat: "Close chat",
+      askQuestion: "Ask a question",
+      clearHistory: "Clear history",
+      copyCode: "Copy code",
+      exampleQuestion: "Example question: ",
+      
+      // Date/time text
+      lastModified: "Last Modified:",
+      
+      // Character count
+      charCount: "{count}/200"
+    },
+    tr: {
+      // Button and input text
+      askAI: "AI'ya Sor",
+      askAnything: "Herhangi bir şey sor",
+      askAnythingAbout: "{name} hakkında herhangi bir şey sor",
+      askGuru: "{name} Guru'ya Sor",
+      
+      // Empty state messages
+      emptyStateHeading: "{name} hakkında herhangi bir şey sor",
+      emptyStateDescription: "{name} Guru, sorularınızı yanıtlamak için dokümantasyondaki en güncel verileri kullanır.",
+      
+      // Loading/processing messages
+      findingContexts: "Kaynaklardan en iyi bağlamları buluyor.",
+      evaluatingSources: "Kaynakları değerlendiriyor",
+      errorFindingContexts: "Bağlam bulma hatası",
+      errorEvaluatingSources: "Kaynak değerlendirme hatası",
+      
+      // Error messages
+      genericError: "İsteğiniz işlenirken bir hata oluştu.",
+      errorPrefix: "Bir hata oluştu: ",
+      validationError: "En az 10 karakter gerekli!",
+      browserNotSupported: "Tarayıcınız ses kaydını desteklemiyor. Lütfen modern bir tarayıcı kullanın.",
+      microphoneDenied: "Mikrofon erişimi reddedildi. Lütfen mikrofon erişimine izin verin ve tekrar deneyin.",
+      noMicrophone: "Mikrofon bulunamadı. Lütfen bir mikrofon bağlayın ve tekrar deneyin.",
+      microphoneInUse: "Mikrofon zaten başka bir uygulama tarafından kullanılıyor.",
+      microphoneError: "Mikrofona erişilemiyor. Lütfen tekrar deneyin.",
+      transcriptionError: "Ses transkripsiyonu başarısız. ",
+      
+      // Voice recording text
+      startVoiceRecording: "Ses kaydını başlat",
+      stopRecording: "Kaydı durdur",
+      processingAudio: "Ses işleniyor...",
+      microphoneBlocked: "Mikrofon erişimi engellendi. Nasıl etkinleştirileceğini görmek için tıklayın.",
+      
+      // Trust score text
+      trustScore: "Güven Skoru",
+      trustScoreTooltip: "Güven skoru bu cevaba olan güveni yansıtır. AI hata yapabilir, bu yüzden referansları her zaman kontrol edin.",
+      
+      // Vote/feedback text
+      feedbackPlaceholder: "Lütfen neyin iyileştirilebileceğini söyleyin...",
+      cancel: "İptal",
+      submit: "Gönder",
+      
+      // References/sources text
+      sources: "Kaynaklar",
+      
+      // Footer text
+      poweredBy: "tarafından desteklenir",
+      clear: "Temizle",
+      
+      // Accessibility labels
+      sendMessage: "Mesaj gönder",
+      maximizeChat: "Sohbeti büyüt",
+      minimizeChat: "Sohbeti küçült",
+      closeChat: "Sohbeti kapat",
+      askQuestion: "Soru sor",
+      clearHistory: "Geçmişi temizle",
+      copyCode: "Kodu kopyala",
+      exampleQuestion: "Örnek soru: ",
+      
+      // Date/time text
+      lastModified: "Son Değiştirilme:",
+      
+      // Character count
+      charCount: "{count}/200"
+    }
+  };
+
+  // Translation function
+  t(key, params = {}) {
+    const lang = this.language || 'en';
+    const translation = this.translations[lang]?.[key] || this.translations.en[key] || key;
+    
+    // Replace parameters in the translation string
+    return translation.replace(/\{(\w+)\}/g, (match, param) => {
+      return params[param] || match;
+    });
+  }
+
   injectStyles = (hljsTheme) => {
     const styleElement = document.createElement("style");
     styleElement.textContent = `
@@ -823,7 +970,7 @@ class ChatWidget {
         }
   
         .trust-score-info:hover::after {
-          content: "Trust score reflects confidence in this answer. Always double-check references, as AI can make mistakes.";
+          content: attr(data-tooltip);
           position: absolute;
           bottom: 100%;
           left: 50%;
@@ -1676,10 +1823,18 @@ class ChatWidget {
         }
 
         // Validate and set button text
-        this.buttonText = scriptTag.getAttribute('data-text') || "Ask AI";
+        this.buttonText = scriptTag.getAttribute('data-text') || this.t('askAI');
 
         // Validate and set tooltip text
         this.tooltipText = scriptTag.getAttribute('data-tooltip');
+
+        // Validate and set language
+        const language = scriptTag.getAttribute('data-language');
+        if (language && ['en', 'tr'].includes(language.toLowerCase())) {
+            this.language = language.toLowerCase();
+        } else {
+            this.language = 'en'; // Default to English
+        }
 
         this.overlapContentStr = scriptTag.getAttribute('data-overlap-content') || "true";
         this.overlapContent = this.overlapContentStr.toLowerCase() === "true";
@@ -1757,7 +1912,8 @@ class ChatWidget {
         // Fallback values if script tag not found
         this.widgetId = "";
         this.baseUrl = defaultBaseUrl;
-        this.buttonText = "Ask AI";
+        this.language = 'en'; // Default to English
+        this.buttonText = this.t('askAI');
         this.margins = { bottom: "20px", right: "20px" };
         this.mainColor = null;
         this.logoUrl = null;
@@ -1869,8 +2025,8 @@ class ChatWidget {
     return `
       <div class='empty-state'>
         <div class='sparkles'>${this.getLargeSparkle()}</div>
-        <h2>Ask anything about ${this.name}</h2>
-        <p>${this.name} Guru uses the latest data in the documentation to answer your questions.</p>
+        <h2>${this.t('emptyStateHeading', { name: this.name })}</h2>
+        <p>${this.t('emptyStateDescription', { name: this.name })}</p>
       </div>
     `;
   }
@@ -1879,7 +2035,7 @@ class ChatWidget {
     return `
       <button 
         class="submit-button"
-        aria-label="Send message"
+        aria-label="${this.t('sendMessage')}"
       >
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path fill-rule="evenodd" clip-rule="evenodd" d="M9 6.75C8.58579 6.75 8.25 6.41421 8.25 6C8.25 5.58579 8.58579 5.25 9 5.25H18C18.4142 5.25 18.75 5.58579 18.75 6V15C18.75 15.4142 18.4142 15.75 18 15.75C17.5858 15.75 17.25 15.4142 17.25 15V7.81066L6.53033 18.5303C6.23744 18.8232 5.76256 18.8232 5.46967 18.5303C5.17678 18.2374 5.17678 17.7626 5.46967 17.4697L16.1893 6.75H9Z" fill="currentColor"/>
@@ -1897,8 +2053,8 @@ class ChatWidget {
       <div class="voice-record-container">
         <button 
           class="voice-record-button"
-          aria-label="Start voice recording"
-          title="Start voice recording"
+          aria-label="${this.t('startVoiceRecording')}"
+          title="${this.t('startVoiceRecording')}"
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M12 19v3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -1952,7 +2108,7 @@ class ChatWidget {
   async startVoiceRecording() {
     try {
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        alert('Your browser does not support audio recording. Please use a modern browser.');
+        alert(this.t('browserNotSupported'));
         return;
       }
 
@@ -1983,13 +2139,13 @@ class ChatWidget {
 
     } catch (error) {
       if (error.name === 'NotAllowedError') {
-        alert('Microphone access was denied. Please allow microphone access and try again.');
+        alert(this.t('microphoneDenied'));
       } else if (error.name === 'NotFoundError') {
-        alert('No microphone found. Please connect a microphone and try again.');
+        alert(this.t('noMicrophone'));
       } else if (error.name === 'NotReadableError') {
-        alert('Microphone is already in use by another application.');
+        alert(this.t('microphoneInUse'));
       } else {
-        alert('Unable to access microphone. Please try again.');
+        alert(this.t('microphoneError'));
       }
     }
   }
@@ -2025,7 +2181,7 @@ class ChatWidget {
         }
       }
     } catch (error) {
-      alert('Failed to transcribe audio. ' + error.message);
+      alert(this.t('transcriptionError') + error.message);
       this.stopVoiceRecording();
     } finally {
       this.isProcessing = false;
@@ -2069,8 +2225,8 @@ class ChatWidget {
         <button 
           class="voice-record-button processing"
           disabled
-          aria-label="Processing audio..."
-          title="Processing audio..."
+          aria-label="${this.t('processingAudio')}"
+          title="${this.t('processingAudio')}"
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M21 12a9 9 0 11-6.219-8.56" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -2086,8 +2242,8 @@ class ChatWidget {
         </div>
         <button 
           class="voice-record-button recording"
-          aria-label="Stop recording"
-          title="Stop recording"
+          aria-label="${this.t('stopRecording')}"
+          title="${this.t('stopRecording')}"
           style="border-radius: 50%; background-color: #374151; color: white;"
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check-icon lucide-check"><path d="M20 6 9 17l-5-5"/></svg>
@@ -2097,10 +2253,10 @@ class ChatWidget {
       container.innerHTML = `
         <button 
           class="voice-record-button"
-          aria-label="Start voice recording"
+          aria-label="${this.t('startVoiceRecording')}"
           title="${this.permissionStatus === 'denied' 
-            ? 'Microphone access blocked. Click to see how to enable it.'
-            : 'Start voice recording'}"
+            ? this.t('microphoneBlocked')
+            : this.t('startVoiceRecording')}"
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M12 19v3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -2171,7 +2327,7 @@ class ChatWidget {
       const buttonHtml = `
         <button 
           class="code-block-copy-button"
-          aria-label="Copy code">
+          aria-label="${this.t('copyCode')}">
           <svg width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'>
             <rect x='9' y='9' width='13' height='13' rx='2' ry='2'></rect>
             <path d='M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1'></path>
@@ -2256,7 +2412,7 @@ class ChatWidget {
       // Character count handler
       textarea.addEventListener("input", () => {
         const count = textarea.value.length;
-        charCount.textContent = `${count}/200`;
+        charCount.textContent = this.t('charCount', { count: count });
         charCount.classList.toggle("over-limit", count > 200);
         submitBtn.disabled = count > 200;
       });
@@ -2315,7 +2471,7 @@ class ChatWidget {
         setVoteState(null);
         feedbackForm.classList.remove("show");
         textarea.value = "";
-        charCount.textContent = "0/200";
+        charCount.textContent = this.t('charCount', { count: 0 });
         charCount.classList.remove("over-limit");
         updateButtonStates();
       });
@@ -2331,7 +2487,7 @@ class ChatWidget {
           await this.recordVote(slug, bingeId, 'downvote', feedback);
           feedbackForm.classList.remove("show");
           textarea.value = "";
-          charCount.textContent = "0/200";
+          charCount.textContent = this.t('charCount', { count: 0 });
           charCount.classList.remove("over-limit");
         } catch (error) {
           console.error("Failed to record vote:", error);
@@ -2648,7 +2804,7 @@ class ChatWidget {
     if (question.length < 10) {
       errorElement.style.display = "block";
       inputContainer.style.paddingBottom = "24px"; // Add padding to input container
-      errorElement.textContent = "* At least 10 characters required!";
+      errorElement.textContent = "* " + this.t('validationError');
       return;
     }
 
@@ -2689,9 +2845,9 @@ class ChatWidget {
       <div class="trust-score-card">
         <div class="trust-score-header">
           <div class="trust-score-left">
-            <span class="trust-score-label">Trust Score</span>
+            <span class="trust-score-label">${this.t('trustScore')}</span>
             <span class="trust-score-value" style="color: ${text}">%${trustScore}</span>
-            <button class="trust-score-info">
+            <button class="trust-score-info" data-tooltip="${this.t('trustScoreTooltip')}">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <circle cx="12" cy="12" r="10"></circle>
                 <line x1="12" y1="18" x2="12" y2="10"></line>
@@ -2699,7 +2855,7 @@ class ChatWidget {
               </svg>
             </button>
           </div>
-          <div class="trust-score-bars" role="meter" aria-valuenow="${trustScore}" aria-label="Trust score ${trustScore}%">
+          <div class="trust-score-bars" role="meter" aria-valuenow="${trustScore}" aria-label="${this.t('trustScore')} ${trustScore}%">
             ${Array(10)
               .fill(0)
               .map(
@@ -2804,7 +2960,7 @@ class ChatWidget {
               <line x1="6" y1="6" x2="18" y2="18"></line>
             </svg>
           </div>
-          <span class="stage-text">Finding the best contexts from sources.</span>
+          <span class="stage-text">${this.t('findingContexts')}</span>
         </div>
       </div>
     `;
@@ -2819,7 +2975,7 @@ class ChatWidget {
       completeFirstStage();
     }, 2000);
 
-    function completeFirstStage() {
+    const completeFirstStage = () => {
       firstStageComplete = true;
       const contextStage = loadingMessage.querySelector("#context-stage");
 
@@ -2834,7 +2990,7 @@ class ChatWidget {
 
       // Instead of showing a new stage, update the text of the existing stage
       const stageText = contextStage.querySelector(".stage-text");
-      stageText.textContent = "Evaluating sources";
+      stageText.textContent = this.t('evaluatingSources');
       
       // Reset the loading animation
       contextStage.querySelector(".loading-dots").classList.remove("hidden");
@@ -2842,7 +2998,7 @@ class ChatWidget {
       contextStatusContainer.querySelector(".success-tick").classList.add("hidden");
 
       messagesContainer.scrollTop = messagesContainer.scrollHeight;
-    }
+    };
 
     // After first question is answered, create binge for future questions
 
@@ -2894,13 +3050,13 @@ class ChatWidget {
       });
 
       if (!response.ok) {
-        let errorMessage = "An error occurred while processing your request.";
+        let errorMessage = this.t('genericError');
         try {
           const errorData = await response.json();
           if (errorData.msg) {
-            errorMessage = "An error occurred: " + errorData.msg;
+            errorMessage = this.t('errorPrefix') + errorData.msg;
           } else if (errorData.error) {
-            errorMessage = errorData.error;
+            errorMessage = this.t('errorPrefix') + errorData.error;
           }
         } catch (error) {
           console.error("error", error);
@@ -3002,7 +3158,7 @@ class ChatWidget {
                   referencesContainer.className = "references-container";
                   referencesContainer.innerHTML = `
                     <header style="font-size: 1rem; font-weight: 600;">
-                      Sources
+                      ${this.t('sources')}
                     </header>
                   `;
 
@@ -3063,7 +3219,7 @@ class ChatWidget {
                 //     <line x1="8" y1="2" x2="8" y2="6"></line>
                 //     <line x1="3" y1="10" x2="21" y2="10"></line>
                 //   </svg>
-                //   <span class="label">Last Modified:</span>
+                //   <span class="label">${this.t('lastModified')}</span>
                 //   <span class="date">${data.date_updated}</span>
                 // `;
                 //       botResponseElement.appendChild(dateUpdated);
@@ -3124,11 +3280,11 @@ class ChatWidget {
 
         if (!response.ok) {
           throw new Error(
-            data.error || "An error occurred while processing your request."
+            data.error || this.t('genericError')
           );
         }
         if (!response.ok) {
-          botResponseElement.textContent = data.error || "An error occurred";
+          botResponseElement.textContent = data.error || this.t('genericError');
         } else {
           const messageContent = document.createElement("div");
 
@@ -3162,7 +3318,7 @@ class ChatWidget {
 
             referencesContainer.innerHTML = `
               <header style="font-size: 1rem; font-weight: 600;">
-                Sources
+                ${this.t('sources')}
               </header>
             `;
 
@@ -3211,16 +3367,16 @@ class ChatWidget {
           //     if (data.date_updated) {
           //       const dateUpdated = document.createElement("div");
           //       dateUpdated.className = "date-updated";
-          //       dateUpdated.innerHTML = `
-          //   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          //     <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-          //     <line x1="16" y1="2" x2="16" y2="6"></line>
-          //     <line x1="8" y1="2" x2="8" y2="6"></line>
-          //     <line x1="3" y1="10" x2="21" y2="10"></line>
-          //   </svg>
-          //   <span class="label">Last Modified:</span>
-          //   <span class="date">${data.date_updated}</span>
-          // `;
+                          //       dateUpdated.innerHTML = `
+                //   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                //     <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                //     <line x1="16" y1="2" x2="16" y2="6"></line>
+                //     <line x1="8" y1="2" x2="8" y2="6"></line>
+                //     <line x1="3" y1="10" x2="21" y2="10"></line>
+                //   </svg>
+                //   <span class="label">${this.t('lastModified')}</span>
+                //   <span class="date">${data.date_updated}</span>
+                // `;
           //       messageContent.appendChild(dateUpdated);
           //     }
 
@@ -3285,9 +3441,9 @@ class ChatWidget {
       // Update the text to show the error stage
       const stageText = failedStage.querySelector(".stage-text");
       if (firstStageComplete) {
-        stageText.textContent = "Error evaluating sources";
+        stageText.textContent = this.t('errorEvaluatingSources');
       } else {
-        stageText.textContent = "Error finding contexts";
+        stageText.textContent = this.t('errorFindingContexts');
       }
 
       await new Promise((resolve) => setTimeout(resolve, 700));
@@ -3425,25 +3581,25 @@ class ChatWidget {
             <div class="logo" style="display: flex; align-items: center; gap: 8px; width: 100%; text-overflow: ellipsis;">
               ${this.getLogo()}
               <span style="min-width: 0; overflow: hidden; text-overflow: ellipsis;">
-                Ask ${this.name} Guru
+                ${this.t('askGuru', { name: this.name })}
               </span>
             </div>
             <button 
               id="maximizeChatButton"
               class="header-button"
-              aria-label="Maximize chat">
+              aria-label="${this.t('maximizeChat')}">
               <svg height="20" width="20" stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M16 4l4 0l0 4"></path><path d="M14 10l6 -6"></path><path d="M8 20l-4 0l0 -4"></path><path d="M4 20l6 -6"></path><path d="M16 20l4 0l0 -4"></path><path d="M14 14l6 6"></path><path d="M8 4l-4 0l0 4"></path><path d="M4 4l6 6"></path></svg>              
             </button>
             <button 
               id="minimizeChatButton"
               class="header-button hidden"
-              aria-label="Minimize chat">
+              aria-label="${this.t('minimizeChat')}">
               <svg height="20" width="20" stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M5 9l4 0l0 -4"></path><path d="M3 3l6 6"></path><path d="M5 15l4 0l0 4"></path><path d="M3 21l6 -6"></path><path d="M19 9l-4 0l0 -4"></path><path d="M15 9l6 -6"></path><path d="M19 15l-4 0l0 4"></path><path d="M15 15l6 6"></path></svg>              
             </button>
             <button 
               id="closeChatButton"
               class="header-button"
-              aria-label="Close chat">
+              aria-label="${this.t('closeChat')}">
               <svg height="24" width="24" stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg"><path d="m289.94 256 95-95A24 24 0 0 0 351 127l-95 95-95-95a24 24 0 0 0-34 34l95 95-95 95a24 24 0 1 0 34 34l95-95 95 95a24 24 0 0 0 34-34z"></path></svg>
             </button>
           </div>
@@ -3461,8 +3617,8 @@ class ChatWidget {
                     type="text"
                     id="questionInput"
                     class="search-bar"
-                    placeholder="Ask anything"
-                    aria-label="Ask a question"
+                    placeholder="${this.t('askAnything')}"
+                    aria-label="${this.t('askQuestion')}"
                   />
                   ${this.getVoiceRecordButton()}
                   ${this.getSubmitButton()}
@@ -3471,14 +3627,14 @@ class ChatWidget {
             </div>
             <div class="footer-info">
               <a href="https://gurubase.io" target="_blank" class="powered-by">
-                <div class="anteon-powered">powered by ${this.getGurubaseLogo()}</div>
+                <div class="anteon-powered">${this.t('poweredBy')} ${this.getGurubaseLogo()}</div>
               </a>
               <button 
                 class="clear-button" 
-                aria-label="Clear history"
+                aria-label="${this.t('clearHistory')}"
                 style="display: none;"
               >
-                Clear
+                ${this.t('clear')}
               </button>
             </div>
           </div>
@@ -4021,7 +4177,7 @@ class ChatWidget {
       const button = document.createElement("button");
       button.className = "example-question";
       button.textContent = question;
-      button.setAttribute("aria-label", `Example question: ${question}`);
+      button.setAttribute("aria-label", `${this.t('exampleQuestion')} ${question}`);
       button.setAttribute("data-question-id", questionUuid);
       this.addExampleQuestionEventListener(button, question);
       container.appendChild(button);
@@ -4338,11 +4494,11 @@ class ChatWidget {
     const feedbackForm = document.createElement("div");
     feedbackForm.className = "vote-feedback-form";
     feedbackForm.innerHTML = `
-      <textarea placeholder="Please tell us what could be improved..." maxlength="200"></textarea>
+      <textarea placeholder="${this.t('feedbackPlaceholder')}" maxlength="200"></textarea>
       <div class="feedback-char-count">0/200</div>
       <div class="feedback-actions">
-        <button type="button" class="feedback-button cancel">Cancel</button>
-        <button type="button" class="feedback-button submit">Submit</button>
+        <button type="button" class="feedback-button cancel">${this.t('cancel')}</button>
+        <button type="button" class="feedback-button submit">${this.t('submit')}</button>
       </div>
     `;
 
