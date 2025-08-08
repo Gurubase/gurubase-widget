@@ -49,6 +49,7 @@ The only thing you need to do is to add the widget.js to your website as follows
 | data-tooltip-side | string | Tooltip side. 8 possible values: "top", "bottom", "left", "right", "top left", "top right", "bottom left", "bottom right" | "left" |
 | data-overlap-content | string | Whether to overlap the main content or shrink its width with the sidebar | "false" |
 | data-language | string | Language to use ("tr" and "en" supported) | "en" (english) |
+| data-window-mode | string | Display mode for the chat window. Options: "sidebar" (default), "floating" | "sidebar" |
 
 
 > [!NOTE]
@@ -63,6 +64,25 @@ The only thing you need to do is to add the widget.js to your website as follows
 
 > [!NOTE]
 > The background color of the tooltip is the inverse of the widget's background color. If `data-light-mode` is `light`, the tooltip's background color will be black, or vice versa.
+
+## Window Modes
+
+The widget supports two display modes:
+
+### Sidebar Mode (Default)
+The traditional sidebar experience where the chat window slides in from the right edge of the screen.
+
+### Floating Mode
+A modern modal-style experience where the chat opens as a centered floating window.
+
+**Usage:**
+```html
+<script async src="https://widget.gurubase.io/widget.latest.min.js" 
+    data-widget-id="YOUR_WIDGET_ID"
+    data-window-mode="floating"
+    id="guru-widget-id">
+</script>
+```
 
 ## Exposed Functions
 

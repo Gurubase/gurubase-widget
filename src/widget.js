@@ -78,13 +78,13 @@ class ChatWidget {
       
       // Empty state messages
       emptyStateHeading: "{name} hakkında herhangi bir şey sor",
-      emptyStateDescription: "{name} Guru, sorularınızı yanıtlamak için dokümantasyondaki en güncel verileri kullanır.",
+      emptyStateDescription: "{name} Guru, yapay zeka desteğiyle sorularınıza cevap verir.",
       
       // Loading/processing messages
-      findingContexts: "Kaynaklardan en iyi bağlamları buluyor.",
-      evaluatingSources: "Kaynakları değerlendiriyor",
-      errorFindingContexts: "Bağlam bulma hatası",
-      errorEvaluatingSources: "Kaynak değerlendirme hatası",
+      findingContexts: "En iyi referansları buluyor...",
+      evaluatingSources: "Referansları değerlendiriyor...",
+      errorFindingContexts: "Referans bulma hatası",
+      errorEvaluatingSources: "Referans değerlendirme hatası",
       
       // Error messages
       genericError: "İsteğiniz işlenirken bir hata oluştu.",
