@@ -3549,19 +3549,21 @@ class ChatWidget {
                       ? ref.question.slice(0, 90) + "..."
                       : ref.question;
 
-                    referenceItem.innerHTML = `
-                <img 
-                  src="${ref.icon || "path/to/default/icon.svg"}" 
-                  alt="Source icon" 
-                  class="reference-icon"
-                >
-                <span 
-                  class="reference-question" 
-                  ${shouldShowTooltip ? `data-tooltip="${ref.question}"` : ""}
-                >
-                  ${displayedQuestion}
-                </span>
-              `;
+                    // Create reference content safely to prevent XSS
+                    const refIcon = document.createElement('img');
+                    refIcon.src = sanitizeURL(ref.icon || "path/to/default/icon.svg");
+                    refIcon.alt = 'Source icon';
+                    refIcon.className = 'reference-icon';
+                    
+                    const refSpan = document.createElement('span');
+                    refSpan.className = 'reference-question';
+                    if (shouldShowTooltip) {
+                      refSpan.setAttribute('data-tooltip', ref.question); // Safe attribute
+                    }
+                    refSpan.textContent = displayedQuestion; // Use textContent to prevent XSS
+                    
+                    referenceItem.appendChild(refIcon);
+                    referenceItem.appendChild(refSpan);
 
                     referencesContainer.appendChild(referenceItem);
                   });
@@ -3575,7 +3577,7 @@ class ChatWidget {
                     data.trust_score
                   );
                   const trustScoreDiv = document.createElement("div");
-                  trustScoreDiv.innerHTML = trustScoreHtml;
+                  trustScoreDiv.innerHTML = sanitizeHTML(trustScoreHtml);
                   botResponseElement.appendChild(trustScoreDiv);
                 }
 
@@ -3628,7 +3630,9 @@ class ChatWidget {
 
           // Only update display if we've found and stripped the header
           if (headerFound) {
-            botResponseElement.innerHTML = marked.parse(bufferedContent);
+            // Sanitize the markdown-parsed content to prevent XSS
+            const parsedContent = marked.parse(bufferedContent);
+            botResponseElement.innerHTML = sanitizeHTML(parsedContent);
             // Add target="_blank" to all links
             botResponseElement.querySelectorAll('a').forEach(link => {
               link.setAttribute('target', '_blank');
@@ -3674,7 +3678,9 @@ class ChatWidget {
             }
           }
 
-          markdownContent.innerHTML = marked.parse(displayContent);
+          // Sanitize the markdown-parsed content to prevent XSS
+          const parsedContent = marked.parse(displayContent);
+          markdownContent.innerHTML = sanitizeHTML(parsedContent);
           // Add target="_blank" to all links
           markdownContent.querySelectorAll('a').forEach(link => {
             link.setAttribute('target', '_blank');
@@ -3717,19 +3723,21 @@ class ChatWidget {
                 ? ref.question.slice(0, 90) + "..."
                 : ref.question;
 
-              referenceItem.innerHTML = `
-          <img 
-            src="${ref.icon || "path/to/default/icon.svg"}" 
-            alt="Source icon" 
-            class="reference-icon"
-          >
-          <span 
-            class="reference-question" 
-            ${shouldShowTooltip ? `data-tooltip="${ref.question}"` : ""}
-          >
-            ${displayedQuestion}
-          </span>
-        `;
+              // Create reference content safely to prevent XSS
+              const refIcon = document.createElement('img');
+              refIcon.src = sanitizeURL(ref.icon || "path/to/default/icon.svg");
+              refIcon.alt = 'Source icon';
+              refIcon.className = 'reference-icon';
+              
+              const refSpan = document.createElement('span');
+              refSpan.className = 'reference-question';
+              if (shouldShowTooltip) {
+                refSpan.setAttribute('data-tooltip', ref.question); // Safe attribute
+              }
+              refSpan.textContent = displayedQuestion; // Use textContent to prevent XSS
+              
+              referenceItem.appendChild(refIcon);
+              referenceItem.appendChild(refSpan);
 
               referencesContainer.appendChild(referenceItem);
             });
@@ -3739,7 +3747,9 @@ class ChatWidget {
 
           // Add trust score last if it exists
           if (data.trust_score !== undefined && data.trust_score !== null) {
-            messageContent.innerHTML += this.createTrustScore(data.trust_score);
+            const trustScoreDiv = document.createElement("div");
+            trustScoreDiv.innerHTML = sanitizeHTML(this.createTrustScore(data.trust_score));
+            messageContent.appendChild(trustScoreDiv);
           }
 
           finalResponse = data.content;
@@ -4261,7 +4271,7 @@ class ChatWidget {
       if (textContainerId) {
         const textContainerDiv = this.shadow.getElementById(textContainerId);
         if (textContainerDiv) {
-          textToCopy = textContainerDiv.innerHTML;
+          textToCopy = textContainerDiv.textContent || textContainerDiv.innerText;
         }
       }
       this.addResponseButtonEventListeners(button, () => this.copyResponseText(textToCopy))
@@ -4277,7 +4287,7 @@ class ChatWidget {
       if (questionContainerId) {
         const questionContainerDiv = this.shadow.getElementById(questionContainerId);
         if (questionContainerDiv) {
-          question = questionContainerDiv.innerHTML;
+          question = questionContainerDiv.textContent || questionContainerDiv.innerText;
         }
       }
       this.addExampleQuestionEventListener(button, question);
@@ -4836,7 +4846,7 @@ class ChatWidget {
     const copyTextContainer = document.createElement("div");
     copyTextContainer.className = 'hidden';
     copyTextContainer.id = containerUuid;
-    copyTextContainer.innerHTML = textToCopy;
+    copyTextContainer.textContent = textToCopy;
     buttonContainer.appendChild(copyTextContainer);
 
     const copyButton = this.createResponseButton(
@@ -4989,8 +4999,59 @@ function loadScript(url) {
     });
   }
 
-  // Load marked.js before initializing the widget
-  loadScript('https://cdn.jsdelivr.net/npm/marked/marked.min.js')
+  // Load DOMPurify for HTML sanitization
+  function loadDOMPurify() {
+    return new Promise((resolve, reject) => {
+      // Check if DOMPurify is already loaded
+      if (window.DOMPurify) {
+        resolve();
+        return;
+      }
+
+      const script = document.createElement('script');
+      script.src = 'https://cdn.jsdelivr.net/npm/dompurify@3.0.5/dist/purify.min.js';
+      script.onload = resolve;
+      script.onerror = () => reject(new Error('Failed to load DOMPurify'));
+      document.head.appendChild(script);
+    });
+  }
+
+  // Sanitize HTML content to prevent XSS
+  function sanitizeHTML(html) {
+    if (typeof window.DOMPurify !== 'undefined') {
+      return window.DOMPurify.sanitize(html, {
+        ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 'u', 'a', 'ul', 'ol', 'li', 'blockquote', 'code', 'pre', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'table', 'thead', 'tbody', 'tr', 'td', 'th', 'span', 'div'],
+        ALLOWED_ATTR: ['href', 'target', 'rel', 'class'],
+        ALLOW_DATA_ATTR: false,
+        FORBID_TAGS: ['script', 'object', 'embed', 'form', 'input', 'textarea', 'select', 'button'],
+        FORBID_ATTR: ['onerror', 'onload', 'onclick', 'onmouseover', 'onfocus', 'onblur', 'onchange', 'onsubmit']
+      });
+    }
+    // Fallback: strip all HTML tags if DOMPurify isn't loaded
+    const div = document.createElement('div');
+    div.textContent = html;
+    return div.innerHTML;
+  }
+
+  // Validate and sanitize URLs
+  function sanitizeURL(url) {
+    try {
+      const urlObj = new URL(url);
+      // Only allow http and https protocols
+      if (urlObj.protocol === 'http:' || urlObj.protocol === 'https:') {
+        return urlObj.href;
+      }
+    } catch (e) {
+      // Invalid URL
+    }
+    return '#'; // Return safe fallback
+  }
+
+  // Load required libraries before initializing the widget
+  Promise.all([
+    loadScript('https://cdn.jsdelivr.net/npm/marked/marked.min.js'),
+    loadDOMPurify()
+  ])
     .then(() => {
       // Check if DOMContentLoaded has already fired
       if (document.readyState === 'loading') {
