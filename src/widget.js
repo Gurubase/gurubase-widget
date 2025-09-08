@@ -3529,11 +3529,13 @@ class ChatWidget {
                 if (data.references && data.references.length > 0) {
                   const referencesContainer = document.createElement("div");
                   referencesContainer.className = "references-container";
-                  referencesContainer.innerHTML = `
-                    <header style="font-size: 1rem; font-weight: 600;">
-                      ${this.t('sources')}
-                    </header>
-                  `;
+                  
+                  // Create header safely without innerHTML
+                  const header = document.createElement("header");
+                  header.style.fontSize = "1rem";
+                  header.style.fontWeight = "600";
+                  header.textContent = this.t('sources');
+                  referencesContainer.appendChild(header);
 
                   data.references.forEach((ref) => {
                     const referenceItem = document.createElement(ref.link ? 'a' : 'div');
@@ -3551,14 +3553,20 @@ class ChatWidget {
 
                     // Create reference content safely to prevent XSS
                     const refIcon = document.createElement('img');
-                    refIcon.src = sanitizeURL(ref.icon || "path/to/default/icon.svg");
+                    
+                    // Sanitize icon URL and use safe default if sanitization fails
+                    const sanitizedIconURL = sanitizeURL(ref.icon);
+                    const defaultIconURL = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEzIDJMMTMgNkwxNyA2TDEzIDJaIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPHBhdGggZD0iTTEzIDZMMTMgMjJMNSAyMkw1IDJMMTMgMloiIHN0cm9rZT0iY3VycmVudENvbG9yIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgo8L3N2Zz4K';
+                    
+                    refIcon.src = sanitizedIconURL || defaultIconURL;
                     refIcon.alt = 'Source icon';
                     refIcon.className = 'reference-icon';
                     
                     const refSpan = document.createElement('span');
                     refSpan.className = 'reference-question';
                     if (shouldShowTooltip) {
-                      refSpan.setAttribute('data-tooltip', ref.question); // Safe attribute
+                      // Sanitize tooltip text to prevent XSS via attributes
+                      refSpan.setAttribute('data-tooltip', sanitizeAttributeText(ref.question));
                     }
                     refSpan.textContent = displayedQuestion; // Use textContent to prevent XSS
                     
@@ -3703,11 +3711,12 @@ class ChatWidget {
             const referencesContainer = document.createElement("div");
             referencesContainer.className = "references-container";
 
-            referencesContainer.innerHTML = `
-              <header style="font-size: 1rem; font-weight: 600;">
-                ${this.t('sources')}
-              </header>
-            `;
+            // Create header safely without innerHTML
+            const header = document.createElement("header");
+            header.style.fontSize = "1rem";
+            header.style.fontWeight = "600";
+            header.textContent = this.t('sources');
+            referencesContainer.appendChild(header);
 
             data.references.forEach((ref) => {
               const referenceItem = document.createElement(ref.link ? 'a' : 'div');
@@ -3725,14 +3734,20 @@ class ChatWidget {
 
               // Create reference content safely to prevent XSS
               const refIcon = document.createElement('img');
-              refIcon.src = sanitizeURL(ref.icon || "path/to/default/icon.svg");
+              
+              // Sanitize icon URL and use safe default if sanitization fails
+              const sanitizedIconURL = sanitizeURL(ref.icon);
+              const defaultIconURL = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEzIDJMMTMgNkwxNyA2TDEzIDJaIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPHBhdGggZD0iTTEzIDZMMTMgMjJMNSAyMkw1IDJMMTMgMloiIHN0cm9rZT0iY3VycmVudENvbG9yIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgo8L3N2Zz4K';
+              
+              refIcon.src = sanitizedIconURL || defaultIconURL;
               refIcon.alt = 'Source icon';
               refIcon.className = 'reference-icon';
               
               const refSpan = document.createElement('span');
               refSpan.className = 'reference-question';
               if (shouldShowTooltip) {
-                refSpan.setAttribute('data-tooltip', ref.question); // Safe attribute
+                // Sanitize tooltip text to prevent XSS via attributes
+                refSpan.setAttribute('data-tooltip', sanitizeAttributeText(ref.question));
               }
               refSpan.textContent = displayedQuestion; // Use textContent to prevent XSS
               
@@ -5033,18 +5048,65 @@ function loadScript(url) {
     return div.innerHTML;
   }
 
-  // Validate and sanitize URLs
+  // Validate and sanitize URLs with strict scheme/host checks
   function sanitizeURL(url) {
+    if (!url || typeof url !== 'string') {
+      return null; // Return null for invalid input so code can fall back to default
+    }
+    
     try {
       const urlObj = new URL(url);
       // Only allow http and https protocols
-      if (urlObj.protocol === 'http:' || urlObj.protocol === 'https:') {
-        return urlObj.href;
+      if (urlObj.protocol !== 'http:' && urlObj.protocol !== 'https:') {
+        return null;
       }
+      
+      // Additional host validation - reject localhost, private IPs, and suspicious hosts
+      const hostname = urlObj.hostname.toLowerCase();
+      
+      // Reject localhost and loopback
+      if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '::1') {
+        return null;
+      }
+      
+      // Reject private IP ranges (basic check)
+      if (hostname.match(/^192\.168\.|^10\.|^172\.(1[6-9]|2[0-9]|3[01])\./)) {
+        return null;
+      }
+      
+      // Reject suspicious or malicious patterns
+      if (hostname.includes('javascript:') || hostname.includes('data:') || hostname.includes('vbscript:')) {
+        return null;
+      }
+      
+      return urlObj.href;
     } catch (e) {
-      // Invalid URL
+      // Invalid URL format
+      return null;
     }
-    return '#'; // Return safe fallback
+  }
+
+  // Sanitize text for use in attributes to prevent XSS
+  function sanitizeAttributeText(text) {
+    if (!text || typeof text !== 'string') {
+      return '';
+    }
+    
+    // Remove potentially dangerous characters and scripts
+    return text
+      .replace(/[<>\"'&]/g, function(match) {
+        const entityMap = {
+          '<': '&lt;',
+          '>': '&gt;',
+          '"': '&quot;',
+          "'": '&#x27;',
+          '&': '&amp;'
+        };
+        return entityMap[match];
+      })
+      .replace(/javascript:/gi, '')
+      .replace(/data:/gi, '')
+      .replace(/vbscript:/gi, '');
   }
 
   // Load required libraries before initializing the widget
