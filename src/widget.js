@@ -3923,14 +3923,25 @@ class ChatWidget {
     // Add user message
     const userMessage = document.createElement("div");
     userMessage.className = `message user-message${isFirstMessage ? " first-message" : ""}`;
-    userMessage.innerHTML = `
-      ${!isFirstMessage ? '<div class="message-divider"></div>' : ""}
-      <div class="message-content" style="width: 100%;">
-        <p class="user-text">
-          ${question}
-        </p>
-      </div>
-    `;
+    
+    // Create the structure without innerHTML to avoid HTML rendering
+    if (!isFirstMessage) {
+      const divider = document.createElement("div");
+      divider.className = "message-divider";
+      userMessage.appendChild(divider);
+    }
+    
+    const messageContent = document.createElement("div");
+    messageContent.className = "message-content";
+    messageContent.style.width = "100%";
+    
+    const userText = document.createElement("p");
+    userText.className = "user-text";
+    userText.textContent = question; // Use textContent to prevent HTML rendering
+    
+    messageContent.appendChild(userText);
+    userMessage.appendChild(messageContent);
+    
     messagesContainer.appendChild(userMessage);
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
   }
@@ -4549,7 +4560,7 @@ class ChatWidget {
       const exampleQuestionContainer = document.createElement("div");
       exampleQuestionContainer.className = 'hidden';
       exampleQuestionContainer.id = questionUuid;
-      exampleQuestionContainer.innerHTML = question;
+      exampleQuestionContainer.textContent = question; // Use textContent to prevent HTML rendering
       container.appendChild(exampleQuestionContainer);
       // Create button
       const button = document.createElement("button");
