@@ -3529,11 +3529,13 @@ class ChatWidget {
                 if (data.references && data.references.length > 0) {
                   const referencesContainer = document.createElement("div");
                   referencesContainer.className = "references-container";
-                  referencesContainer.innerHTML = `
-                    <header style="font-size: 1rem; font-weight: 600;">
-                      ${this.t('sources')}
-                    </header>
-                  `;
+                  
+                  // Create header safely without innerHTML
+                  const header = document.createElement("header");
+                  header.style.fontSize = "1rem";
+                  header.style.fontWeight = "600";
+                  header.textContent = this.t('sources');
+                  referencesContainer.appendChild(header);
 
                   data.references.forEach((ref) => {
                     const referenceItem = document.createElement(ref.link ? 'a' : 'div');
@@ -3549,19 +3551,27 @@ class ChatWidget {
                       ? ref.question.slice(0, 90) + "..."
                       : ref.question;
 
-                    referenceItem.innerHTML = `
-                <img 
-                  src="${ref.icon || "path/to/default/icon.svg"}" 
-                  alt="Source icon" 
-                  class="reference-icon"
-                >
-                <span 
-                  class="reference-question" 
-                  ${shouldShowTooltip ? `data-tooltip="${ref.question}"` : ""}
-                >
-                  ${displayedQuestion}
-                </span>
-              `;
+                    // Create reference content safely to prevent XSS
+                    const refIcon = document.createElement('img');
+                    
+                    // Sanitize icon URL and use safe default if sanitization fails
+                    const sanitizedIconURL = sanitizeURL(ref.icon);
+                    const defaultIconURL = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEzIDJMMTMgNkwxNyA2TDEzIDJaIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPHBhdGggZD0iTTEzIDZMMTMgMjJMNSAyMkw1IDJMMTMgMloiIHN0cm9rZT0iY3VycmVudENvbG9yIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgo8L3N2Zz4K';
+                    
+                    refIcon.src = sanitizedIconURL || defaultIconURL;
+                    refIcon.alt = 'Source icon';
+                    refIcon.className = 'reference-icon';
+                    
+                    const refSpan = document.createElement('span');
+                    refSpan.className = 'reference-question';
+                    if (shouldShowTooltip) {
+                      // Sanitize tooltip text to prevent XSS via attributes
+                      refSpan.setAttribute('data-tooltip', sanitizeAttributeText(ref.question));
+                    }
+                    refSpan.textContent = displayedQuestion; // Use textContent to prevent XSS
+                    
+                    referenceItem.appendChild(refIcon);
+                    referenceItem.appendChild(refSpan);
 
                     referencesContainer.appendChild(referenceItem);
                   });
@@ -3575,7 +3585,7 @@ class ChatWidget {
                     data.trust_score
                   );
                   const trustScoreDiv = document.createElement("div");
-                  trustScoreDiv.innerHTML = trustScoreHtml;
+                  trustScoreDiv.innerHTML = sanitizeHTML(trustScoreHtml);
                   botResponseElement.appendChild(trustScoreDiv);
                 }
 
@@ -3628,7 +3638,9 @@ class ChatWidget {
 
           // Only update display if we've found and stripped the header
           if (headerFound) {
-            botResponseElement.innerHTML = marked.parse(bufferedContent);
+            // Sanitize the markdown-parsed content to prevent XSS
+            const parsedContent = marked.parse(bufferedContent);
+            botResponseElement.innerHTML = sanitizeHTML(parsedContent);
             // Add target="_blank" to all links
             botResponseElement.querySelectorAll('a').forEach(link => {
               link.setAttribute('target', '_blank');
@@ -3674,7 +3686,9 @@ class ChatWidget {
             }
           }
 
-          markdownContent.innerHTML = marked.parse(displayContent);
+          // Sanitize the markdown-parsed content to prevent XSS
+          const parsedContent = marked.parse(displayContent);
+          markdownContent.innerHTML = sanitizeHTML(parsedContent);
           // Add target="_blank" to all links
           markdownContent.querySelectorAll('a').forEach(link => {
             link.setAttribute('target', '_blank');
@@ -3697,11 +3711,12 @@ class ChatWidget {
             const referencesContainer = document.createElement("div");
             referencesContainer.className = "references-container";
 
-            referencesContainer.innerHTML = `
-              <header style="font-size: 1rem; font-weight: 600;">
-                ${this.t('sources')}
-              </header>
-            `;
+            // Create header safely without innerHTML
+            const header = document.createElement("header");
+            header.style.fontSize = "1rem";
+            header.style.fontWeight = "600";
+            header.textContent = this.t('sources');
+            referencesContainer.appendChild(header);
 
             data.references.forEach((ref) => {
               const referenceItem = document.createElement(ref.link ? 'a' : 'div');
@@ -3717,19 +3732,27 @@ class ChatWidget {
                 ? ref.question.slice(0, 90) + "..."
                 : ref.question;
 
-              referenceItem.innerHTML = `
-          <img 
-            src="${ref.icon || "path/to/default/icon.svg"}" 
-            alt="Source icon" 
-            class="reference-icon"
-          >
-          <span 
-            class="reference-question" 
-            ${shouldShowTooltip ? `data-tooltip="${ref.question}"` : ""}
-          >
-            ${displayedQuestion}
-          </span>
-        `;
+              // Create reference content safely to prevent XSS
+              const refIcon = document.createElement('img');
+              
+              // Sanitize icon URL and use safe default if sanitization fails
+              const sanitizedIconURL = sanitizeURL(ref.icon);
+              const defaultIconURL = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEzIDJMMTMgNkwxNyA2TDEzIDJaIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPHBhdGggZD0iTTEzIDZMMTMgMjJMNSAyMkw1IDJMMTMgMloiIHN0cm9rZT0iY3VycmVudENvbG9yIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgo8L3N2Zz4K';
+              
+              refIcon.src = sanitizedIconURL || defaultIconURL;
+              refIcon.alt = 'Source icon';
+              refIcon.className = 'reference-icon';
+              
+              const refSpan = document.createElement('span');
+              refSpan.className = 'reference-question';
+              if (shouldShowTooltip) {
+                // Sanitize tooltip text to prevent XSS via attributes
+                refSpan.setAttribute('data-tooltip', sanitizeAttributeText(ref.question));
+              }
+              refSpan.textContent = displayedQuestion; // Use textContent to prevent XSS
+              
+              referenceItem.appendChild(refIcon);
+              referenceItem.appendChild(refSpan);
 
               referencesContainer.appendChild(referenceItem);
             });
@@ -3739,7 +3762,9 @@ class ChatWidget {
 
           // Add trust score last if it exists
           if (data.trust_score !== undefined && data.trust_score !== null) {
-            messageContent.innerHTML += this.createTrustScore(data.trust_score);
+            const trustScoreDiv = document.createElement("div");
+            trustScoreDiv.innerHTML = sanitizeHTML(this.createTrustScore(data.trust_score));
+            messageContent.appendChild(trustScoreDiv);
           }
 
           finalResponse = data.content;
@@ -3923,14 +3948,25 @@ class ChatWidget {
     // Add user message
     const userMessage = document.createElement("div");
     userMessage.className = `message user-message${isFirstMessage ? " first-message" : ""}`;
-    userMessage.innerHTML = `
-      ${!isFirstMessage ? '<div class="message-divider"></div>' : ""}
-      <div class="message-content" style="width: 100%;">
-        <p class="user-text">
-          ${question}
-        </p>
-      </div>
-    `;
+    
+    // Create the structure without innerHTML to avoid HTML rendering
+    if (!isFirstMessage) {
+      const divider = document.createElement("div");
+      divider.className = "message-divider";
+      userMessage.appendChild(divider);
+    }
+    
+    const messageContent = document.createElement("div");
+    messageContent.className = "message-content";
+    messageContent.style.width = "100%";
+    
+    const userText = document.createElement("p");
+    userText.className = "user-text";
+    userText.textContent = question; // Use textContent to prevent HTML rendering
+    
+    messageContent.appendChild(userText);
+    userMessage.appendChild(messageContent);
+    
     messagesContainer.appendChild(userMessage);
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
   }
@@ -4250,7 +4286,7 @@ class ChatWidget {
       if (textContainerId) {
         const textContainerDiv = this.shadow.getElementById(textContainerId);
         if (textContainerDiv) {
-          textToCopy = textContainerDiv.innerHTML;
+          textToCopy = textContainerDiv.textContent || textContainerDiv.innerText;
         }
       }
       this.addResponseButtonEventListeners(button, () => this.copyResponseText(textToCopy))
@@ -4266,7 +4302,7 @@ class ChatWidget {
       if (questionContainerId) {
         const questionContainerDiv = this.shadow.getElementById(questionContainerId);
         if (questionContainerDiv) {
-          question = questionContainerDiv.innerHTML;
+          question = questionContainerDiv.textContent || questionContainerDiv.innerText;
         }
       }
       this.addExampleQuestionEventListener(button, question);
@@ -4549,7 +4585,7 @@ class ChatWidget {
       const exampleQuestionContainer = document.createElement("div");
       exampleQuestionContainer.className = 'hidden';
       exampleQuestionContainer.id = questionUuid;
-      exampleQuestionContainer.innerHTML = question;
+      exampleQuestionContainer.textContent = question; // Use textContent to prevent HTML rendering
       container.appendChild(exampleQuestionContainer);
       // Create button
       const button = document.createElement("button");
@@ -4825,7 +4861,7 @@ class ChatWidget {
     const copyTextContainer = document.createElement("div");
     copyTextContainer.className = 'hidden';
     copyTextContainer.id = containerUuid;
-    copyTextContainer.innerHTML = textToCopy;
+    copyTextContainer.textContent = textToCopy;
     buttonContainer.appendChild(copyTextContainer);
 
     const copyButton = this.createResponseButton(
@@ -4978,8 +5014,106 @@ function loadScript(url) {
     });
   }
 
-  // Load marked.js before initializing the widget
-  loadScript('https://cdn.jsdelivr.net/npm/marked/marked.min.js')
+  // Load DOMPurify for HTML sanitization
+  function loadDOMPurify() {
+    return new Promise((resolve, reject) => {
+      // Check if DOMPurify is already loaded
+      if (window.DOMPurify) {
+        resolve();
+        return;
+      }
+
+      const script = document.createElement('script');
+      script.src = 'https://cdn.jsdelivr.net/npm/dompurify@3.0.5/dist/purify.min.js';
+      script.onload = resolve;
+      script.onerror = () => reject(new Error('Failed to load DOMPurify'));
+      document.head.appendChild(script);
+    });
+  }
+
+  // Sanitize HTML content to prevent XSS
+  function sanitizeHTML(html) {
+    if (typeof window.DOMPurify !== 'undefined') {
+      return window.DOMPurify.sanitize(html, {
+        ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 'u', 'a', 'ul', 'ol', 'li', 'blockquote', 'code', 'pre', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'table', 'thead', 'tbody', 'tr', 'td', 'th', 'span', 'div'],
+        ALLOWED_ATTR: ['href', 'target', 'rel', 'class'],
+        ALLOW_DATA_ATTR: false,
+        FORBID_TAGS: ['script', 'object', 'embed', 'form', 'input', 'textarea', 'select', 'button'],
+        FORBID_ATTR: ['onerror', 'onload', 'onclick', 'onmouseover', 'onfocus', 'onblur', 'onchange', 'onsubmit']
+      });
+    }
+    // Fallback: strip all HTML tags if DOMPurify isn't loaded
+    const div = document.createElement('div');
+    div.textContent = html;
+    return div.innerHTML;
+  }
+
+  // Validate and sanitize URLs with strict scheme/host checks
+  function sanitizeURL(url) {
+    if (!url || typeof url !== 'string') {
+      return null; // Return null for invalid input so code can fall back to default
+    }
+    
+    try {
+      const urlObj = new URL(url);
+      // Only allow http and https protocols
+      if (urlObj.protocol !== 'http:' && urlObj.protocol !== 'https:') {
+        return null;
+      }
+      
+      // Additional host validation - reject localhost, private IPs, and suspicious hosts
+      const hostname = urlObj.hostname.toLowerCase();
+      
+      // Reject localhost and loopback
+      if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '::1') {
+        return null;
+      }
+      
+      // Reject private IP ranges (basic check)
+      if (hostname.match(/^192\.168\.|^10\.|^172\.(1[6-9]|2[0-9]|3[01])\./)) {
+        return null;
+      }
+      
+      // Reject suspicious or malicious patterns
+      if (hostname.includes('javascript:') || hostname.includes('data:') || hostname.includes('vbscript:')) {
+        return null;
+      }
+      
+      return urlObj.href;
+    } catch (e) {
+      // Invalid URL format
+      return null;
+    }
+  }
+
+  // Sanitize text for use in attributes to prevent XSS
+  function sanitizeAttributeText(text) {
+    if (!text || typeof text !== 'string') {
+      return '';
+    }
+    
+    // Remove potentially dangerous characters and scripts
+    return text
+      .replace(/[<>\"'&]/g, function(match) {
+        const entityMap = {
+          '<': '&lt;',
+          '>': '&gt;',
+          '"': '&quot;',
+          "'": '&#x27;',
+          '&': '&amp;'
+        };
+        return entityMap[match];
+      })
+      .replace(/javascript:/gi, '')
+      .replace(/data:/gi, '')
+      .replace(/vbscript:/gi, '');
+  }
+
+  // Load required libraries before initializing the widget
+  Promise.all([
+    loadScript('https://cdn.jsdelivr.net/npm/marked/marked.min.js'),
+    loadDOMPurify()
+  ])
     .then(() => {
       // Check if DOMContentLoaded has already fired
       if (document.readyState === 'loading') {
