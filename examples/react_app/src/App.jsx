@@ -19,15 +19,19 @@ function App() {
           </Routes>
         </main>
         <GurubaseWidget 
-          widgetId="YOUR_WIDGET_ID"
-          text="Ask AI"
+          widgetId="d4OtSt6iRKcNEEwkCCJQ7A5XfTMigLUOGRjp2hvNyQs"  // Cloud
+          // widgetId="CJ5fN2FaYAmpDyhQWjY-37Yn54D0jFbh6mQKFqomGMA"  // Selfhosted
+          // text="Ask AI"
           margins={{ bottom: "20px", right: "20px" }} // Optional
-          lightMode="auto" // Optional
+          lightMode="true" // Optional
           bgColor="YOUR_BG_COLOR" // Optional
           iconUrl="YOUR_ICON_URL" // Optional
           name="YOUR_NAME" // Optional
-          overlapContent="false" // Optional
+          baseUrl="http://localhost:8008" // Cloud
+          // baseUrl="http://localhost:8019/api" // Selfhosted
         />
+        <div>Test</div>
+
       </div>
     </Router>
   )

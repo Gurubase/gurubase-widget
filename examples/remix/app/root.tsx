@@ -30,7 +30,6 @@ export default function App() {
           // text="Ask AI"
           // margins={{ bottom: "20px", right: "20px" }}
           // lightMode="auto"
-          overlapContent="false"
         />        
         <div className="min-h-screen">
           <Outlet />

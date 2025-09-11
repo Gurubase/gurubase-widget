@@ -14,7 +14,6 @@ interface GurubaseWidgetProps {
   iconUrl?: string;
   name?: string;
   lightMode?: string;
-  overlapContent?: string;
 }
 
 export function GurubaseWidget({
@@ -25,7 +24,6 @@ export function GurubaseWidget({
   iconUrl,
   name,
   lightMode = "auto",
-  overlapContent = "false"
 }: GurubaseWidgetProps) {
   useEffect(() => {
     if (window.chatWidget) return;
@@ -41,7 +39,6 @@ export function GurubaseWidget({
     if (iconUrl) script.setAttribute('data-icon-url', iconUrl);
     if (name) script.setAttribute('data-name', name);
     script.setAttribute('data-light-mode', String(lightMode));
-    if (overlapContent) script.setAttribute('data-overlap-content', overlapContent);
 
     document.body.appendChild(script);
 
@@ -51,7 +48,7 @@ export function GurubaseWidget({
       const widgetContainer = document.querySelector('.chat-widget');
       if (widgetContainer) widgetContainer.remove();
     };
-  }, [widgetId, text, margins, bgColor, iconUrl, name, lightMode, overlapContent]);
+  }, [widgetId, text, margins, bgColor, iconUrl, name, lightMode]);
 
   return null;
 }
