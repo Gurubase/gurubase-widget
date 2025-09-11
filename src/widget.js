@@ -1838,8 +1838,6 @@ class ChatWidget {
             this.language = 'en'; // Default to English
         }
 
-        this.overlapContentStr = scriptTag.getAttribute('data-overlap-content') || "true";
-        this.overlapContent = this.overlapContentStr.toLowerCase() === "true";
 
         // Validate and set main color
         const mainColor = scriptTag.getAttribute('data-bg-color');
@@ -4141,9 +4139,6 @@ class ChatWidget {
     this.injectStyles(hljsTheme);
     document.body.appendChild(this.container);
 
-    // Initialize content wrapper
-    this.initializeContentWrapper();
-
     // Set up URL change detection
     this.setupUrlChangeDetection();
 
@@ -4387,17 +4382,6 @@ class ChatWidget {
     chatWindow.style.width = `${newWidth}px`;
     // Update content width while dragging
     this.setWrapperPanelWidth(newWidth);
-  }
-
-  setWrapperPanelWidth(newWidth) {
-    if (this.overlapContent) {
-      return;
-    }
-    if (newWidth === undefined) newWidth = this.shadow.getElementById("chatWindow").clientWidth;
-    if (document.body.classList.contains("widget-open")) {
-      const wrapper = document.getElementById("gurubase-page-content-wrapper");
-      wrapper.style.width = `calc(100% - ${newWidth}px)`;
-    }
   }
 
   handleDragEnd(e) {
@@ -4669,42 +4653,8 @@ class ChatWidget {
   }
 
   handleUrlChange() {
-    // Small delay to let the framework update the DOM
-    setTimeout(() => {
-      this.initializeContentWrapper();
-      
-      // Check if widget container is still in document
-      if (!document.body.contains(this.container)) {
-        document.body.appendChild(this.container);
-        
-        // Reinitialize widget button styles
-        const chatButton = this.shadow.querySelector(".chat-button");
-        if (chatButton) {
-          chatButton.style.cssText = `
-            bottom: ${this.margins.bottom};
-            right: ${this.margins.right};
-            --chat-button-bg: ${this.mainColor};
-          `;
-          chatButton.style.setProperty(
-            "--chat-button-hover-bg",
-            this.darkenColor(this.mainColor, 0.1)
-          );
-          chatButton.style.setProperty(
-            "--chat-button-active-bg",
-            this.darkenColor(this.mainColor, 0.2)
-          );
-        }
-      }
-
-      // Check if chat is open and adjust wrapper width
-      const chatWindow = this.shadow.getElementById("chatWindow");
-      const wrapper = document.getElementById("gurubase-page-content-wrapper");
-      if (chatWindow && wrapper && chatWindow.classList.contains("open")) {
-        const chatWidth = chatWindow.style.width || "400px";
-        this.setChatPanelWidth(chatWidth);
-      }
-    }, 100);
   }
+
 
   setupUrlChangeDetection() {
     // Store initial URL
@@ -4741,33 +4691,6 @@ class ChatWidget {
         this.handleUrlChange();
       }
     }, 1000);
-  }
-
-  initializeContentWrapper() {
-    let wrapper = document.getElementById("gurubase-page-content-wrapper");
-    
-    // If wrapper doesn't exist, create it
-    if (!wrapper) {
-      wrapper = document.createElement("div");
-      wrapper.id = "gurubase-page-content-wrapper";
-      wrapper.style.position = "relative";
-      wrapper.style.zIndex = "1";
-      wrapper.style.width = "100%";
-      
-      // Move all body children into wrapper except chat widget and scripts
-      const bodyChildren = Array.from(document.body.children);
-      const eligibleChildren = bodyChildren.filter(child => 
-        !child.classList?.contains("chat-widget") && 
-        child.id !== "guru-widget-id" && 
-        child.tagName !== 'SCRIPT'
-      );
-
-      eligibleChildren.forEach(child => {
-        wrapper.appendChild(child);
-      });
-      
-      document.body.insertBefore(wrapper, document.body.firstChild);
-    }
   }
 
   // Add this new method to switch themes
