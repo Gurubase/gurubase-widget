@@ -14,7 +14,6 @@ export default function App({ Component, pageProps }) {
         // bgColor="YOUR_BG_COLOR"
         // iconUrl="YOUR_ICON_URL"
         // name="YOUR_NAME"
-        // overlapContent="false"
       />
     </>
   )

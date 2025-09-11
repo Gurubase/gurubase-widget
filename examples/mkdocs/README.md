@@ -23,7 +23,6 @@ document.addEventListener("DOMContentLoaded", () => {
     "data-name": "YOUR_NAME", // Optional - Widget name
     "data-icon-url": "YOUR_ICON_URL", // Optional - Widget icon URL
     "data-bg-color": "#000000" // Optional - Widget background color
-    "data-overlap-content": "true" // Optional - Whether to overlap the main content or shrink its width with the sidebar
   };
 
   // Add widget settings as data attributes

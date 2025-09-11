@@ -20,7 +20,6 @@ function GurubaseWidget({
   name = null,
   lightMode = "auto",
   baseUrl = null,
-  overlapContent = false
 }) {
   useEffect(() => {
     // Check if widget is already initialized
@@ -61,9 +60,6 @@ function GurubaseWidget({
       }
       if (baseUrl) {
         script.setAttribute('data-baseUrl', baseUrl);
-      }
-      if (overlapContent) {
-        script.setAttribute('data-overlap-content', overlapContent);
       }
 
       script.setAttribute('id', 'guru-widget-id');
@@ -109,7 +105,6 @@ function App() {
           bgColor="YOUR_BG_COLOR" // Optional
           iconUrl="YOUR_ICON_URL" // Optional
           name="YOUR_NAME" // Optional
-          overlapContent="false" // Optional
         />
       {/* ... existing app content ... */}
     </div>

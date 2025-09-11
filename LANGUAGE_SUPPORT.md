@@ -42,7 +42,6 @@ To use the widget with a specific language, add the `data-language` attribute to
     data-window-mode="sidebar"
     data-light-mode="auto"
     data-margins='{"bottom": "20px", "right": "20px"}'
-    data-overlap-content="true">
 </script>
 ```
 

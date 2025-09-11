@@ -15,7 +15,6 @@ This is a simple example of how to integrate the Gurubase Widget into your websi
     data-bg-color="YOUR_BG_COLOR"
     data-icon-url="YOUR_ICON_URL"
     data-name="YOUR_NAME"
-    data-overlap-content="false"
     id="guru-widget-id"
 ></script>
 ```

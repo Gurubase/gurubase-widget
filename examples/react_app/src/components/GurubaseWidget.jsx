@@ -4,14 +4,13 @@ import { useEffect } from 'react';
 
 function GurubaseWidget({
   widgetId,
-  text = "Ask AI",
+  text = 'Ask AI',
   margins = { bottom: "20px", right: "20px" },
   bgColor = null,
   iconUrl = null,
   name = null,
   lightMode = "auto",
   baseUrl = null,
-  overlapContent = false
 }) {
   useEffect(() => {
     // Check if widget is already initialized
@@ -27,14 +26,17 @@ function GurubaseWidget({
     // Load widget script after marked.js
     // markedScript.onload = () => {
       const script = document.createElement('script');
-      script.src = 'https://widget.gurubase.io/widget.latest.min.js';
+      // script.src = 'https://widget.gurubase.io/widget.latest.min.js';
+      // script.src = 'https://reservation-mw-fireplace-wilson.trycloudflare.com/src/widget.js';
+      script.src = 'http://localhost:8080/src/widget.js';
+      // script.src = 'https://cdn.jsdelivr.net/gh/Gurubase/gurubase-widget@task/voice-recording/src/widget.js';
       script.async = true;
 
       // Set data attributes
       script.setAttribute('data-widget-id', widgetId);
-      if (text) {
-        script.setAttribute('data-text', text);
-      }
+      // if (text) {
+      //   script.setAttribute('data-text', text);
+      // }
       if (margins) {
         script.setAttribute('data-margins', JSON.stringify(margins));
       }
@@ -53,9 +55,8 @@ function GurubaseWidget({
       if (baseUrl) {
         script.setAttribute('data-baseUrl', baseUrl);
       }
-      if (overlapContent) {
-        script.setAttribute('data-overlap-content', overlapContent);
-      }
+
+      script.setAttribute('data-language', 'tr');
 
       script.setAttribute('id', 'guru-widget-id');
 
@@ -76,7 +77,7 @@ function GurubaseWidget({
         widgetContainer.remove();
       }
     };
-  }, [widgetId, text, margins, bgColor, iconUrl, name, lightMode, overlapContent]);
+  }, [widgetId, text, margins, bgColor, iconUrl, name, lightMode]);
 
   return null;
 }

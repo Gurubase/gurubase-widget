@@ -57,7 +57,6 @@ data-bg-color="YOUR_BG_COLOR"
 data-icon-url="YOUR_ICON_URL"
 data-name="YOUR_NAME"
 data-baseUrl="YOUR_BASE_URL"
-data-overlap-content="false"
 id="guru-widget-id">
 </script>
 ```
