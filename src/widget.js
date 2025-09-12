@@ -1764,11 +1764,32 @@ if (typeof ChatWidget === 'undefined') {
     const G = ((num >> 8) & 0x00ff) - amt;
     const B = (num & 0x0000ff) - amt;
     return `#${(0x1000000 + (R < 255 ? (R < 1 ? 0 : R) : 255) * 0x10000 + (G < 255 ? (G < 1 ? 0 : G) : 255) * 0x100 + (B < 255 ? (B < 1 ? 0 : B) : 255)).toString(16).slice(1)}`;
-  }  
+  }
+
+  // Helper method to add timeout to fetch requests
+  async fetchWithTimeout(url, options = {}, timeoutMs = 5000) {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+    
+    try {
+      const response = await fetch(url, {
+        ...options,
+        signal: controller.signal
+      });
+      clearTimeout(timeoutId);
+      return response;
+    } catch (error) {
+      clearTimeout(timeoutId);
+      if (error.name === 'AbortError') {
+        throw new Error(`Request timeout after ${timeoutMs}ms`);
+      }
+      throw error;
+    }
+  }
 
   async fetchDefaultValues() {
     try {
-      const response = await fetch(this.guruUrl, {
+      const response = await this.fetchWithTimeout(this.guruUrl, {
         headers: {
           Authorization: this.widgetId,
           origin: window.location.href
@@ -2218,7 +2239,7 @@ if (typeof ChatWidget === 'undefined') {
     const formData = new FormData();
     formData.append("audio", audioBlob, "recording.webm");
 
-    const response = await fetch(`${this.transcribeUrl}`, {
+    const response = await this.fetchWithTimeout(`${this.transcribeUrl}`, {
       method: 'POST',
       headers: {
         'Authorization': this.widgetId,
@@ -2515,7 +2536,7 @@ if (typeof ChatWidget === 'undefined') {
       });
 
       // Get the stream response
-      const response = await fetch(this.textToSpeechUrl, {
+      const response = await this.fetchWithTimeout(this.textToSpeechUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -3362,7 +3383,7 @@ if (typeof ChatWidget === 'undefined') {
         (this.currentBingeId === null || this.currentBingeId === undefined)
       ) {
         try {
-          const bingeResponse = await fetch(this.bingeUrl, {
+          const bingeResponse = await this.fetchWithTimeout(this.bingeUrl, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -3387,7 +3408,7 @@ if (typeof ChatWidget === 'undefined') {
         }
       }
 
-      const response = await fetch(this.askUrl, {
+      const response = await this.fetchWithTimeout(this.askUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -3486,7 +3507,7 @@ if (typeof ChatWidget === 'undefined') {
           if (done) {
             // After stream completes, try to fetch additional details
             try {
-              const response = await fetch(this.askUrl, {
+              const response = await this.fetchWithTimeout(this.askUrl, {
                 method: "POST",
                 headers: {
                   "Content-Type": "application/json",
@@ -4281,7 +4302,7 @@ if (typeof ChatWidget === 'undefined') {
 
   async loadHljsTheme(themeName) {
     try {
-      const response = await fetch(`https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/${themeName}.min.css`);
+      const response = await this.fetchWithTimeout(`https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/${themeName}.min.css`);
       const css = await response.text();
       return css;
     } catch (error) {
@@ -4472,7 +4493,7 @@ if (typeof ChatWidget === 'undefined') {
   async fetchFollowUpExamples(bingeId, slug, questionText) {
     try {
       const endpoint = `${this.baseUrl}/${this.guruSlug}/follow_up/examples/`;
-      const response = await fetch(endpoint, {
+      const response = await this.fetchWithTimeout(endpoint, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -4501,7 +4522,7 @@ if (typeof ChatWidget === 'undefined') {
 
   async recordVote(contentSlug, bingeId, voteType, feedback = null) {
     try {
-      const response = await fetch(`${this.baseUrl}/${this.guruSlug}/record_vote/`, {
+      const response = await this.fetchWithTimeout(`${this.baseUrl}/${this.guruSlug}/record_vote/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
