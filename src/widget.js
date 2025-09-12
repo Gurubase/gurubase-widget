@@ -3034,6 +3034,7 @@ class ChatWidget {
               chatWindow.classList.add("open");
               document.body.classList.add("widget-open");
               chatButton.style.display = 'none';
+
             } else {
             chatWindow.style.display = "flex";
             
@@ -3045,6 +3046,14 @@ class ChatWidget {
             document.body.classList.add("widget-open");
             chatButton.style.display = 'none';
             }
+
+            // Focus on the input field when opening floating window
+            chatWindow.addEventListener("transitionend", () => {
+              const questionInput = this.shadow.getElementById("questionInput");
+              if (questionInput) {
+                questionInput.focus();
+              }
+            }, { once: true });            
 
             // Scroll to the end of the current messages
             const messagesContainer = this.shadow.querySelector(".chat-messages");
