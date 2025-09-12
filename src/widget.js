@@ -1794,7 +1794,7 @@ if (typeof ChatWidget === 'undefined') {
           Authorization: this.widgetId,
           origin: window.location.href
         }
-      });
+      }, 5000);
       
       if (!response.ok) {
         throw new Error('Failed to fetch default values');
@@ -2272,7 +2272,7 @@ if (typeof ChatWidget === 'undefined') {
         'origin': window.location.href
       },
       body: formData
-    });
+    }, 20000);
 
     if (!response.ok) {
       const error = await response.json();
@@ -2577,7 +2577,7 @@ if (typeof ChatWidget === 'undefined') {
         },
         body: JSON.stringify({ text: cleanedText }),
         signal: audioState.abortController.signal
-      });
+      }, 20000);
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -2703,7 +2703,7 @@ if (typeof ChatWidget === 'undefined') {
         },
         body: JSON.stringify({ text: cleanedText }),
         signal: audioState.abortController.signal
-      });
+      }, 20000);
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -3541,7 +3541,7 @@ if (typeof ChatWidget === 'undefined') {
               question,
               root_slug: this.previousQuestionSlug
             })
-          });
+          }, 20000);
 
           if (bingeResponse.ok) {
             const bingeData = await bingeResponse.json();
@@ -3569,7 +3569,7 @@ if (typeof ChatWidget === 'undefined') {
             this.currentBingeId
           )
         )
-      });
+      }, 100000);
 
       if (!response.ok) {
         let errorMessage = this.t('genericError');
@@ -3669,7 +3669,7 @@ if (typeof ChatWidget === 'undefined') {
                     true
                   )
                 )
-              });
+              }, 20000);
 
               // Only proceed if we got a valid response with additional details
               if (response.ok) {
@@ -4449,7 +4449,7 @@ if (typeof ChatWidget === 'undefined') {
 
   async loadHljsTheme(themeName) {
     try {
-      const response = await this.fetchWithTimeout(`https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/${themeName}.min.css`);
+      const response = await this.fetchWithTimeout(`https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/${themeName}.min.css`, {}, 20000);
       const css = await response.text();
       return css;
     } catch (error) {
@@ -4653,7 +4653,7 @@ if (typeof ChatWidget === 'undefined') {
           question_text: questionText,
           widget: true
         })
-      });
+      }, 20000);
 
       if (!response.ok) {
         throw new Error("Failed to fetch follow-up examples");
@@ -4682,7 +4682,7 @@ if (typeof ChatWidget === 'undefined') {
           vote_type: voteType,
           feedback: feedback
         })
-      });
+      }, 5000);
 
       if (!response.ok) {
         throw new Error("Failed to record vote");
