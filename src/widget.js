@@ -1,5 +1,6 @@
 // Widget class to handle all functionality
-class ChatWidget {
+if (typeof ChatWidget === 'undefined') {
+  window.ChatWidget = class ChatWidget {
 
   // Translation system
   translations = {
@@ -2932,7 +2933,6 @@ class ChatWidget {
 
   toggleChat() {
     const chatWindow = this.shadow.getElementById("chatWindow");
-    const wrapper = document.getElementById("gurubase-page-content-wrapper");
     const chatButton = this.shadow.querySelector(".chat-button");
     const overlay = this.shadow.querySelector(".overlay");
     const isMobile = this.isMobile();
@@ -2993,15 +2993,12 @@ class ChatWidget {
                 document.body.style.overflow = '';
                 document.body.style.position = '';
                 document.body.style.height = '';
-                wrapper.style.overflow = '';
-                wrapper.style.height = '';
                 // Restore scroll position
                 if (this.savedScrollY !== undefined) {
                     window.scrollTo(0, this.savedScrollY);
                     this.savedScrollY = undefined;
                 }
             }
-            wrapper.style.width = "100%";
 
             // Remove escape key listener
             document.removeEventListener("keydown", this.handleEscape);
@@ -3053,7 +3050,6 @@ class ChatWidget {
             this.resetClearButton();
             chatWindow.addEventListener("transitionend", () => {
               // Make sure the wrapper panel's width is applied
-              this.setWrapperPanelWidth();
               // Focus on the input field when opening
               const questionInput = this.shadow.getElementById("questionInput");
               if (questionInput) {
@@ -3069,10 +3065,7 @@ class ChatWidget {
                 document.body.style.position = 'fixed';
                 document.body.style.height = '100%';
                 document.body.style.top = `-${this.savedScrollY}px`;
-                wrapper.style.overflow = 'hidden';
-                wrapper.style.height = '100%';
             } else {
-                this.setWrapperPanelWidth(400);
             }
 
             // Add escape key listener
@@ -4209,27 +4202,6 @@ class ChatWidget {
       });
     }
 
-    // // Wrap page content
-    // const wrapper = document.createElement("div");
-    // wrapper.id = "gurubase-page-content-wrapper";
-
-    // wrapper.style.position = "relative"; // Add this
-    // wrapper.style.zIndex = "1"; // Add this to ensure it stays below the widget
-
-    // // Move all body children into wrapper except chat widget
-    // while (document.body.firstChild) {
-    //   const child = document.body.firstChild;
-    //   if (!child.classList?.contains("chat-widget")) {
-    //     wrapper.appendChild(child);
-    //   }
-    // }
-
-    // wrapper.style.width = "100%";
-    // document.body.insertBefore(wrapper, document.body.firstChild);
-
-    // Remove Speed Highlight CSS import
-    // Remove Speed Highlight script import
-
     // Add highlight.js CSS and script if not already present
     if (!document.querySelector('link[href*="highlight.js"]')) {
       const highlightCSS = document.createElement("link");
@@ -4381,7 +4353,6 @@ class ChatWidget {
     const chatWindow = this.shadow.getElementById("chatWindow");
     chatWindow.style.width = `${newWidth}px`;
     // Update content width while dragging
-    this.setWrapperPanelWidth(newWidth);
   }
 
   handleDragEnd(e) {
@@ -4920,6 +4891,7 @@ class ChatWidget {
   }
 
 }
+}
 
 function loadScript(url) {
     return new Promise((resolve, reject) => {
@@ -5043,13 +5015,13 @@ function loadScript(url) {
         // If still loading, add event listener
         document.addEventListener("DOMContentLoaded", () => {
           if (!window.chatWidget) {
-            window.chatWidget = new ChatWidget();
+            window.chatWidget = new window.ChatWidget();
           }
         });
       } else {
         // If already loaded, initialize immediately
         if (!window.chatWidget) {
-          window.chatWidget = new ChatWidget();
+          window.chatWidget = new window.ChatWidget();
         }
       }
     })
