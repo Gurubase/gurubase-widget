@@ -1821,6 +1821,32 @@ if (typeof ChatWidget === 'undefined') {
     }
   }  
 
+  // Check if MediaSource is properly supported for streaming audio
+  isMediaSourceStreamingSupported() {
+    try {
+      // Basic MediaSource support check
+      if (!window.MediaSource) {
+        return false;
+      }
+
+      // Check if audio/mpeg is supported
+      if (!MediaSource.isTypeSupported('audio/mpeg')) {
+        return false;
+      }
+
+      // Firefox-specific checks - MediaSource has issues with audio streaming
+      const isFirefox = navigator.userAgent.toLowerCase().includes('firefox');
+      if (isFirefox) {
+        return false; // Disable streaming for Firefox
+      }
+
+      return true;
+    } catch (error) {
+      console.warn('MediaSource support detection failed:', error);
+      return false;
+    }
+  }
+
   constructor() {
     // Find the widget script tag
     const scriptTag = document.querySelector('script#guru-widget-id');
@@ -2440,6 +2466,12 @@ if (typeof ChatWidget === 'undefined') {
   async generateSpeechForButton(text, button) {
     if (!text) return;
 
+    // Check if MediaSource streaming is supported, otherwise use fallback
+    if (!this.isMediaSourceStreamingSupported()) {
+      console.log('MediaSource streaming not supported, using fallback method');
+      return this.generateSpeechForButtonFallback(text, button);
+    }
+
     const audioState = button.audioState;
 
     // Stop any currently playing audio from other buttons
@@ -2611,8 +2643,123 @@ if (typeof ChatWidget === 'undefined') {
       }
     } catch (error) {
       if (error.name === 'AbortError') {
+        // Request was aborted, don't fallback
       } else {
-        console.error("Text-to-speech error:", error);
+        console.error("Text-to-speech streaming error:", error);
+        console.log("Attempting fallback to non-streaming method");
+        
+        // Clean up the failed streaming attempt
+        this.stopTextToSpeechForButton(button);
+        
+        // Try the fallback method
+        try {
+          return this.generateSpeechForButtonFallback(text, button);
+        } catch (fallbackError) {
+          console.error("Text-to-speech fallback also failed:", fallbackError);
+          this.updateTextToSpeechButton();
+        }
+      }
+    }
+  }
+
+  // Fallback method for non-streaming text-to-speech using blob URLs
+  async generateSpeechForButtonFallback(text, button) {
+    if (!text) return;
+
+    const audioState = button.audioState;
+
+    // Stop any currently playing audio from other buttons
+    if (this.currentlyPlayingButton && this.currentlyPlayingButton !== button) {
+      this.stopTextToSpeechForButton(this.currentlyPlayingButton);
+    }
+
+    // Stop any existing audio for this button before starting new one
+    if (audioState.hasAudio || audioState.audioRef) {
+      this.stopTextToSpeechForButton(button);
+    }
+
+    // Cancel any ongoing fetch request for this button
+    if (audioState.abortController) {
+      audioState.abortController.abort();
+    }
+
+    // Clean the text before sending to TTS
+    const cleanedText = this.cleanTextForSpeech(text);
+
+    audioState.isGeneratingAudio = true;
+    this.updateTextToSpeechButton();
+
+    // Create abort controller for this request
+    audioState.abortController = new AbortController();
+
+    try {
+      // Fetch the complete audio as a blob (non-streaming)
+      const response = await this.fetchWithTimeout(this.textToSpeechUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: this.widgetId,
+          origin: window.location.href
+        },
+        body: JSON.stringify({ text: cleanedText }),
+        signal: audioState.abortController.signal
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      // Get the audio blob
+      const audioBlob = await response.blob();
+      
+      // Create audio element with blob URL
+      const audio = document.createElement("audio");
+      const blobUrl = URL.createObjectURL(audioBlob);
+      
+      audioState.audioRef = audio;
+      audioState.hasAudio = true;
+
+      audio.src = blobUrl;
+      audio.volume = 1.0;
+
+      // Handle audio events
+      audio.addEventListener("play", () => {
+        audioState.isPlaying = true;
+        this.currentlyPlayingButton = button;
+        this.updateTextToSpeechButton();
+      });
+      
+      audio.addEventListener("pause", () => {
+        audioState.isPlaying = false;
+        this.updateTextToSpeechButton();
+      });
+      
+      audio.addEventListener("ended", () => {
+        audioState.isPlaying = false;
+        if (this.currentlyPlayingButton === button) {
+          this.currentlyPlayingButton = null;
+        }
+        // Clean up blob URL
+        URL.revokeObjectURL(blobUrl);
+        this.stopTextToSpeechForButton(button);
+      });
+
+      // Audio is ready to play
+      audioState.isGeneratingAudio = false;
+      this.updateTextToSpeechButton();
+      
+      // Start playing immediately
+      try {
+        await audio.play();
+      } catch (error) {
+        console.error("Error playing audio:", error);
+      }
+
+    } catch (error) {
+      if (error.name === 'AbortError') {
+        // Request was aborted, no need to log
+      } else {
+        console.error("Text-to-speech fallback error:", error);
       }
       this.stopTextToSpeechForButton(button);
       this.updateTextToSpeechButton();
