@@ -2468,7 +2468,6 @@ if (typeof ChatWidget === 'undefined') {
 
     // Check if MediaSource streaming is supported, otherwise use fallback
     if (!this.isMediaSourceStreamingSupported()) {
-      console.log('MediaSource streaming not supported, using fallback method');
       return this.generateSpeechForButtonFallback(text, button);
     }
 
@@ -2646,7 +2645,6 @@ if (typeof ChatWidget === 'undefined') {
         // Request was aborted, don't fallback
       } else {
         console.error("Text-to-speech streaming error:", error);
-        console.log("Attempting fallback to non-streaming method");
         
         // Clean up the failed streaming attempt
         this.stopTextToSpeechForButton(button);
