@@ -110,6 +110,6 @@ Below are example installations of the Gurubase Widget for various technologies.
 - [JS](https://github.com/Gurubase/gurubase-widget/tree/master/examples/pure_js)
 - [React](https://github.com/Gurubase/gurubase-widget/tree/master/examples/react_app)
 - [Remix](https://github.com/Gurubase/gurubase-widget/tree/master/examples/remix)
-- [Sphinx](https://github.com/Gurubase/gurubase-widget/tree/master/examples/sphinx)
+- [Sphinx - Read the Docs](https://github.com/Gurubase/gurubase-widget/tree/master/examples/sphinx)
 - [Retype](https://github.com/Gurubase/gurubase-widget/tree/master/examples/retype)
 - [GitBook](https://www.gitbook.com/integrations/gurubase)

@@ -1,4 +1,4 @@
-# Sphinx Example for Gurubase Widget
+# Sphinx Example for Gurubase Widget - Read the Docs
 
 This is a simple Sphinx example.
 
@@ -12,11 +12,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const widgetSettings = {
         widgetId: "YOUR_WIDGET_ID", // Replace with your widget ID
         text: "Ask AI", // Optional - Button text
-        margins: { bottom: "20px", right: "20px" }, // Optional
-        lightMode: "dark", // Optional - Force light mode
-        bgColor: "YOUR_BG_COLOR", // Optional - Widget background color
-        iconUrl: "YOUR_ICON_URL", // Optional - Widget icon URL
-        name: "YOUR_NAME" // Optional - Widget name
+        margins: { bottom: "45px", right: "180px" }, // Optional
+        lightMode: "auto", // Optional - Force light mode
+        windowMode: "floating", // Optional - Window mode: "floating" or "sidebar"
     };
 
     // Load the GuruBase widget
@@ -31,9 +29,6 @@ document.addEventListener('DOMContentLoaded', function() {
         "data-text": widgetSettings.text,
         "data-margins": JSON.stringify(widgetSettings.margins),
         "data-light-mode": widgetSettings.lightMode,
-        "data-bg-color": widgetSettings.bgColor,
-        "data-icon-url": widgetSettings.iconUrl,
-        "data-name": widgetSettings.name
     }).forEach(([key, value]) => {
         guruScript.setAttribute(key, value);
     });
@@ -48,12 +43,4 @@ document.addEventListener('DOMContentLoaded', function() {
 ```python
 html_static_path = ['_static']
 html_js_files = ['gurubase-widget.js']
-```
-
-## Usage
-
-```bash
-chmod +x build.sh
-./build.sh
-open _build/html/index.html
 ```
