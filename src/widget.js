@@ -2011,12 +2011,14 @@ class ChatWidget {
       // Check if any input/textarea inside shadow DOM is focused
       const activeElement = this.shadow.activeElement;
       if (activeElement && (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA')) {
-        // For character keys, prevent framework shortcuts
-        if (/^[\p{L}\p{N}\p{P}\p{S}]$/u.test(event.key)) {
+        // For character keys, prevent framework shortcuts, but allow special keys like Enter/Escape
+        if (/^[\p{L}\p{N}\p{P}\p{S}]$/u.test(event.key) && !['Enter', 'Escape'].includes(event.key)) {
           event.stopImmediatePropagation();
         }
-        // Also prevent keydown events from bubbling
-        event.stopPropagation();
+        // Also prevent keydown events from bubbling, but allow Enter/Escape to pass through
+        if (!['Enter', 'Escape'].includes(event.key)) {
+          event.stopPropagation();
+        }
       }
     };
 
@@ -2028,7 +2030,7 @@ class ChatWidget {
 
       const activeElement = this.shadow.activeElement;
       if (activeElement && (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA')) {
-        if (/^[\p{L}\p{N}\p{P}\p{S}]$/u.test(event.key)) {
+        if (/^[\p{L}\p{N}\p{P}\p{S}]$/u.test(event.key) && !['Enter', 'Escape'].includes(event.key)) {
           event.stopImmediatePropagation();
         }
       }
