@@ -1997,6 +1997,8 @@ class ChatWidget {
     this.handleVisualViewportChange = this.handleVisualViewportChange.bind(this);
     
     this.currentlyPlayingButton = null;
+
+    console.log("Constructing ChatWidget");
   }
 
   setupContainerKeyboardHandler() {
