@@ -1983,7 +1983,10 @@ class ChatWidget {
     this.container = document.createElement('div');
     this.container.id = 'gurubase-chat-widget-container';
     this.shadow = this.container.attachShadow({ mode: 'open' });
-  
+
+    // Add container-level keyboard event handler to prevent framework shortcuts
+    this.setupContainerKeyboardHandler();
+
     this.init();
 
     // Add these properties
@@ -1994,6 +1997,48 @@ class ChatWidget {
     this.handleVisualViewportChange = this.handleVisualViewportChange.bind(this);
     
     this.currentlyPlayingButton = null;
+  }
+
+  setupContainerKeyboardHandler() {
+    // Bind handlers to be able to remove them later
+    this.containerKeydownHandler = (event) => {
+      // Only prevent if chat window is open
+      const chatWindow = this.shadow.getElementById("chatWindow");
+      if (!chatWindow || !chatWindow.classList.contains("open")) {
+        return;
+      }
+
+      // Check if any input/textarea inside shadow DOM is focused
+      const activeElement = this.shadow.activeElement;
+      if (activeElement && (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA')) {
+        // For character keys, prevent framework shortcuts
+        if (/^[\p{L}\p{N}\p{P}\p{S}]$/u.test(event.key)) {
+          event.stopImmediatePropagation();
+          event.preventDefault();
+        }
+        // Also prevent keydown events from bubbling
+        event.stopPropagation();
+      }
+    };
+
+    this.containerKeyupHandler = (event) => {
+      const chatWindow = this.shadow.getElementById("chatWindow");
+      if (!chatWindow || !chatWindow.classList.contains("open")) {
+        return;
+      }
+
+      const activeElement = this.shadow.activeElement;
+      if (activeElement && (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA')) {
+        if (/^[\p{L}\p{N}\p{P}\p{S}]$/u.test(event.key)) {
+          event.stopImmediatePropagation();
+          event.preventDefault();
+        }
+      }
+    };
+
+    // Add container-level keyboard handlers in capture phase to run before framework handlers
+    this.container.addEventListener('keydown', this.containerKeydownHandler, true);
+    this.container.addEventListener('keyup', this.containerKeyupHandler, true);
   }
 
   getLogo(maxWidth = 24, maxHeight = 24) {
@@ -2777,35 +2822,6 @@ class ChatWidget {
         submitBtn.disabled = count > 200;
       });
 
-      // Create the keyup handler for feedback textarea
-      const feedbackKeyupHandler = function(event) {
-        // Match any character that could be part of natural language:
-        // - Letters (including accented) from any language
-        // - Numbers
-        // - Punctuation
-        // - Common symbols
-        if (/^[\p{L}\p{N}\p{P}\p{S}]$/u.test(event.key)) {
-          event.stopPropagation();
-          event.preventDefault();
-        }
-      };
-
-      // Add focus and blur handlers to manage the keyup listener for feedback textarea
-      textarea.addEventListener("focus", () => {
-        document.addEventListener("keyup", feedbackKeyupHandler, true);
-      });
-
-      textarea.addEventListener("blur", () => {
-        document.removeEventListener("keyup", feedbackKeyupHandler, true);
-      });
-
-      // Add keydown event listener to prevent propagation when feedback textarea is focused
-      textarea.addEventListener("keydown", (event) => {
-        // Only prevent propagation if the feedback form is visible
-        if (feedbackForm.classList.contains("show")) {
-          event.stopPropagation();
-        }
-      });
 
       // Update button states based on current state
       const updateButtonStates = () => {
@@ -4362,6 +4378,14 @@ class ChatWidget {
     document.removeEventListener("mousemove", this.handleDrag);
     document.removeEventListener("mouseup", this.handleDragEnd);
     window.removeEventListener('resize', this.handleViewportHeight);
+
+    // Clean up container keyboard handlers
+    if (this.containerKeydownHandler) {
+      this.container.removeEventListener('keydown', this.containerKeydownHandler, true);
+    }
+    if (this.containerKeyupHandler) {
+      this.container.removeEventListener('keyup', this.containerKeyupHandler, true);
+    }
     if (window.visualViewport) {
       window.visualViewport.removeEventListener('resize', this.handleVisualViewportChange);
       window.visualViewport.removeEventListener('scroll', this.handleVisualViewportChange);
