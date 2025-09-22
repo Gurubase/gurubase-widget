@@ -141,10 +141,10 @@ class ChatWidget {
   t(key, params = {}) {
     const lang = this.language || 'en';
     const translation = this.translations[lang]?.[key] || this.translations.en[key] || key;
-    
+
     // Replace parameters in the translation string
     return translation.replace(/\{(\w+)\}/g, (match, param) => {
-      return params[param] || match;
+      return params[param] !== undefined ? params[param] : match;
     });
   }
 
