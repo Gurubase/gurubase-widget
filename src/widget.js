@@ -2014,7 +2014,6 @@ class ChatWidget {
         // For character keys, prevent framework shortcuts
         if (/^[\p{L}\p{N}\p{P}\p{S}]$/u.test(event.key)) {
           event.stopImmediatePropagation();
-          event.preventDefault();
         }
         // Also prevent keydown events from bubbling
         event.stopPropagation();
@@ -2031,7 +2030,6 @@ class ChatWidget {
       if (activeElement && (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA')) {
         if (/^[\p{L}\p{N}\p{P}\p{S}]$/u.test(event.key)) {
           event.stopImmediatePropagation();
-          event.preventDefault();
         }
       }
     };
