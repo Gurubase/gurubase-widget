@@ -2030,14 +2030,15 @@ class ChatWidget {
         // Only block specific keys that are known to cause conflicts with documentation frameworks
         const blockedKeys = ['d', '/', 's', 't', 'k', 'g', 'p', 'b'];
         if (blockedKeys.includes(event.key)) {
+          console.log("Key in blocked keys", event.key, "stopping immediate propagation");
           event.stopImmediatePropagation();
         }
       }
     };
 
     // Add container-level keyboard handlers in capture phase to run before framework handlers
-    this.container.addEventListener('keydown', this.containerKeydownHandler, true);
-    // this.container.addEventListener('keyup', this.containerKeyupHandler, true);
+    // this.container.addEventListener('keydown', this.containerKeydownHandler, true);
+    this.container.addEventListener('keyup', this.containerKeyupHandler, true);
   }
 
   getLogo(maxWidth = 24, maxHeight = 24) {
