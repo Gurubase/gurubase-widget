@@ -1824,6 +1824,8 @@ class ChatWidget {
             // console.warn("Invalid base URL provided, using default");
         }
 
+        console.log("baseUrl", this.baseUrl);
+
         // Validate and set button text
         this.buttonText = scriptTag.getAttribute('data-text') || this.t('askAI');
 
