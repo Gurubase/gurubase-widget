@@ -1823,9 +1823,6 @@ class ChatWidget {
             this.baseUrl = defaultBaseUrl;
             // console.warn("Invalid base URL provided, using default");
         }
-
-        console.log("baseUrl", this.baseUrl);
-
         // Validate and set button text
         this.buttonText = scriptTag.getAttribute('data-text') || this.t('askAI');
 
@@ -2778,6 +2775,36 @@ class ChatWidget {
         charCount.textContent = this.t('charCount', { count: count });
         charCount.classList.toggle("over-limit", count > 200);
         submitBtn.disabled = count > 200;
+      });
+
+      // Create the keyup handler for feedback textarea
+      const feedbackKeyupHandler = function(event) {
+        // Match any character that could be part of natural language:
+        // - Letters (including accented) from any language
+        // - Numbers
+        // - Punctuation
+        // - Common symbols
+        if (/^[\p{L}\p{N}\p{P}\p{S}]$/u.test(event.key)) {
+          event.stopPropagation();
+          event.preventDefault();
+        }
+      };
+
+      // Add focus and blur handlers to manage the keyup listener for feedback textarea
+      textarea.addEventListener("focus", () => {
+        document.addEventListener("keyup", feedbackKeyupHandler, true);
+      });
+
+      textarea.addEventListener("blur", () => {
+        document.removeEventListener("keyup", feedbackKeyupHandler, true);
+      });
+
+      // Add keydown event listener to prevent propagation when feedback textarea is focused
+      textarea.addEventListener("keydown", (event) => {
+        // Only prevent propagation if the feedback form is visible
+        if (feedbackForm.classList.contains("show")) {
+          event.stopPropagation();
+        }
       });
 
       // Update button states based on current state
