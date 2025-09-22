@@ -2014,8 +2014,8 @@ class ChatWidget {
         // Only block specific keys that are known to cause conflicts with documentation frameworks
         const blockedKeys = ['d', '/', 's', 't', 'k', 'g', 'p', 'b'];
         if (blockedKeys.includes(event.key)) {
-          console.log("For keydown handler, key in blocked keys", event.key, "stopping immediate propagation");
-          event.stopImmediatePropagation();
+          console.log("For keydown handler, key in blocked keys", event.key, "stopping propagation");
+          event.stopPropagation();
         }
       }
     };
@@ -2031,8 +2031,8 @@ class ChatWidget {
         // Only block specific keys that are known to cause conflicts with documentation frameworks
         const blockedKeys = ['d', '/', 's', 't', 'k', 'g', 'p', 'b'];
         if (blockedKeys.includes(event.key)) {
-          console.log("For keyup handler, key in blocked keys", event.key, "stopping immediate propagation");
-          event.stopImmediatePropagation();
+          console.log("For keyup handler, key in blocked keys", event.key, "stopping propagation");
+          event.stopPropagation();
         }
       }
     };
@@ -4497,27 +4497,6 @@ class ChatWidget {
     const footer = this.shadow.querySelector(".anteon-footer");
     const inputContainer = this.shadow.querySelector(".chat-input-container");
 
-    // Create the keyup handler that will be added/removed on focus/blur
-    const keyupHandler = function(event) {
-      // Match any character that could be part of natural language:
-      // - Letters (including accented) from any language
-      // - Numbers
-      // - Punctuation
-      // - Common symbols
-      if (/^[\p{L}\p{N}\p{P}\p{S}]$/u.test(event.key)) {
-        event.stopPropagation();
-        event.preventDefault();
-      }
-    };
-
-    // Add focus and blur handlers to manage the keyup listener
-    questionInput.addEventListener("focus", () => {
-      document.addEventListener("keyup", keyupHandler, true);
-    });
-
-    questionInput.addEventListener("blur", () => {
-      document.removeEventListener("keyup", keyupHandler, true);
-    });
 
     questionInput.addEventListener("input", () => {
       const length = questionInput.value.trim().length;
