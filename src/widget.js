@@ -2036,8 +2036,8 @@ class ChatWidget {
     };
 
     // Add container-level keyboard handlers in capture phase to run before framework handlers
-    this.container.addEventListener('keydown', this.containerKeydownHandler, true);
-    this.container.addEventListener('keyup', this.containerKeyupHandler, true);
+    // this.container.addEventListener('keydown', this.containerKeydownHandler, true);
+    // this.container.addEventListener('keyup', this.containerKeyupHandler, true);
   }
 
   getLogo(maxWidth = 24, maxHeight = 24) {
