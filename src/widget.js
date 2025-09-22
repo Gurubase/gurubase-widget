@@ -1998,7 +1998,6 @@ class ChatWidget {
     
     this.currentlyPlayingButton = null;
 
-    console.log("Constructing ChatWidget");
   }
 
   setupContainerKeyboardHandler() {
@@ -2016,7 +2015,6 @@ class ChatWidget {
         // Only block specific keys that are known to cause conflicts with documentation frameworks
         const blockedKeys = ['d', '/', 's', 't', 'k', 'g', 'p', 'b'];
         if (blockedKeys.includes(event.key)) {
-          console.log("For keydown handler, key in blocked keys", event.key, "stopping propagation");
           event.stopPropagation();
         }
       }
@@ -2033,7 +2031,6 @@ class ChatWidget {
         // Only block specific keys that are known to cause conflicts with documentation frameworks
         const blockedKeys = ['d', '/', 's', 't', 'k', 'g', 'p', 'b'];
         if (blockedKeys.includes(event.key)) {
-          console.log("For keyup handler, key in blocked keys", event.key, "stopping propagation");
           event.stopPropagation();
         }
       }
