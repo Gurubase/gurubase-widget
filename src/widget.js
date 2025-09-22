@@ -4450,10 +4450,10 @@ class ChatWidget {
       // - Numbers
       // - Punctuation
       // - Common symbols
-      // if (/^[\p{L}\p{N}\p{P}\p{S}]$/u.test(event.key)) {
-      //   event.stopPropagation();
-      //   event.preventDefault();
-      // }
+      if (/^[\p{L}\p{N}\p{P}\p{S}]$/u.test(event.key)) {
+        event.stopPropagation();
+        event.preventDefault();
+      }
     };
 
     // Add focus and blur handlers to manage the keyup listener
