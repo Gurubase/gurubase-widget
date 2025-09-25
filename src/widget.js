@@ -116,7 +116,7 @@ class ChatWidget {
       sources: "Kaynaklar",
       
       // Footer text
-      poweredBy: "tarafından desteklenir",
+      poweredBy: "powered by",
       clear: "Temizle",
       
       // Accessibility labels
