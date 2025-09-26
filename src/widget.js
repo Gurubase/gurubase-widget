@@ -3469,9 +3469,9 @@ class ChatWidget {
         try {
           const errorData = await response.json();
           if (errorData.msg) {
-            errorMessage = this.t('errorPrefix') + errorData.msg;
+            errorMessage = errorData.not_error ? errorData.msg : this.t('errorPrefix') + errorData.msg;
           } else if (errorData.error) {
-            errorMessage = this.t('errorPrefix') + errorData.error;
+            errorMessage = errorData.not_error ? errorData.error : this.t('errorPrefix') + errorData.error;
           }
         } catch (error) {
           console.error("error", error);
