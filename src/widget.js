@@ -1,5 +1,6 @@
 // Widget class to handle all functionality
-class ChatWidget {
+if (typeof ChatWidget === 'undefined') {
+  window.ChatWidget = class ChatWidget {
 
   // Translation system
   translations = {
@@ -1763,16 +1764,37 @@ class ChatWidget {
     const G = ((num >> 8) & 0x00ff) - amt;
     const B = (num & 0x0000ff) - amt;
     return `#${(0x1000000 + (R < 255 ? (R < 1 ? 0 : R) : 255) * 0x10000 + (G < 255 ? (G < 1 ? 0 : G) : 255) * 0x100 + (B < 255 ? (B < 1 ? 0 : B) : 255)).toString(16).slice(1)}`;
-  }  
+  }
+
+  // Helper method to add timeout to fetch requests
+  async fetchWithTimeout(url, options = {}, timeoutMs = 5000) {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+    
+    try {
+      const response = await fetch(url, {
+        ...options,
+        signal: controller.signal
+      });
+      clearTimeout(timeoutId);
+      return response;
+    } catch (error) {
+      clearTimeout(timeoutId);
+      if (error.name === 'AbortError') {
+        throw new Error(`Request timeout after ${timeoutMs}ms`);
+      }
+      throw error;
+    }
+  }
 
   async fetchDefaultValues() {
     try {
-      const response = await fetch(this.guruUrl, {
+      const response = await this.fetchWithTimeout(this.guruUrl, {
         headers: {
           Authorization: this.widgetId,
           origin: window.location.href
         }
-      });
+      }, 5000);
       
       if (!response.ok) {
         throw new Error('Failed to fetch default values');
@@ -1798,6 +1820,32 @@ class ChatWidget {
       this.textToSpeechEnabled = false;
     }
   }  
+
+  // Check if MediaSource is properly supported for streaming audio
+  isMediaSourceStreamingSupported() {
+    try {
+      // Basic MediaSource support check
+      if (!window.MediaSource) {
+        return false;
+      }
+
+      // Check if audio/mpeg is supported
+      if (!MediaSource.isTypeSupported('audio/mpeg')) {
+        return false;
+      }
+
+      // Firefox-specific checks - MediaSource has issues with audio streaming
+      const isFirefox = navigator.userAgent.toLowerCase().includes('firefox');
+      if (isFirefox) {
+        return false; // Disable streaming for Firefox
+      }
+
+      return true;
+    } catch (error) {
+      console.warn('MediaSource support detection failed:', error);
+      return false;
+    }
+  }
 
   constructor() {
     // Find the widget script tag
@@ -2261,14 +2309,14 @@ class ChatWidget {
     const formData = new FormData();
     formData.append("audio", audioBlob, "recording.webm");
 
-    const response = await fetch(`${this.transcribeUrl}`, {
+    const response = await this.fetchWithTimeout(`${this.transcribeUrl}`, {
       method: 'POST',
       headers: {
         'Authorization': this.widgetId,
         'origin': window.location.href
       },
       body: formData
-    });
+    }, 20000);
 
     if (!response.ok) {
       const error = await response.json();
@@ -2462,6 +2510,11 @@ class ChatWidget {
   async generateSpeechForButton(text, button) {
     if (!text) return;
 
+    // Check if MediaSource streaming is supported, otherwise use fallback
+    if (!this.isMediaSourceStreamingSupported()) {
+      return this.generateSpeechForButtonFallback(text, button);
+    }
+
     const audioState = button.audioState;
 
     // Stop any currently playing audio from other buttons
@@ -2558,7 +2611,7 @@ class ChatWidget {
       });
 
       // Get the stream response
-      const response = await fetch(this.textToSpeechUrl, {
+      const response = await this.fetchWithTimeout(this.textToSpeechUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -2567,7 +2620,7 @@ class ChatWidget {
         },
         body: JSON.stringify({ text: cleanedText }),
         signal: audioState.abortController.signal
-      });
+      }, 20000);
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -2633,8 +2686,122 @@ class ChatWidget {
       }
     } catch (error) {
       if (error.name === 'AbortError') {
+        // Request was aborted, don't fallback
       } else {
-        console.error("Text-to-speech error:", error);
+        console.error("Text-to-speech streaming error:", error);
+        
+        // Clean up the failed streaming attempt
+        this.stopTextToSpeechForButton(button);
+        
+        // Try the fallback method
+        try {
+          return this.generateSpeechForButtonFallback(text, button);
+        } catch (fallbackError) {
+          console.error("Text-to-speech fallback also failed:", fallbackError);
+          this.updateTextToSpeechButton();
+        }
+      }
+    }
+  }
+
+  // Fallback method for non-streaming text-to-speech using blob URLs
+  async generateSpeechForButtonFallback(text, button) {
+    if (!text) return;
+
+    const audioState = button.audioState;
+
+    // Stop any currently playing audio from other buttons
+    if (this.currentlyPlayingButton && this.currentlyPlayingButton !== button) {
+      this.stopTextToSpeechForButton(this.currentlyPlayingButton);
+    }
+
+    // Stop any existing audio for this button before starting new one
+    if (audioState.hasAudio || audioState.audioRef) {
+      this.stopTextToSpeechForButton(button);
+    }
+
+    // Cancel any ongoing fetch request for this button
+    if (audioState.abortController) {
+      audioState.abortController.abort();
+    }
+
+    // Clean the text before sending to TTS
+    const cleanedText = this.cleanTextForSpeech(text);
+
+    audioState.isGeneratingAudio = true;
+    this.updateTextToSpeechButton();
+
+    // Create abort controller for this request
+    audioState.abortController = new AbortController();
+
+    try {
+      // Fetch the complete audio as a blob (non-streaming)
+      const response = await this.fetchWithTimeout(this.textToSpeechUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: this.widgetId,
+          origin: window.location.href
+        },
+        body: JSON.stringify({ text: cleanedText }),
+        signal: audioState.abortController.signal
+      }, 20000);
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      // Get the audio blob
+      const audioBlob = await response.blob();
+      
+      // Create audio element with blob URL
+      const audio = document.createElement("audio");
+      const blobUrl = URL.createObjectURL(audioBlob);
+      
+      audioState.audioRef = audio;
+      audioState.hasAudio = true;
+
+      audio.src = blobUrl;
+      audio.volume = 1.0;
+
+      // Handle audio events
+      audio.addEventListener("play", () => {
+        audioState.isPlaying = true;
+        this.currentlyPlayingButton = button;
+        this.updateTextToSpeechButton();
+      });
+      
+      audio.addEventListener("pause", () => {
+        audioState.isPlaying = false;
+        this.updateTextToSpeechButton();
+      });
+      
+      audio.addEventListener("ended", () => {
+        audioState.isPlaying = false;
+        if (this.currentlyPlayingButton === button) {
+          this.currentlyPlayingButton = null;
+        }
+        // Clean up blob URL
+        URL.revokeObjectURL(blobUrl);
+        this.stopTextToSpeechForButton(button);
+      });
+
+      // Audio is ready to play
+      audioState.isGeneratingAudio = false;
+      this.updateTextToSpeechButton();
+      
+      // Start playing immediately
+      try {
+        await audio.play();
+      } catch (error) {
+        console.error("Error playing audio:", error);
+      }
+
+    } catch (error) {
+      if (error.name === 'AbortError') {
+        // Request was aborted, no need to log
+      } else {
+        console.error("Text-to-speech fallback error:", error);
       }
       this.stopTextToSpeechForButton(button);
       this.updateTextToSpeechButton();
@@ -2977,7 +3144,6 @@ class ChatWidget {
 
   toggleChat() {
     const chatWindow = this.shadow.getElementById("chatWindow");
-    const wrapper = document.getElementById("gurubase-page-content-wrapper");
     const chatButton = this.shadow.querySelector(".chat-button");
     const overlay = this.shadow.querySelector(".overlay");
     const isMobile = this.isMobile();
@@ -3038,15 +3204,12 @@ class ChatWidget {
                 document.body.style.overflow = '';
                 document.body.style.position = '';
                 document.body.style.height = '';
-                wrapper.style.overflow = '';
-                wrapper.style.height = '';
                 // Restore scroll position
                 if (this.savedScrollY !== undefined) {
                     window.scrollTo(0, this.savedScrollY);
                     this.savedScrollY = undefined;
                 }
             }
-            wrapper.style.width = "100%";
 
             // Remove escape key listener
             document.removeEventListener("keydown", this.handleEscape);
@@ -3107,7 +3270,6 @@ class ChatWidget {
             this.resetClearButton();
             chatWindow.addEventListener("transitionend", () => {
               // Make sure the wrapper panel's width is applied
-              this.setWrapperPanelWidth();
               // Focus on the input field when opening
               const questionInput = this.shadow.getElementById("questionInput");
               if (questionInput) {
@@ -3123,10 +3285,7 @@ class ChatWidget {
                 document.body.style.position = 'fixed';
                 document.body.style.height = '100%';
                 document.body.style.top = `-${this.savedScrollY}px`;
-                wrapper.style.overflow = 'hidden';
-                wrapper.style.height = '100%';
             } else {
-                this.setWrapperPanelWidth(400);
             }
 
             // Add escape key listener
@@ -3423,7 +3582,7 @@ class ChatWidget {
         (this.currentBingeId === null || this.currentBingeId === undefined)
       ) {
         try {
-          const bingeResponse = await fetch(this.bingeUrl, {
+          const bingeResponse = await this.fetchWithTimeout(this.bingeUrl, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -3434,7 +3593,7 @@ class ChatWidget {
               question,
               root_slug: this.previousQuestionSlug
             })
-          });
+          }, 20000);
 
           if (bingeResponse.ok) {
             const bingeData = await bingeResponse.json();
@@ -3448,7 +3607,7 @@ class ChatWidget {
         }
       }
 
-      const response = await fetch(this.askUrl, {
+      const response = await this.fetchWithTimeout(this.askUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -3462,7 +3621,7 @@ class ChatWidget {
             this.currentBingeId
           )
         )
-      });
+      }, 100000);
 
       if (!response.ok) {
         let errorMessage = this.t('genericError');
@@ -3547,7 +3706,7 @@ class ChatWidget {
           if (done) {
             // After stream completes, try to fetch additional details
             try {
-              const response = await fetch(this.askUrl, {
+              const response = await this.fetchWithTimeout(this.askUrl, {
                 method: "POST",
                 headers: {
                   "Content-Type": "application/json",
@@ -3562,7 +3721,7 @@ class ChatWidget {
                     true
                   )
                 )
-              });
+              }, 20000);
 
               // Only proceed if we got a valid response with additional details
               if (response.ok) {
@@ -4263,27 +4422,6 @@ class ChatWidget {
       });
     }
 
-    // // Wrap page content
-    // const wrapper = document.createElement("div");
-    // wrapper.id = "gurubase-page-content-wrapper";
-
-    // wrapper.style.position = "relative"; // Add this
-    // wrapper.style.zIndex = "1"; // Add this to ensure it stays below the widget
-
-    // // Move all body children into wrapper except chat widget
-    // while (document.body.firstChild) {
-    //   const child = document.body.firstChild;
-    //   if (!child.classList?.contains("chat-widget")) {
-    //     wrapper.appendChild(child);
-    //   }
-    // }
-
-    // wrapper.style.width = "100%";
-    // document.body.insertBefore(wrapper, document.body.firstChild);
-
-    // Remove Speed Highlight CSS import
-    // Remove Speed Highlight script import
-
     // Add highlight.js CSS and script if not already present
     if (!document.querySelector('link[href*="highlight.js"]')) {
       const highlightCSS = document.createElement("link");
@@ -4363,7 +4501,7 @@ class ChatWidget {
 
   async loadHljsTheme(themeName) {
     try {
-      const response = await fetch(`https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/${themeName}.min.css`);
+      const response = await this.fetchWithTimeout(`https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/${themeName}.min.css`, {}, 20000);
       const css = await response.text();
       return css;
     } catch (error) {
@@ -4443,7 +4581,6 @@ class ChatWidget {
     const chatWindow = this.shadow.getElementById("chatWindow");
     chatWindow.style.width = `${newWidth}px`;
     // Update content width while dragging
-    this.setWrapperPanelWidth(newWidth);
   }
 
   handleDragEnd(e) {
@@ -4542,7 +4679,7 @@ class ChatWidget {
   async fetchFollowUpExamples(bingeId, slug, questionText) {
     try {
       const endpoint = `${this.baseUrl}/${this.guruSlug}/follow_up/examples/`;
-      const response = await fetch(endpoint, {
+      const response = await this.fetchWithTimeout(endpoint, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -4555,7 +4692,7 @@ class ChatWidget {
           question_text: questionText,
           widget: true
         })
-      });
+      }, 20000);
 
       if (!response.ok) {
         throw new Error("Failed to fetch follow-up examples");
@@ -4571,7 +4708,7 @@ class ChatWidget {
 
   async recordVote(contentSlug, bingeId, voteType, feedback = null) {
     try {
-      const response = await fetch(`${this.baseUrl}/${this.guruSlug}/record_vote/`, {
+      const response = await this.fetchWithTimeout(`${this.baseUrl}/${this.guruSlug}/record_vote/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -4584,7 +4721,7 @@ class ChatWidget {
           vote_type: voteType,
           feedback: feedback
         })
-      });
+      }, 5000);
 
       if (!response.ok) {
         throw new Error("Failed to record vote");
@@ -4961,6 +5098,7 @@ class ChatWidget {
   }
 
 }
+}
 
 function loadScript(url) {
     return new Promise((resolve, reject) => {
@@ -5084,13 +5222,13 @@ function loadScript(url) {
         // If still loading, add event listener
         document.addEventListener("DOMContentLoaded", () => {
           if (!window.chatWidget) {
-            window.chatWidget = new ChatWidget();
+            window.chatWidget = new window.ChatWidget();
           }
         });
       } else {
         // If already loaded, initialize immediately
         if (!window.chatWidget) {
-          window.chatWidget = new ChatWidget();
+          window.chatWidget = new window.ChatWidget();
         }
       }
     })
