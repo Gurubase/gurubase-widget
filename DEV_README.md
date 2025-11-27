@@ -39,15 +39,22 @@ To enable the on-screen keyboard in the Android Studio emulator:
 
 ### Local Development Setup
 
-For local testing with the widget and React applications, use the following tunnel configuration:
+For local testing with the widget and React demo app, use the following tunnel configuration:
 
 **Widget (Cloudflare Tunnel):**
+
+Start the widget server and serve it on public.
 ```bash
+python server.py
 cloudflared tunnel --url http://localhost:8081
 ```
 
 **React Application (ngrok):**
+
+Start the React demo app and serve it on public.
 ```bash
+cd examples/react
+npm run dev
 ngrok http 5173
 ```
 
