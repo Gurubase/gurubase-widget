@@ -4789,43 +4789,95 @@ if (typeof ChatWidget === 'undefined') {
     // Check if browser is Safari
     const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
     
+    // Check if device is Android
+    const isAndroid = /android/i.test(navigator.userAgent);
+    
     // Calculate the keyboard height
     const keyboardHeight = window.innerHeight - window.visualViewport.height;
     
     if (keyboardHeight > 0) {
         // Keyboard is shown
         if (!isSafari) {
-            // Apply our custom handling only for non-Safari browsers
-            chatWindow.style.height = `${window.visualViewport.height}px`;
-            chatWindow.style.maxHeight = `${window.visualViewport.height}px`;
-            
-            // Adjust the input container position
-            inputContainer.style.position = 'fixed';
-            inputContainer.style.bottom = '0';
-            inputContainer.style.left = '0';
-            inputContainer.style.right = '0';
-            inputContainer.style.transform = `translateY(-${keyboardHeight}px)`;
-            
-            // Adjust messages container to make room for keyboard
-            messagesContainer.style.marginBottom = `${keyboardHeight}px`;
+            // For Android, use a different approach
+            if (isAndroid) {
+                // Set chat window height to visual viewport height (use setProperty to override !important)
+                chatWindow.style.setProperty('height', `${window.visualViewport.height}px`, 'important');
+                chatWindow.style.setProperty('max-height', `${window.visualViewport.height}px`, 'important');
+                chatWindow.style.setProperty('top', `${window.visualViewport.offsetTop}px`, 'important');
+                chatWindow.style.setProperty('bottom', 'auto', 'important');
+                
+                // Keep input container in normal flow
+                inputContainer.style.setProperty('position', 'relative', 'important');
+                inputContainer.style.setProperty('transform', '', 'important');
+                inputContainer.style.setProperty('bottom', '', 'important');
+                inputContainer.style.setProperty('left', '', 'important');
+                inputContainer.style.setProperty('right', '', 'important');
+                
+                // Calculate available height for messages (viewport height - header - input)
+                const headerHeight = chatWindow.querySelector('.anteon-header')?.offsetHeight || 60;
+                const inputHeight = inputContainer.offsetHeight || 80;
+                const availableHeight = window.visualViewport.height - headerHeight - inputHeight;
+                
+                // Adjust messages container
+                messagesContainer.style.setProperty('max-height', `${availableHeight}px`, 'important');
+                messagesContainer.style.setProperty('height', `${availableHeight}px`, 'important');
+                messagesContainer.style.setProperty('padding-bottom', '0', 'important');
+                
+                // Scroll to bottom to show input
+                setTimeout(() => {
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                }, 150);
+            } else {
+                // Apply our custom handling for other non-Safari browsers
+                chatWindow.style.height = `${window.visualViewport.height}px`;
+                chatWindow.style.maxHeight = `${window.visualViewport.height}px`;
+                
+                // Adjust the input container position
+                inputContainer.style.position = 'fixed';
+                inputContainer.style.bottom = '0';
+                inputContainer.style.left = '0';
+                inputContainer.style.right = '0';
+                inputContainer.style.transform = `translateY(-${keyboardHeight}px)`;
+                
+                // Adjust messages container to make room for keyboard
+                messagesContainer.style.marginBottom = `${keyboardHeight}px`;
+            }
         }
         
-        // Scroll to the input after a short delay
-        setTimeout(() => {
-            inputContainer.scrollIntoView({ behavior: 'smooth' });
-        }, 10);
+        // Scroll to the input after a short delay (only for non-Android)
+        if (!isAndroid) {
+            setTimeout(() => {
+                inputContainer.scrollIntoView({ behavior: 'smooth' });
+            }, 10);
+        }
     } else {
         // Keyboard is hidden
         if (!isSafari) {
-            // Reset styles only for non-Safari browsers
-            chatWindow.style.height = '';
-            chatWindow.style.maxHeight = '';
-            inputContainer.style.transform = '';
-            inputContainer.style.position = '';
-            inputContainer.style.bottom = '';
-            inputContainer.style.left = '';
-            inputContainer.style.right = '';
-            messagesContainer.style.marginBottom = '';
+            if (isAndroid) {
+                // Reset Android-specific styles (use setProperty to remove !important)
+                chatWindow.style.removeProperty('height');
+                chatWindow.style.removeProperty('max-height');
+                chatWindow.style.removeProperty('top');
+                chatWindow.style.removeProperty('bottom');
+                inputContainer.style.removeProperty('position');
+                inputContainer.style.removeProperty('transform');
+                inputContainer.style.removeProperty('bottom');
+                inputContainer.style.removeProperty('left');
+                inputContainer.style.removeProperty('right');
+                messagesContainer.style.removeProperty('max-height');
+                messagesContainer.style.removeProperty('height');
+                messagesContainer.style.removeProperty('padding-bottom');
+            } else {
+                // Reset styles for other non-Safari browsers
+                chatWindow.style.height = '';
+                chatWindow.style.maxHeight = '';
+                inputContainer.style.transform = '';
+                inputContainer.style.position = '';
+                inputContainer.style.bottom = '';
+                inputContainer.style.left = '';
+                inputContainer.style.right = '';
+                messagesContainer.style.marginBottom = '';
+            }
         }
     }
   }
