@@ -20,7 +20,7 @@ module.exports = function (context) {
                 "data-widget-id": "YOUR_WIDGET_ID", // Replace with your widget ID
                 "data-text": "Ask AI", // Optional
                 "data-margins": '{"bottom": "20px", "right": "20px"}', // Optional
-                "data-light-mode": "dark", // Optional
+                "data-light-mode": "auto", // Optional - "auto", "light", or "dark"
                 "data-name": "YOUR_NAME", // Optional
                 "data-icon-url": "YOUR_ICON_URL", // Optional
                 "data-bg-color": "#000000", // Optional

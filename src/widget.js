@@ -1916,10 +1916,13 @@ if (typeof ChatWidget === 'undefined') {
 
         const lightMode = scriptTag.getAttribute('data-light-mode')?.toLowerCase();
 
-        if (lightMode === 'auto') {
-          this.lightMode = getThemeState();
+        if (lightMode === 'light' || lightMode === 'true') {
+          this.lightMode = true;
+        } else if (lightMode === 'dark' || lightMode === 'false') {
+          this.lightMode = false;
         } else {
-          this.lightMode = (lightMode === 'true' || lightMode === 'light') || false;
+          // Default to auto (including when lightMode is 'auto', undefined, or null)
+          this.lightMode = getThemeState();
         }
 
         // Validate and set margins

@@ -43,7 +43,7 @@ The only thing you need to do is to add the widget.js to your website as follows
 | data-bg-color | string | Primary color for the widget. Accepts hex color values (e.g., "#0000FF") | Fetched from the Gurubase.io |
 | data-icon-url | string | URL to your company/product logo | Fetched from the Gurubase.io |
 | data-name | string | Your company/product name | Fetched from the Gurubase.io |
-| data-light-mode | string | Whether to use light mode. Possible values are `"auto"`, `"light"`, `"dark"` | "dark" |
+| data-light-mode | string | Whether to use light mode. Possible values are `"auto"`, `"light"`, `"dark"` | "auto" |
 | data-baseUrl | string | URL to your Gurubase backend. **Only for self-hosted Gurubase.** | Gurubase Cloud |
 | data-tooltip | string | Tooltip text | null |
 | data-tooltip-side | string | Tooltip side. 8 possible values: "top", "bottom", "left", "right", "top left", "top right", "bottom left", "bottom right" | "left" |
