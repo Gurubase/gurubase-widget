@@ -13,11 +13,11 @@ if (typeof ChatWidget === 'undefined') {
       
       // Empty state messages
       emptyStateHeading: "Ask anything about {name}",
-      emptyStateDescription: "{name} Guru uses the latest data in the documentation to answer your questions.",
+      emptyStateDescription: "{name} Guru uses the latest data from {name} sources to answer your questions.",
       
       // Loading/processing messages
-      findingContexts: "Finding the best contexts from sources.",
-      evaluatingSources: "Evaluating sources",
+      findingContexts: "Finding the best contexts...",
+      evaluatingSources: "Evaluating sources...",
       errorFindingContexts: "Error finding contexts",
       errorEvaluatingSources: "Error evaluating sources",
       
@@ -79,7 +79,7 @@ if (typeof ChatWidget === 'undefined') {
       
       // Empty state messages
       emptyStateHeading: "{name} hakkında herhangi bir şey sor",
-      emptyStateDescription: "{name} Guru, yapay zeka desteğiyle sorularınıza cevap verir.",
+      emptyStateDescription: "{name} Guru, {name} kaynaklarından en son verileri kullanarak sorularınıza cevap verir.",
       
       // Loading/processing messages
       findingContexts: "En iyi referansları buluyor...",
@@ -154,38 +154,42 @@ if (typeof ChatWidget === 'undefined') {
     styleElement.textContent = `
       /* Base theme colors */
       :host {
-        --bg-primary: ${this.lightMode ? 'white' : '#141526'};
-        --text-primary: ${this.lightMode ? '#1F2937' : 'white'};
-        --bg-secondary: ${this.lightMode ? '#F9FAFB' : '#2D2F33'};
-        --border-color: ${this.lightMode ? '#E5E7EB' : '#242629'};
-        --header-bg: ${this.lightMode ? '#FAFAFA' : '#141526'};
-        --search-bar-bg: ${this.lightMode ? 'white' : '#0C0D17'};
-        --button-passive-bg: ${this.lightMode ? '#BABFC8' : '#191919'};
-        --button-passive-svg-color: ${this.lightMode ? 'white' : '#6D6D6D'};
-        --text-accent-color: ${this.lightMode ? '#6D6D6D' : '#A1A1A1'};
-        --link-color: ${this.lightMode ? '#3782f6' : '#9999ff'};
-        --response-button-color: ${this.lightMode ? '#6D6D6D' : 'white'};
-        --error-red-color: ${this.lightMode ? '#DC2626' : '#F00'};
-        --text-reference-color: ${this.lightMode ? '#000' : '#9999ff'};
-        --tooltip-bg: ${this.lightMode ? '#1B242D' : '#FFF'};
-        --tooltip-text: ${this.lightMode ? '#FFF' : '#1B242D'};
+        --bg-primary: ${this.lightMode ? '#ffffff' : '#0a0a0b'};
+        --text-primary: ${this.lightMode ? '#111111' : '#ededed'};
+        --bg-secondary: ${this.lightMode ? '#F9FAFB' : '#18181b'};
+        --border-color: ${this.lightMode ? '#E5E7EB' : '#27272a'};
+        --header-bg: ${this.lightMode ? '#FAFAFA' : '#0a0a0b'};
+        --search-bar-bg: ${this.lightMode ? '#ffffff' : '#141416'};
+        --button-passive-bg: ${this.lightMode ? '#BABFC8' : '#27272a'};
+        --button-passive-svg-color: ${this.lightMode ? 'white' : '#71717a'};
+        --text-accent-color: ${this.lightMode ? '#6B7280' : '#a1a1aa'};
+        --link-color: ${this.lightMode ? '#3782f6' : '#818cf8'};
+        --response-button-color: ${this.lightMode ? '#6D6D6D' : '#d4d4d8'};
+        --error-red-color: ${this.lightMode ? '#DC2626' : '#ef4444'};
+        --text-reference-color: ${this.lightMode ? '#000' : '#a5b4fc'};
+        --tooltip-bg: ${this.lightMode ? '#1B242D' : '#fafafa'};
+        --tooltip-text: ${this.lightMode ? '#FFF' : '#18181b'};
         --max-tooltip-width: ${this.maxTooltipWidth}px;
-        --vote-button-color: ${this.lightMode ? '#6D6D6D' : '#A1A1A1'};
-        --vote-button-hover: ${this.lightMode ? '#4B5563' : '#C1C1C1'};
+        --vote-button-color: ${this.lightMode ? '#6D6D6D' : '#a1a1aa'};
+        --vote-button-hover: ${this.lightMode ? '#4B5563' : '#d4d4d8'};
         --vote-button-active-upvote: #10B981;
         --vote-button-active-downvote: #EF4444;
-        --vote-button-disabled: ${this.lightMode ? '#D1D5DB' : '#4B5563'};
-        --feedback-form-bg: ${this.lightMode ? '#F9FAFB' : '#1F2937'};
-        --feedback-form-border: ${this.lightMode ? '#E5E7EB' : '#374151'};
-        --feedback-textarea-bg: ${this.lightMode ? 'white' : '#111827'};
-        --feedback-textarea-border: ${this.lightMode ? '#D1D5DB' : '#4B5563'};
-        --feedback-textarea-focus: ${this.lightMode ? '#3B82F6' : '#60A5FA'};
-        --feedback-button-bg: ${this.lightMode ? '#3B82F6' : '#2563EB'};
-        --feedback-button-hover: ${this.lightMode ? '#2563EB' : '#1D4ED8'};
+        --vote-button-disabled: ${this.lightMode ? '#D1D5DB' : '#52525b'};
+        --feedback-form-bg: ${this.lightMode ? '#F9FAFB' : '#18181b'};
+        --feedback-form-border: ${this.lightMode ? '#E5E7EB' : '#3f3f46'};
+        --feedback-textarea-bg: ${this.lightMode ? '#ffffff' : '#0a0a0b'};
+        --feedback-textarea-border: ${this.lightMode ? '#D1D5DB' : '#52525b'};
+        --feedback-textarea-focus: ${this.lightMode ? '#3B82F6' : '#818cf8'};
+        --feedback-button-bg: ${this.lightMode ? '#3B82F6' : '#6366f1'};
+        --feedback-button-hover: ${this.lightMode ? '#2563EB' : '#4f46e5'};
         --feedback-button-text: white;
-        --feedback-cancel-bg: ${this.lightMode ? '#F3F4F6' : '#374151'};
-        --feedback-cancel-hover: ${this.lightMode ? '#E5E7EB' : '#4B5563'};
-        --feedback-cancel-text: ${this.lightMode ? '#374151' : '#D1D5DB'};
+        --feedback-cancel-bg: ${this.lightMode ? '#F3F4F6' : '#27272a'};
+        --feedback-cancel-hover: ${this.lightMode ? '#E5E7EB' : '#3f3f46'};
+        --feedback-cancel-text: ${this.lightMode ? '#374151' : '#d4d4d8'};
+        --powered-by-color: ${this.lightMode ? '#6B7280' : '#71717a'};
+        --powered-by-hover: ${this.lightMode ? '#374151' : '#a1a1aa'};
+        --gradient-fade-color: ${this.lightMode ? 'rgba(255, 255, 255, 0)' : 'rgba(10, 10, 11, 0)'};
+        --gradient-fade-solid: ${this.lightMode ? 'rgba(255, 255, 255, 1)' : 'rgba(10, 10, 11, 1)'};
       }
 
       .chat-button[data-tooltip] {
@@ -516,7 +520,7 @@ if (typeof ChatWidget === 'undefined') {
         :root {
           --primary: #4f46e5;
           --background: #ffffff;
-          --text: #1f2937;
+          --text: #111111;
           --chat-button-hover-bg: #f3f4f6; /* Default hover color */
           --chat-button-active-bg: #e5e7eb; /* Default active color */
         }
@@ -561,26 +565,24 @@ if (typeof ChatWidget === 'undefined') {
           border: none;
           font-size: 16px;
           box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-          transition: transform 0.2s;
           background-color: var(--chat-button-bg);
-          width: var(--initial-width);
-          transition: width 0.2s; background-color 0.2s ease;
+          transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
         }
-  
+
         .chat-button .sparkle {
           display: flex;
           align-items: center;
           justify-content: center;
         }
-  
+
         .chat-button:hover {
-          background-color: var(--chat-button-hover-bg);
-          width: calc(var(--initial-width) * 0.9); /* Reduce by 10% */
+          transform: scale(1.05);
+          box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
         }
-  
+
         .chat-button:active {
           background-color: var(--chat-button-active-bg);
-          text-color: #191919;
+          transform: scale(0.95);
         }
   
         .chat-window:not(.floating) {
@@ -643,6 +645,45 @@ if (typeof ChatWidget === 'undefined') {
           gap: 8px;
         }
   
+        .chat-messages-wrapper {
+          position: relative;
+          flex: 1;
+          overflow: hidden;
+          display: flex;
+          flex-direction: column;
+        }
+
+        .chat-messages-wrapper::before,
+        .chat-messages-wrapper::after {
+          content: '';
+          position: absolute;
+          left: 0;
+          right: 0;
+          height: 24px;
+          pointer-events: none;
+          z-index: 10;
+          opacity: 0;
+          transition: opacity 0.2s ease;
+        }
+
+        .chat-messages-wrapper::before {
+          top: 0;
+          background: linear-gradient(to bottom, var(--gradient-fade-solid), var(--gradient-fade-color));
+        }
+
+        .chat-messages-wrapper::after {
+          bottom: 0;
+          background: linear-gradient(to top, var(--gradient-fade-solid), var(--gradient-fade-color));
+        }
+
+        .chat-messages-wrapper.fade-top::before {
+          opacity: 1;
+        }
+
+        .chat-messages-wrapper.fade-bottom::after {
+          opacity: 1;
+        }
+
         .chat-messages {
           flex: 1;
           overflow-y: auto;
@@ -651,7 +692,7 @@ if (typeof ChatWidget === 'undefined') {
           
           /* Webkit scrollbar styles */
           &::-webkit-scrollbar {
-            width: 4px;  /* Changed from 6px to 4px */
+            width: 4px;
           }
 
           &::-webkit-scrollbar-track {
@@ -659,17 +700,17 @@ if (typeof ChatWidget === 'undefined') {
           }
 
           &::-webkit-scrollbar-thumb {
-            background-color: ${this.lightMode ? '#D1D5DB' : '#4B5563'};
-            border-radius: 2px;  /* Reduced from 3px to 2px to match thinner width */
+            background-color: ${this.lightMode ? '#D1D5DB' : '#52525b'};
+            border-radius: 2px;
           }
 
           &::-webkit-scrollbar-thumb:hover {
-            background-color: ${this.lightMode ? '#9CA3AF' : '#6B7280'};
+            background-color: ${this.lightMode ? '#9CA3AF' : '#71717a'};
           }
 
           /* Firefox scrollbar styles */
           scrollbar-width: thin;
-          scrollbar-color: ${this.lightMode ? '#D1D5DB' : '#4B5563'} transparent;
+          scrollbar-color: ${this.lightMode ? '#D1D5DB' : '#52525b'} transparent;
         }
   
         .message {
@@ -871,28 +912,29 @@ if (typeof ChatWidget === 'undefined') {
   
         /* Add styles for references */
         .references-container {
-          margin-top: 16px;
+          margin-top: 20px;
           display: flex;
           flex-direction: column;
-          gap: 8px;
+          gap: 4px;
         }
   
         .reference-item {
           display: flex;
           align-items: center;
-          gap: 12px;
-          padding: 12px;
+          gap: 8px;
+          padding: 6px 10px;
           background: var(--bg-secondary);
           border: 1px solid var(--button-passive-border);
-          border-radius: 12px;
+          border-radius: 8px;
           text-decoration: none;
           transition: background-color 0.2s;
         }
   
         .reference-icon {
-          width: 20px;
-          height: 20px;
+          width: 16px;
+          height: 16px;
           object-fit: contain;
+          flex-shrink: 0;
         }
   
         .reference-question {
@@ -901,8 +943,73 @@ if (typeof ChatWidget === 'undefined') {
           text-overflow: ellipsis;
           white-space: nowrap;
           position: relative;
-          color: var(--text-reference-color);
+          color: var(--text-accent-color);
           font-weight: 500;
+          font-size: 12px;
+          line-height: 1.4;
+        }
+
+        .reference-item:hover .reference-question {
+          color: var(--text-primary);
+        }
+
+        .references-header {
+          font-size: 14px;
+          font-weight: 500;
+          color: var(--text-accent-color);
+          margin-bottom: 4px;
+        }
+
+        /* Inline trust score styles - matches Sources text */
+        .trust-score-inline {
+          display: inline-flex;
+          align-items: center;
+          gap: 4px;
+          font-size: 14px;
+          font-weight: 500;
+          color: var(--text-accent-color);
+          margin-left: auto;
+          cursor: pointer;
+          position: relative;
+        }
+
+        .trust-score-inline-label {
+          color: var(--text-accent-color);
+        }
+
+        .trust-score-inline-value {
+          color: var(--text-accent-color);
+        }
+
+        /* Trust score tooltip styles */
+        .trust-score-tooltip {
+          position: absolute;
+          bottom: 100%;
+          right: 0;
+          margin-bottom: 8px;
+          padding: 8px 12px;
+          background: var(--bg-primary);
+          color: ${this.lightMode ? '#6B7280' : '#9CA3AF'};
+          font-size: 12px;
+          line-height: 1.5;
+          border-radius: 4px;
+          white-space: normal;
+          word-wrap: break-word;
+          overflow-wrap: break-word;
+          max-width: 250px;
+          min-width: 200px;
+          z-index: 1000;
+          pointer-events: none;
+          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+          opacity: 0;
+          visibility: hidden;
+          transition: opacity 0.2s ease, visibility 0.2s ease;
+          border: 1px solid var(--border-color);
+        }
+
+        .trust-score-inline:hover .trust-score-tooltip {
+          opacity: 1;
+          visibility: visible;
         }
   
         /* Simple tooltip styles */
@@ -931,7 +1038,7 @@ if (typeof ChatWidget === 'undefined') {
         }
   
         .trust-score-label {
-          color: #6d6d6d;
+          color: var(--text-accent-color);
           font-size: 14px;
           font-weight: 500;
         }
@@ -1062,16 +1169,19 @@ if (typeof ChatWidget === 'undefined') {
         position: absolute;
         left: 0;
         top: 0;
-        width: 4px;
+        width: 6px;
         height: 100%;
         cursor: ew-resize;
         background: transparent;
         transition: background 0.2s;
+        z-index: 10001;
+        pointer-events: auto;
       }
   
       .resize-handle:hover,
       .resize-handle.dragging {
         background: rgba(0, 0, 0, 0.1);
+        width: 6px;
       }
   
       /* Add transition to body margin */
@@ -1132,48 +1242,40 @@ if (typeof ChatWidget === 'undefined') {
           font-size: 10px;
         }
         
-        .footer-info .anteon-powered svg {
-          width: 35px;
-          height: 6px;
+        .anteon-powered {
+          font-size: 10px;
         }
       }
 
       .powered-by {
-        text-decoration: none; /* Remove underline by default */
-        color: var(--text-accent-color) /* Default text color */
-      }
-
-      .visit-link {
-        text-decoration: none; /* Remove underline by default */
-        color: var(--text-accent-color) /* Default text color */
+        text-decoration: none;
+        color: var(--powered-by-color);
+        display: flex;
         align-items: center;
         gap: 4px;
-        transition: color 0.2s;
-        position: relative;
+        transition: color 0.15s ease;
       }
-  
-      .visit-link:hover {
-        text-decoration: underline; /* Underline the whole link on hover */
-        text-decoration-skip-ink: none; /* Ensure underline does not skip spaces */
-        color: {this.lightMode ? "#191919" : "#ffffff"};
+
+      .powered-by:hover {
+        color: var(--powered-by-hover);
       }
-  
-      .visit-link:hover .guru-text {
-        color: #FF0000; /* Set "Guru" text color to red on hover */
+
+      .powered-by:hover .brand-name {
+        text-decoration: underline;
       }
-  
-      .visit-link:hover::before {
-        color: #191919; /* Set "Visit" text color */
-      }
-  
-      .visit-link:hover::after {
-        color: #FF0000; /* Set "Guru" text color */
-      }
-  
+
       .anteon-powered {
         display: flex;
         align-items: center;
         gap: 4px;
+        font-size: 12px;
+        font-weight: 400;
+        color: inherit;
+      }
+
+      .anteon-powered .brand-name {
+        font-weight: 500;
+        transition: text-decoration 0.15s ease;
       }
   
       .chat-input-container {
@@ -1251,18 +1353,10 @@ if (typeof ChatWidget === 'undefined') {
         box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1);
       }
   
-      .search-icon {
-        position: absolute;
-        left: 12px;
-        width: 20px;
-        height: 20px;
-        pointer-events: none;
-      }
-  
       .search-bar {
         flex: 1;
         height: 100%;
-        padding: 0 100px 0 40px; /* Right padding for button */
+        padding: 0 100px 0 16px;
         border: none;
         font-size: 16px;
         background: transparent;
@@ -1494,7 +1588,7 @@ if (typeof ChatWidget === 'undefined') {
       .bot-icon {
         width: 24px;
         height: 24px;
-        color: #1F2937;
+        color: #111111;
       }
   
       .sparkle-badge {
@@ -1636,6 +1730,8 @@ if (typeof ChatWidget === 'undefined') {
         border: none;
         background: inherit;
         padding: 0;
+        width: 16px;
+        height: 16px;
         cursor: pointer;
         transition: background-color 0.2s ease, transform 0.2s ease;
         display: flex;
@@ -2101,16 +2197,16 @@ if (typeof ChatWidget === 'undefined') {
   getSmallSparkle() {
     return `
       <svg width="9" height="9" viewBox="0 0 9 9" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M2.98363 1.40552C3.10855 1.08878 3.55682 1.08878 3.68174 1.40552L4.06885 2.38708C4.10699 2.48378 4.18354 2.56032 4.28024 2.59846L5.26179 2.98558C5.57853 3.1105 5.57853 3.55877 5.26179 3.68369L4.28024 4.07081C4.18354 4.10895 4.10699 4.18549 4.06885 4.2822L3.68174 5.26375C3.55681 5.58049 3.10855 5.58049 2.98363 5.26375L2.59651 4.2822C2.55837 4.18549 2.48182 4.10895 2.38512 4.07081L1.40357 3.68369C1.08683 3.55877 1.08683 3.1105 1.40357 2.98558L2.38512 2.59846C2.48182 2.56032 2.55837 2.48378 2.59651 2.38708L2.98363 1.40552Z" fill="white"/>
-        <path d="M6.14118 4.96258C6.20983 4.78851 6.45618 4.78852 6.52483 4.96258L6.82506 5.72381C6.84602 5.77696 6.88808 5.81902 6.94123 5.83998L7.70246 6.14021C7.87652 6.20886 7.87652 6.4552 7.70246 6.52385L6.94123 6.82408C6.88808 6.84504 6.84602 6.88711 6.82506 6.94025L6.52483 7.70148C6.45618 7.87555 6.20983 7.87555 6.14118 7.70148L5.84096 6.94025C5.82 6.88711 5.77793 6.84504 5.72479 6.82408L4.96356 6.52385C4.78949 6.4552 4.78949 6.20886 4.96356 6.14021L5.72479 5.83998C5.77793 5.81902 5.82 5.77696 5.84096 5.72381L6.14118 4.96258Z" fill="white"/>
+        <path d="M4.5 1C4.5 1 5.5 3.5 8 4.5C5.5 5.5 4.5 8 4.5 8C4.5 8 3.5 5.5 1 4.5C3.5 3.5 4.5 1 4.5 1Z" fill="white"/>
       </svg>
     `;
   }
 
   getLargeSparkle() {
-    return `<svg width="40" height="41" viewBox="0 0 40 41" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M12.4216 5.02371C13.0462 3.44001 15.2875 3.44001 15.9121 5.02371L17.8477 9.93147C18.0384 10.415 18.4211 10.7977 18.9046 10.9884L23.8124 12.924C25.3961 13.5486 25.3961 15.7899 23.8124 16.4145L18.9046 18.3501C18.4211 18.5408 18.0384 18.9236 17.8477 19.4071L15.9121 24.3148C15.2875 25.8985 13.0462 25.8985 12.4216 24.3148L10.486 19.4071C10.2953 18.9236 9.91254 18.5408 9.42903 18.3501L4.52127 16.4145C2.93757 15.7899 2.93757 13.5486 4.52127 12.924L9.42903 10.9884C9.91254 10.7977 10.2953 10.415 10.486 9.93147L12.4216 5.02371Z" fill="${this.mainColor}"/>
-    <path d="M28.2074 22.8168C28.5506 21.9465 29.7824 21.9465 30.1256 22.8168L31.6267 26.623C31.7315 26.8887 31.9419 27.099 32.2076 27.2038L36.0138 28.7049C36.8841 29.0482 36.8841 30.2799 36.0138 30.6232L32.2076 32.1243C31.9419 32.2291 31.7315 32.4394 31.6267 32.7052L30.1256 36.5113C29.7824 37.3816 28.5506 37.3816 28.2074 36.5113L26.7063 32.7052C26.6015 32.4394 26.3911 32.2291 26.1254 32.1243L22.3192 30.6232C21.4489 30.2799 21.4489 29.0482 22.3192 28.7049L26.1254 27.2038C26.3911 27.099 26.6015 26.8887 26.7063 26.623L28.2074 22.8168Z" fill="${this.mainColor}"/>
+    return `<svg width="40" height="41" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M9 5C9 5 11 10.5 16 12C11 13.5 9 19 9 19C9 19 7 13.5 2 12C7 10.5 9 5 9 5Z" fill="${this.mainColor}" />
+    <path d="M19 3C19 3 20 5 22 6C20 7 19 9 19 9C19 9 18 7 16 6C18 5 19 3 19 3Z" fill="${this.mainColor}" fill-opacity="0.8" />
+    <path d="M19 15C19 15 20 17 22 18C20 19 19 21 19 21C19 21 18 19 16 18C18 17 19 15 19 15Z" fill="${this.mainColor}" fill-opacity="0.6" />
     </svg>`;
   }
 
@@ -2843,40 +2939,12 @@ if (typeof ChatWidget === 'undefined') {
     });
   }
 
-  getSearchIcon() {
-    return `                
-      <svg class="search-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M23 2C23 2.55229 22.5523 3 22 3C21.4477 3 21 2.55229 21 2C21 1.44771 21.4477 1 22 1C22.5523 1 23 1.44771 23 2Z" fill="${this.mainColor}"/>
-      <path d="M12.6036 12.1092L14.4867 11.6526C15.1711 11.4867 15.1711 10.5133 14.4867 10.3474L12.6036 9.89075C12.3593 9.83151 12.1685 9.64073 12.1092 9.39639L11.6526 7.51328C11.497 6.87168 10.6318 6.83158 10.3876 7.39298C10.3713 7.43041 10.3578 7.47051 10.3474 7.51328L9.89075 9.39639C9.83521 9.62546 9.66406 9.80745 9.44155 9.87812C9.42672 9.88284 9.41166 9.88705 9.39639 9.89076L7.51328 10.3474C6.87168 10.503 6.83158 11.3682 7.39298 11.6124C7.43041 11.6287 7.47051 11.6422 7.51328 11.6526L9.39639 12.1092C9.61018 12.1611 9.78297 12.3136 9.86252 12.5146C9.87389 12.5434 9.88335 12.5731 9.89075 12.6036L10.3474 14.4867C10.5133 15.1711 11.4867 15.1711 11.6526 14.4867L12.1092 12.6036C12.1685 12.3593 12.3593 12.1685 12.6036 12.1092Z" fill="${this.mainColor}"/>
-      <path fill-rule="evenodd" clip-rule="evenodd" d="M11 2C6.02944 2 2 6.02944 2 11C2 15.9706 6.02944 20 11 20C13.125 20 15.078 19.2635 16.6177 18.0319L21.2929 22.7071C21.6834 23.0976 22.3166 23.0976 22.7071 22.7071C23.0976 22.3166 23.0976 21.6834 22.7071 21.2929L18.0319 16.6177C19.2635 15.078 20 13.125 20 11C20 6.02944 15.9706 2 11 2ZM3.8 11C3.8 14.9764 7.02355 18.2 11 18.2C14.9764 18.2 18.2 14.9764 18.2 11C18.2 7.02355 14.9764 3.8 11 3.8C7.02355 3.8 3.8 7.02355 3.8 11Z" fill="${this.mainColor}"/>
-        <path d="M2 23C2.55228 23 3 22.5523 3 22C3 21.4477 2.55228 21 2 21C1.44772 21 1 21.4477 1 22C1 22.5523 1.44772 23 2 23Z" fill="${this.mainColor}"/>
-        <defs>
-          <linearGradient id="paint0_linear_6298_32913" x1="1.44395" y1="4.36735" x2="23.3381" y2="4.77345" gradientUnits="userSpaceOnUse">
-          <stop stop-color="#FF1CF7"/>
-          <stop offset="1" stop-color="#00F0FF"/>
-        </linearGradient>
-        <linearGradient id="paint1_linear_6298_32913" x1="1.44395" y1="4.36735" x2="23.3381" y2="4.77345" gradientUnits="userSpaceOnUse">
-          <stop stop-color="#FF1CF7"/>
-          <stop offset="1" stop-color="#00F0FF"/>
-        </linearGradient>
-        <linearGradient id="paint2_linear_6298_32913" x1="1.44395" y1="4.36735" x2="23.3381" y2="4.77345" gradientUnits="userSpaceOnUse">
-          <stop stop-color="#FF1CF7"/>
-          <stop offset="1" stop-color="#00F0FF"/>
-        </linearGradient>
-        <linearGradient id="paint3_linear_6298_32913" x1="1.44395" y1="4.36735" x2="23.3381" y2="4.77345" gradientUnits="userSpaceOnUse">
-          <stop stop-color="#FF1CF7"/>
-          <stop offset="1" stop-color="#00F0FF"/>
-        </linearGradient>
-      </defs>
-    </svg>`;
-  }
-
   getWidgetButtonSparkle() {
     return `
-      <svg width="23" height="24" viewBox="0 0 23 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M19.3642 1.20841C19.1622 1.65493 18.8042 2.01373 18.3568 2.21572L18.1555 2.30679C17.7636 2.48407 17.7636 3.04063 18.1555 3.21791L18.3568 3.30898C18.8034 3.51097 19.1622 3.8689 19.3642 4.31629L19.4552 4.51762C19.6325 4.90952 20.1891 4.90952 20.3663 4.51762L20.4574 4.31629C20.6594 3.86976 21.0173 3.51097 21.4647 3.30898L21.6661 3.21791C22.058 3.04063 22.058 2.48407 21.6661 2.30679L21.4647 2.21572C21.0182 2.01372 20.6594 1.65579 20.4574 1.20841L20.3663 1.00708C20.1891 0.615178 19.6325 0.615177 19.4552 1.00708L19.3642 1.20841Z" fill="white" fill-opacity="0.5"/>
-      <path d="M2.21572 19.685C2.01372 20.1315 1.65579 20.4903 1.20841 20.6923L1.00708 20.7834C0.615177 20.9606 0.615178 21.5172 1.00708 21.6945L1.20841 21.7855C1.65493 21.9875 2.01373 22.3455 2.21572 22.7929L2.30679 22.9942C2.48407 23.3861 3.04063 23.3861 3.21791 22.9942L3.30898 22.7929C3.51097 22.3463 3.8689 21.9875 4.31629 21.7855L4.51762 21.6945C4.90952 21.5172 4.90952 20.9606 4.51762 20.7834L4.31629 20.6923C3.86976 20.4903 3.51097 20.1324 3.30898 19.685L3.21791 19.4836C3.04063 19.0917 2.48407 19.0917 2.30679 19.4836L2.21572 19.685Z" fill="white" fill-opacity="0.75"/>
-      <path d="M10.8816 3.67497C11.0588 3.28308 11.6154 3.28308 11.7927 3.67497L13.1852 6.75308C13.8682 8.26361 15.0793 9.47195 16.5871 10.1551L19.6653 11.5476C20.0571 11.7249 20.0571 12.2814 19.6653 12.4587L16.5871 13.8512C15.0766 14.5342 13.8683 15.7453 13.1852 17.2532L11.7927 20.3313C11.6154 20.7232 11.0588 20.7232 10.8816 20.3313L9.48905 17.2532C8.806 15.7426 7.59492 14.5343 6.08706 13.8512L3.00895 12.4587C2.61707 12.2814 2.61707 11.7249 3.00895 11.5476L6.08706 10.1551C7.59759 9.47202 8.80593 8.26093 9.48905 6.75308L10.8816 3.67497Z" fill="white"/>
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M9 5C9 5 11 10.5 16 12C11 13.5 9 19 9 19C9 19 7 13.5 2 12C7 10.5 9 5 9 5Z" fill="white" />
+        <path d="M19 3C19 3 20 5 22 6C20 7 19 9 19 9C19 9 18 7 16 6C18 5 19 3 19 3Z" fill="white" fill-opacity="0.8" />
+        <path d="M19 15C19 15 20 17 22 18C20 19 19 21 19 21C19 21 18 19 16 18C18 17 19 15 19 15Z" fill="white" fill-opacity="0.6" />
       </svg>`;
   }
 
@@ -3116,8 +3184,13 @@ if (typeof ChatWidget === 'undefined') {
       chatWindow.classList.add("maximized-state-changing");
       // Restore the panel width from before maximizing.
       if (chatWindow.hasAttribute("data-original-width")) {
-        chatWindow.style.width = chatWindow.getAttribute("data-original-width")+"px";
+        const originalWidth = chatWindow.getAttribute("data-original-width");
+        chatWindow.style.width = originalWidth + "px";
         chatWindow.removeAttribute("data-original-width");
+        // Save restored width to sessionStorage
+        if (sessionStorage) {
+          sessionStorage.setItem("chatWidth", originalWidth);
+        }
       }
       chatWindow.addEventListener("transitionend", () => {
         // Cleanup
@@ -3422,7 +3495,7 @@ if (typeof ChatWidget === 'undefined') {
       <div class="trust-score-card">
         <div class="trust-score-header">
           <div class="trust-score-left">
-            <span class="trust-score-label">${this.t('trustScore')}</span>
+            <span class="trust-score-label">${this.t('trustScore')}:</span>
             <span class="trust-score-value" style="color: ${text}">%${trustScore}</span>
             <button class="trust-score-info" data-tooltip="${this.t('trustScoreTooltip')}">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -3736,7 +3809,7 @@ if (typeof ChatWidget === 'undefined') {
                   bingeId: this.currentBingeId,
                   userVote: data.user_vote || null
                 } : null;
-                const buttons = this.createResponseButtons(data.content, questionData);
+                const buttons = this.createResponseButtons(data.content, questionData, data.trust_score);
                 botResponseElement.appendChild(buttons);
 
                 // Add references if they exist
@@ -3746,8 +3819,7 @@ if (typeof ChatWidget === 'undefined') {
                   
                   // Create header safely without innerHTML
                   const header = document.createElement("header");
-                  header.style.fontSize = "1rem";
-                  header.style.fontWeight = "600";
+                  header.className = "references-header";
                   header.textContent = this.t('sources');
                   referencesContainer.appendChild(header);
 
@@ -3793,15 +3865,6 @@ if (typeof ChatWidget === 'undefined') {
                   botResponseElement.appendChild(referencesContainer);
                 }
 
-                // Add trust score if it exists
-                if (data.trust_score !== undefined && data.trust_score !== null) {
-                  const trustScoreHtml = this.createTrustScore(
-                    data.trust_score
-                  );
-                  const trustScoreDiv = document.createElement("div");
-                  trustScoreDiv.innerHTML = sanitizeHTML(trustScoreHtml);
-                  botResponseElement.appendChild(trustScoreDiv);
-                }
 
                 finalResponse = data.content;
 
@@ -3917,7 +3980,7 @@ if (typeof ChatWidget === 'undefined') {
             bingeId: this.currentBingeId,
             userVote: data.user_vote || null
           } : null;
-          const buttons = this.createResponseButtons(data.content, questionData);
+          const buttons = this.createResponseButtons(data.content, questionData, data.trust_score);
           messageContent.appendChild(buttons);
 
           // Add references if they exist
@@ -3927,8 +3990,7 @@ if (typeof ChatWidget === 'undefined') {
 
             // Create header safely without innerHTML
             const header = document.createElement("header");
-            header.style.fontSize = "1rem";
-            header.style.fontWeight = "600";
+            header.className = "references-header";
             header.textContent = this.t('sources');
             referencesContainer.appendChild(header);
 
@@ -3974,12 +4036,6 @@ if (typeof ChatWidget === 'undefined') {
             messageContent.appendChild(referencesContainer);
           }
 
-          // Add trust score last if it exists
-          if (data.trust_score !== undefined && data.trust_score !== null) {
-            const trustScoreDiv = document.createElement("div");
-            trustScoreDiv.innerHTML = sanitizeHTML(this.createTrustScore(data.trust_score));
-            messageContent.appendChild(trustScoreDiv);
-          }
 
           finalResponse = data.content;
 
@@ -4226,20 +4282,21 @@ if (typeof ChatWidget === 'undefined') {
             </button>
           </div>
 
-          <div class="chat-messages">
-            ${this.getInitialState()}
+          <div class="chat-messages-wrapper">
+            <div class="chat-messages">
+              ${this.getInitialState()}
+            </div>
           </div>
 
           <div class="anteon-footer">
             <div class="chat-input-container">
               <div class="input-row">
                 <div class="search-wrapper">
-                  ${this.getSearchIcon()}
                   <input
                     type="text"
                     id="questionInput"
                     class="search-bar"
-                    placeholder="${this.t('askAnything')}"
+                    placeholder="${this.t('askAnythingAbout', { name: this.name })}"
                     aria-label="${this.t('askQuestion')}"
                   />
                   ${this.getVoiceRecordButton()}
@@ -4248,8 +4305,8 @@ if (typeof ChatWidget === 'undefined') {
               </div>
             </div>
             <div class="footer-info">
-              <a href="https://gurubase.io" target="_blank" class="powered-by">
-                <div class="anteon-powered">${this.t('poweredBy')} ${this.getGurubaseLogo()}</div>
+              <a href="https://gurubase.io" target="_blank" rel="noopener noreferrer" class="powered-by">
+                <div class="anteon-powered">${this.t('poweredBy')} <span class="brand-name">Gurubase</span></div>
               </a>
               <button 
                 class="clear-button" 
@@ -4397,6 +4454,9 @@ if (typeof ChatWidget === 'undefined') {
 
     // Initialize voice recording functionality
     this.initVoiceRecording();
+
+    // Initialize scroll fade listener for gradient indicators
+    this.initScrollFadeListener();
 
     // Add voice record button event listener using delegation
     if (this.voiceRecordingEnabled) {
@@ -4582,14 +4642,39 @@ if (typeof ChatWidget === 'undefined') {
 
   setChatPanelWidth(newWidth) {
     const chatWindow = this.shadow.getElementById("chatWindow");
-    chatWindow.style.width = `${newWidth}px`;
-    // Update content width while dragging
+    
+    // Don't set width if window is maximized
+    if (chatWindow.classList.contains("maximized")) {
+      return;
+    }
+    
+    // Convert to number if it's a string
+    const width = typeof newWidth === 'string' ? parseInt(newWidth, 10) : newWidth;
+    
+    // Ensure width is within valid range
+    const clampedWidth = Math.min(Math.max(width, 400), 800);
+    
+    chatWindow.style.width = `${clampedWidth}px`;
+    
+    // Save to sessionStorage for persistence
+    if (sessionStorage) {
+      sessionStorage.setItem("chatWidth", clampedWidth.toString());
+    }
   }
 
   handleDragEnd(e) {
     this.isDragging = false;
-    const handle = document.querySelector(".resize-handle");
+    const handle = this.shadow.querySelector(".resize-handle");
     handle?.classList.remove("dragging");
+
+    // Save the final width to sessionStorage
+    const chatWindow = this.shadow.getElementById("chatWindow");
+    if (chatWindow && !chatWindow.classList.contains("maximized")) {
+      const finalWidth = chatWindow.offsetWidth;
+      if (sessionStorage) {
+        sessionStorage.setItem("chatWidth", finalWidth.toString());
+      }
+    }
 
     // Re-enable text selection
     document.body.style.userSelect = "";
@@ -4676,6 +4761,44 @@ if (typeof ChatWidget === 'undefined') {
       else if (isAtBottom) {
         this.shouldAutoScroll = true;
       } 
+    }
+
+    // Update gradient fade indicators
+    this.updateScrollFades(messagesContainer);
+  }
+
+  updateScrollFades(messagesContainer) {
+    const wrapper = messagesContainer?.closest('.chat-messages-wrapper');
+    if (!wrapper) return;
+
+    const scrollTop = messagesContainer.scrollTop;
+    const scrollHeight = messagesContainer.scrollHeight;
+    const clientHeight = messagesContainer.clientHeight;
+    const hasScrollableContent = scrollHeight > clientHeight;
+
+    // Show top fade when scrolled down
+    if (scrollTop > 10 && hasScrollableContent) {
+      wrapper.classList.add('fade-top');
+    } else {
+      wrapper.classList.remove('fade-top');
+    }
+
+    // Show bottom fade when not at bottom
+    if (scrollHeight - scrollTop - clientHeight > 10 && hasScrollableContent) {
+      wrapper.classList.add('fade-bottom');
+    } else {
+      wrapper.classList.remove('fade-bottom');
+    }
+  }
+
+  initScrollFadeListener() {
+    const messagesContainer = this.shadow.querySelector('.chat-messages');
+    if (messagesContainer) {
+      messagesContainer.addEventListener('scroll', () => {
+        this.updateScrollFades(messagesContainer);
+      });
+      // Initial check
+      this.updateScrollFades(messagesContainer);
     }
   }
 
@@ -4938,12 +5061,10 @@ if (typeof ChatWidget === 'undefined') {
     const hljsTheme = await this.loadHljsTheme(hljsThemeName);
     this.injectStyles(hljsTheme);
     
-    // Update the Gurubase logo in the footer
-    const gurubaseLogo = this.shadow.querySelector('.anteon-powered');
-    if (gurubaseLogo) {
-      gurubaseLogo.innerHTML = `powered by ${this.getGurubaseLogo()}`;
-    } else {
-      console.error("Could not find Gurubase logo element");
+    // Update the Gurubase branding in the footer (no changes needed for text-based branding)
+    const gurubaseBranding = this.shadow.querySelector('.anteon-powered');
+    if (gurubaseBranding) {
+      gurubaseBranding.innerHTML = `${this.t('poweredBy')} <span class="brand-name">Gurubase</span>`;
     }
   }
 
@@ -5005,13 +5126,15 @@ if (typeof ChatWidget === 'undefined') {
   }
 
   // Create response buttons
-  createResponseButtons(textToCopy, questionData = null) {
+  createResponseButtons(textToCopy, questionData = null, trustScore = null) {
     const buttonContainer = document.createElement("div");
     buttonContainer.className = "response-buttons";
     buttonContainer.style.display = "flex";
-    buttonContainer.style.alignItems = "flex-start";
+    buttonContainer.style.alignItems = "center";
+    buttonContainer.style.justifyContent = "space-between";
     buttonContainer.style.gap = "8px";
     buttonContainer.style.marginTop = "8px";
+    buttonContainer.style.flexWrap = "wrap";
 
     const containerUuid = this.createUuid();
     const copyTextContainer = document.createElement("div");
@@ -5020,21 +5143,26 @@ if (typeof ChatWidget === 'undefined') {
     copyTextContainer.textContent = textToCopy;
     buttonContainer.appendChild(copyTextContainer);
 
+    // Create left side container for buttons
+    const leftContainer = document.createElement("div");
+    leftContainer.style.display = "flex";
+    leftContainer.style.alignItems = "center";
+    leftContainer.style.gap = "8px";
+    leftContainer.style.flexWrap = "wrap";
+
     const copyButton = this.createResponseButton(
-      `<path fill-rule="evenodd" clip-rule="evenodd" d="M10 0.832031H7.29572C6.07055 0.832021 5.10013 0.832013 4.34065 0.934122C3.55904 1.03921 2.9264 1.26062 2.4275 1.75953C1.92859 2.25844 1.70718 2.89107 1.60209 3.67268C1.49998 4.43216 1.49999 5.40258 1.5 6.62775V10.6654C1.5 11.9135 2.4147 12.9481 3.61034 13.1352C3.70232 13.6445 3.87835 14.0793 4.23223 14.4331C4.63351 14.8344 5.13876 15.007 5.73883 15.0877C6.31681 15.1654 7.05169 15.1654 7.96342 15.1654H10.0366C10.9483 15.1654 11.6832 15.1654 12.2612 15.0877C12.8612 15.007 13.3665 14.8344 13.7678 14.4331C14.169 14.0319 14.3416 13.5266 14.4223 12.9265C14.5 12.3486 14.5 11.6137 14.5 10.7019V7.29545C14.5 6.38372 14.5 5.64884 14.4223 5.07086C14.3416 4.47079 14.169 3.96554 13.7678 3.56427C13.4139 3.21038 12.9791 3.03435 12.4698 2.94237C12.2827 1.74673 11.2482 0.832031 10 0.832031ZM11.4196 2.84614C11.2177 2.25619 10.6584 1.83203 10 1.83203H7.33333C6.06212 1.83203 5.15901 1.83309 4.4739 1.9252C3.80317 2.01538 3.41674 2.18449 3.1346 2.46663C2.85246 2.74877 2.68335 3.1352 2.59317 3.80593C2.50106 4.49104 2.5 5.39415 2.5 6.66536V10.6654C2.5 11.3237 2.92416 11.883 3.51411 12.0849C3.49999 11.6783 3.49999 11.2185 3.5 10.7019V7.29545C3.49999 6.38372 3.49998 5.64884 3.57768 5.07086C3.65836 4.47079 3.83096 3.96554 4.23223 3.56427C4.63351 3.16299 5.13876 2.99039 5.73883 2.90971C6.31681 2.83201 7.05169 2.83202 7.96342 2.83203H10.0366C10.5531 2.83202 11.0129 2.83202 11.4196 2.84614ZM4.93934 4.27137C5.12385 4.08686 5.3829 3.96657 5.87208 3.9008C6.37565 3.83309 7.04306 3.83203 8 3.83203H10C10.9569 3.83203 11.6244 3.83309 12.1279 3.9008C12.6171 3.96657 12.8762 4.08686 13.0607 4.27137C13.2452 4.45588 13.3655 4.71493 13.4312 5.20411C13.4989 5.70768 13.5 6.37509 13.5 7.33203V10.6654C13.5 11.6223 13.4989 12.2897 13.4312 12.7933C13.3655 13.2825 13.2452 13.5415 13.0607 13.726C12.8762 13.9105 12.6171 14.0308 12.1279 14.0966C11.6244 14.1643 10.9569 14.1654 10 14.1654H8C7.04306 14.1654 6.37565 14.1643 5.87208 14.0966C5.3829 14.0308 5.12385 13.9105 4.93934 13.726C4.75483 13.5415 4.63453 13.2825 4.56877 12.7933C4.50106 12.2897 4.5 11.6223 4.5 10.6654V7.33203C4.5 6.37509 4.50106 5.70768 4.56877 5.20411C4.63453 4.71493 4.75483 4.45588 4.93934 4.27137Z" fill="var(--response-button-color)"/>`,
+      `<rect width="14" height="14" x="8" y="8" rx="2" ry="2" stroke="var(--response-button-color)" stroke-width="2" fill="none"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" stroke="var(--response-button-color)" stroke-width="2" fill="none"/>`,
       "",
       () => this.copyResponseText(textToCopy),
       "copy"
     );
     copyButton.setAttribute("data-text-id", containerUuid);
-    buttonContainer.appendChild(copyButton);
+    leftContainer.appendChild(copyButton);
 
     // Add text-to-speech button if enabled
     if (this.textToSpeechEnabled) {
       const textToSpeechButton = this.createResponseButton(
-        `<path d="M11 5L6 9H2v6h4l5 4V5z" stroke="var(--response-button-color)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-         <path d="M15.54 8.46a5 5 0 0 1 0 7.07" stroke="var(--response-button-color)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-         <path d="M19.07 4.93a10 10 0 0 1 0 14.14" stroke="var(--response-button-color)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>`,
+        `<path d="M11 4.702a.705.705 0 0 0-1.203-.498L6.413 7.587A1.4 1.4 0 0 1 5.416 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.416a1.4 1.4 0 0 1 .997.413l3.383 3.384A.705.705 0 0 0 11 19.298z" stroke="var(--response-button-color)" stroke-width="2" fill="none"/><path d="M16 9a5 5 0 0 1 0 6" stroke="var(--response-button-color)" stroke-width="2" fill="none"/><path d="M19.364 18.364a9 9 0 0 0 0-12.728" stroke="var(--response-button-color)" stroke-width="2" fill="none"/>`,
         "",
         () => {
           this.handleTextToSpeechClick(textToCopy, textToSpeechButton);
@@ -5042,7 +5170,7 @@ if (typeof ChatWidget === 'undefined') {
         "text-to-speech"
       );
       textToSpeechButton.setAttribute("data-text-id", containerUuid);
-      buttonContainer.appendChild(textToSpeechButton);
+      leftContainer.appendChild(textToSpeechButton);
     }
 
     // Always add vote buttons - use questionData if available
@@ -5064,7 +5192,7 @@ if (typeof ChatWidget === 'undefined') {
     upvoteButton.setAttribute('data-binge-id', bingeId || '');
     upvoteButton.setAttribute('data-user-vote', userVote || '');
     upvoteButton.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3" stroke="var(--response-button-color)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z" stroke="var(--response-button-color)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M7 10v12" stroke="var(--response-button-color)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>`;
     upvoteButton.disabled = !slug || userVote !== null;
 
@@ -5075,7 +5203,7 @@ if (typeof ChatWidget === 'undefined') {
     downvoteButton.setAttribute('data-binge-id', bingeId || '');
     downvoteButton.setAttribute('data-user-vote', userVote || '');
     downvoteButton.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h2.67A2.31 2.31 0 0 1 22 4v7a2 2 0 0 1-2 2H17" stroke="var(--response-button-color)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M9 18.12 10 14H4.17a2 2 0 0 1-1.92-2.56l2.33-8A2 2 0 0 1 6.5 2H20a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.76a2 2 0 0 0-1.79 1.11L12 22a3.13 3.13 0 0 1-3-3.88Z" stroke="var(--response-button-color)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M17 14V2" stroke="var(--response-button-color)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>`;
     downvoteButton.disabled = !slug || userVote !== null;
 
@@ -5102,7 +5230,33 @@ if (typeof ChatWidget === 'undefined') {
     buttonsContainer.appendChild(downvoteButton);
     voteContainer.appendChild(buttonsContainer);
     voteContainer.appendChild(feedbackForm);
-    buttonContainer.appendChild(voteContainer);
+    leftContainer.appendChild(voteContainer);
+    buttonContainer.appendChild(leftContainer);
+
+    // Add trust score on the right side if it exists
+    if (trustScore !== undefined && trustScore !== null) {
+      const trustScoreInline = document.createElement("div");
+      trustScoreInline.className = "trust-score-inline";
+      trustScoreInline.setAttribute('aria-label', this.t('trustScoreTooltip'));
+      
+      const label = document.createElement("span");
+      label.className = "trust-score-inline-label";
+      label.textContent = this.t('trustScore') + ": ";
+      
+      const value = document.createElement("span");
+      value.className = "trust-score-inline-value";
+      value.textContent = `${trustScore}%`;
+      
+      // Create tooltip element
+      const tooltip = document.createElement("div");
+      tooltip.className = "trust-score-tooltip";
+      tooltip.textContent = this.t('trustScoreTooltip');
+      
+      trustScoreInline.appendChild(label);
+      trustScoreInline.appendChild(value);
+      trustScoreInline.appendChild(tooltip);
+      buttonContainer.appendChild(trustScoreInline);
+    }
 
     // Process vote buttons for this container
     setTimeout(() => {
@@ -5136,13 +5290,16 @@ if (typeof ChatWidget === 'undefined') {
       background: inherit;
       display: flex;
       align-items: center;
+      justify-content: center;
       padding: 0;
+      width: 16px;
+      height: 16px;
       cursor: pointer;
       transition: background-color 0.2s ease, transform 0.2s ease;
     `;
 
     button.innerHTML = `
-    <svg width="16" height="16" viewBox="${type === 'copy' ? '0 0 16 16' : '0 0 24 24'}" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
       ${icon}
     </svg>
     ${text}
