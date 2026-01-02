@@ -1480,7 +1480,7 @@ if (typeof ChatWidget === 'undefined') {
       }
   
       /* Show edit button when empty state is not present */
-      .chat-messages:not(:has(.empty-state)) ~ .anteon-footer .clear-button {
+      .chat-messages-wrapper:not(:has(.empty-state)) ~ .anteon-footer .clear-button {
         display: flex;
       }
   
