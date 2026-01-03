@@ -164,14 +164,10 @@ module.exports = (_context) => ({
                     }
 
                     // Remove all widget-related DOM elements
+                    // These selectors target the actual Gurubase widget elements
                     var selectors = [
-                      '#guru-widget-id',
-                      '[class*="chat-widget"]',
-                      '[class*="chatWidget"]',
-                      '[id*="chat-widget"]',
-                      '[id*="chatWidget"]',
-                      '.guru-widget-container',
-                      '[style*="position: fixed"][style*="z-index: 2147483647"]'
+                      '#guru-widget-id',                    // The script tag
+                      '#gurubase-chat-widget-container'     // The widget container
                     ];
                     
                     selectors.forEach(function(selector) {
