@@ -99,6 +99,146 @@ A modern modal-style experience where the chat opens as a centered floating wind
 > [!NOTE] 
 > It is advised to use `data-light-mode="auto"` instead. If this does not work for your website, feel free to contact us.
 
+## Path-Based Widget Loading
+
+If you want to load the widget only on specific paths (e.g., only on `/docs/` pages), you can use a conditional loading approach. This is especially useful for Single Page Applications (SPAs) where you need to handle client-side navigation.
+
+Below is an example for [Docusaurus](https://github.com/Gurubase/gurubase-widget/tree/master/examples/docusaurus) that loads the widget only on `/docs/` paths:
+
+<details>
+<summary>Docusaurus Plugin Example</summary>
+
+Create a file at `plugins/gurubase-widget.js`:
+
+```javascript
+module.exports = (_context) => ({
+  name: "docusaurus-plugin-gurubase-widget",
+  injectHtmlTags() {
+    return {
+      postBodyTags: [
+        {
+          tagName: "script",
+          innerHTML: `
+                (function() {
+                  // Configuration options: https://github.com/Gurubase/gurubase-widget
+                  // Only activate on docs endpoint
+                  var widgetInitialized = false;
+
+                  function initWidget() {
+                    if (widgetInitialized) return;
+                    if (!window.location.pathname.startsWith('/docs/')) return;
+
+                    var existingScript = document.getElementById('guru-widget-id');
+                    if (existingScript) return;
+
+                    var script = document.createElement('script');
+                    script.src = "https://widget.gurubase.io/widget.latest.min.js";
+                    script.setAttribute("data-widget-id", "YOUR_WIDGET_ID");
+                    script.setAttribute("data-text", "Ask AI");
+                    script.setAttribute("data-margins", '{"bottom": "20px", "right": "20px"}');
+                    script.setAttribute("data-light-mode", "auto");
+                    script.defer = true;
+                    script.id = "guru-widget-id";
+                    document.body.appendChild(script);
+                    widgetInitialized = true;
+                  }
+
+                  function destroyWidget() {
+                    if (!widgetInitialized) return;
+
+                    // Use widget's destroy method if available
+                    if (window.chatWidget && typeof window.chatWidget.destroy === 'function') {
+                      window.chatWidget.destroy();
+                    }
+
+                    // Remove the script tag
+                    var script = document.getElementById('guru-widget-id');
+                    if (script) script.remove();
+
+                    // Remove widget instance
+                    if (window.chatWidget) {
+                      delete window.chatWidget;
+                    }
+                    if (window.ChatWidget) {
+                      delete window.ChatWidget;
+                    }
+
+                    // Remove all widget-related DOM elements
+                    // These selectors target the actual Gurubase widget elements
+                    var selectors = [
+                      '#guru-widget-id',                    // The script tag
+                      '#gurubase-chat-widget-container'     // The widget container
+                    ];
+                    
+                    selectors.forEach(function(selector) {
+                      try {
+                        document.querySelectorAll(selector).forEach(function(el) {
+                          el.remove();
+                        });
+                      } catch (e) {}
+                    });
+
+                    widgetInitialized = false;
+                  }
+
+                  function handleRouteChange() {
+                    if (window.location.pathname.startsWith('/docs/')) {
+                      initWidget();
+                    } else {
+                      destroyWidget();
+                    }
+                  }
+
+                  // Check on initial page load
+                  handleRouteChange();
+
+                  // Hook into History API for SPA client-side navigation
+                  var originalPushState = history.pushState;
+                  history.pushState = function() {
+                    originalPushState.apply(this, arguments);
+                    setTimeout(handleRouteChange, 0);
+                  };
+
+                  var originalReplaceState = history.replaceState;
+                  history.replaceState = function() {
+                    originalReplaceState.apply(this, arguments);
+                    setTimeout(handleRouteChange, 0);
+                  };
+
+                  // Handle browser back/forward buttons
+                  window.addEventListener('popstate', function() {
+                    setTimeout(handleRouteChange, 0);
+                  });
+                })();
+              `,
+        },
+      ],
+    };
+  },
+});
+```
+
+Then register the plugin in your `docusaurus.config.js`:
+
+```javascript
+module.exports = {
+  // ... other config
+  plugins: [
+    './plugins/gurubase-widget.js',
+  ],
+};
+```
+
+</details>
+
+**Key points:**
+- The `initWidget()` function checks the current path before loading the widget
+- The `destroyWidget()` function cleans up all widget-related DOM elements when navigating away
+- History API hooks (`pushState`, `replaceState`, `popstate`) handle SPA navigation
+- Modify the path check (`/docs/`) to match your desired paths
+
+This approach can be adapted for other frameworks like Next.js, Remix, or any SPA that uses the History API for navigation.
+
 ## Demos
 Below are example installations of the Gurubase Widget for various technologies. If your technology isn’t listed, we’d gladly accept a demo, feel free to submit a pull request.
 

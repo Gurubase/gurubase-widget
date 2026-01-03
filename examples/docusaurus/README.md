@@ -43,6 +43,10 @@ plugins: [
 ],
 ```
 
+## Path-Based Loading (Optional)
+
+If you want to load the widget only on specific paths (e.g., only on `/docs/` pages), see the [Path-Based Widget Loading](https://github.com/Gurubase/gurubase-widget#path-based-widget-loading) section in the main README for a more advanced plugin configuration that handles SPA navigation and conditional loading/unloading.
+
 ## Usage
 
 ```bash
