@@ -94,7 +94,7 @@ if (typeof ChatWidget === 'undefined') {
       // Error messages
       genericError: "İsteğiniz işlenirken bir hata oluştu.",
       errorPrefix: "Bir hata oluştu: ",
-      validationError: "En az 10 karakter gerekli!",
+      validationError: "En az 2 karakter gerekli!",
       browserNotSupported: "Tarayıcınız ses kaydını desteklemiyor. Lütfen modern bir tarayıcı kullanın.",
       microphoneDenied: "Mikrofon erişimi reddedildi. Lütfen mikrofon erişimine izin verin ve tekrar deneyin.",
       noMicrophone: "Mikrofon bulunamadı. Lütfen bir mikrofon bağlayın ve tekrar deneyin.",
