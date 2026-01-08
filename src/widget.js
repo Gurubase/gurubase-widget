@@ -1422,10 +1422,6 @@ if (typeof ChatWidget === 'undefined') {
         max-width: 100%;
       }
 
-      .shimmer-button:active {
-        transform: translateY(1px) translateZ(0);
-      }
-
       /* Spark container */
       .shimmer-button .spark-container {
         position: absolute;
@@ -2073,15 +2069,6 @@ if (typeof ChatWidget === 'undefined') {
     const G = ((num >> 8) & 0x00ff) - amt;
     const B = (num & 0x0000ff) - amt;
     return `#${(0x1000000 + (R < 255 ? (R < 1 ? 0 : R) : 255) * 0x10000 + (G < 255 ? (G < 1 ? 0 : G) : 255) * 0x100 + (B < 255 ? (B < 1 ? 0 : B) : 255)).toString(16).slice(1)}`;
-  }
-
-  lightenColor(color, percent) {
-    const num = parseInt(color.replace("#", ""), 16);
-    const amt = Math.round(2.55 * percent * 100);
-    const R = Math.min(255, (num >> 16) + amt);
-    const G = Math.min(255, ((num >> 8) & 0x00ff) + amt);
-    const B = Math.min(255, (num & 0x0000ff) + amt);
-    return `#${(0x1000000 + R * 0x10000 + G * 0x100 + B).toString(16).slice(1)}`;
   }
 
   // Helper method to add timeout to fetch requests
