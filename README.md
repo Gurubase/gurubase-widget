@@ -41,6 +41,7 @@ The only thing you need to do is to add the widget.js to your website as follows
 | data-text | string | Text displayed on the chat button | "Ask AI" |
 | data-margins | object | Button positioning margins | `{ bottom: "20px", right: "20px" }` |
 | data-bg-color | string | Primary color for the widget. Accepts hex color values (e.g., "#0000FF") | Fetched from the Gurubase.io |
+| data-shimmer-color | string | Color for the animated shimmer effect on example questions. Accepts hex color values (e.g., "#0000FF"). If not set, uses `data-bg-color`. Falls back to red if neither is available. | Uses `data-bg-color` or red fallback |
 | data-icon-url | string | URL to your company/product logo | Fetched from the Gurubase.io |
 | data-name | string | Your company/product name | Fetched from the Gurubase.io |
 | data-light-mode | string | Whether to use light mode. Possible values are `"auto"`, `"light"`, `"dark"` | "auto" |

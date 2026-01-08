@@ -1527,9 +1527,9 @@ if (typeof ChatWidget === 'undefined') {
         }
       }
 
-      /* Shimmer color - reddish shimmer that works for both modes */
+      /* Shimmer color - uses guru's highlight color or configured shimmer color */
       .shimmer-button {
-        --shimmer-color: ${this.lightMode ? 'rgba(239, 68, 68, 0.5)' : 'rgba(239, 68, 68, 0.6)'};
+        --shimmer-color: ${this.getShimmerColor()};
       }
 
   
@@ -2071,6 +2071,37 @@ if (typeof ChatWidget === 'undefined') {
     return `#${(0x1000000 + (R < 255 ? (R < 1 ? 0 : R) : 255) * 0x10000 + (G < 255 ? (G < 1 ? 0 : G) : 255) * 0x100 + (B < 255 ? (B < 1 ? 0 : B) : 255)).toString(16).slice(1)}`;
   }
 
+  hexToRgba(hex, opacity = 0.6) {
+    // Remove # if present
+    hex = hex.replace("#", "");
+    
+    // Handle 3-digit hex colors
+    if (hex.length === 3) {
+      hex = hex.split("").map(char => char + char).join("");
+    }
+    
+    // Parse RGB values
+    const r = parseInt(hex.substring(0, 2), 16);
+    const g = parseInt(hex.substring(2, 4), 16);
+    const b = parseInt(hex.substring(4, 6), 16);
+    
+    return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+  }
+
+  getShimmerColor() {
+    // Priority: shimmerColor > mainColor > default red
+    const opacity = this.lightMode ? 0.5 : 0.6;
+    
+    if (this.shimmerColor) {
+      return this.hexToRgba(this.shimmerColor, opacity);
+    } else if (this.mainColor) {
+      return this.hexToRgba(this.mainColor, opacity);
+    } else {
+      // Fallback to default red
+      return this.lightMode ? 'rgba(239, 68, 68, 0.5)' : 'rgba(239, 68, 68, 0.6)';
+    }
+  }
+
   // Helper method to add timeout to fetch requests
   async fetchWithTimeout(url, options = {}, timeoutMs = 5000) {
     const controller = new AbortController();
@@ -2221,6 +2252,15 @@ if (typeof ChatWidget === 'undefined') {
         } else {
             this.mainColor = null;
             if (mainColor) console.warn("Invalid main color format, using default");
+        }
+
+        // Validate and set shimmer color
+        const shimmerColor = scriptTag.getAttribute('data-shimmer-color');
+        if (shimmerColor && /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(shimmerColor)) {
+            this.shimmerColor = shimmerColor;
+        } else {
+            this.shimmerColor = null;
+            if (shimmerColor) console.warn("Invalid shimmer color format, using default");
         }
 
         // Validate and set logo URL
