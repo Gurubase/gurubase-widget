@@ -1,11 +1,9 @@
 # Gurubase Widget
 This repository includes the script for the 'Ask AI' widget, which you can add to your Guru's AI capabilities into your website.
 
-<p align="center">
-  <video src="https://github.com/Gurubase/gurubase-widget/raw/refs/heads/master/assets/Gurubase%20Web%20Widget%202026.mp4" controls autoplay loop muted style="max-width: 100%; height: auto;">
-    Your browser does not support the video tag.
-  </video>
-</p>
+
+https://github.com/user-attachments/assets/34d5cad6-d1e0-40e1-9653-696b8589ac32
+
 
 ## Prerequisites
 
