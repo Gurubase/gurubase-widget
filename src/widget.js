@@ -24,13 +24,16 @@ if (typeof ChatWidget === 'undefined') {
       // Error messages
       genericError: "An error occurred while processing your request.",
       errorPrefix: "An error occurred: ",
-      validationError: "At least 10 characters required!",
+      validationError: "At least 2 characters required!",
       browserNotSupported: "Your browser does not support audio recording. Please use a modern browser.",
       microphoneDenied: "Microphone access was denied. Please allow microphone access and try again.",
       noMicrophone: "No microphone found. Please connect a microphone and try again.",
       microphoneInUse: "Microphone is already in use by another application.",
       microphoneError: "Unable to access microphone. Please try again.",
       transcriptionError: "Failed to transcribe audio. ",
+      initializationError: "Failed to initialize widget",
+      unauthorizedError: "Unauthorized: Invalid widget ID",
+      networkError: "Network error: Unable to connect to the server. Please check your connection.",
       
       // Voice recording text
       startVoiceRecording: "Start voice recording",
@@ -63,6 +66,7 @@ if (typeof ChatWidget === 'undefined') {
       clearHistory: "Clear history",
       copyCode: "Copy code",
       exampleQuestion: "Example question: ",
+      exampleQuestions: "Example Questions",
       
       // Date/time text
       lastModified: "Last Modified:",
@@ -90,13 +94,16 @@ if (typeof ChatWidget === 'undefined') {
       // Error messages
       genericError: "İsteğiniz işlenirken bir hata oluştu.",
       errorPrefix: "Bir hata oluştu: ",
-      validationError: "En az 10 karakter gerekli!",
+      validationError: "En az 2 karakter gerekli!",
       browserNotSupported: "Tarayıcınız ses kaydını desteklemiyor. Lütfen modern bir tarayıcı kullanın.",
       microphoneDenied: "Mikrofon erişimi reddedildi. Lütfen mikrofon erişimine izin verin ve tekrar deneyin.",
       noMicrophone: "Mikrofon bulunamadı. Lütfen bir mikrofon bağlayın ve tekrar deneyin.",
       microphoneInUse: "Mikrofon zaten başka bir uygulama tarafından kullanılıyor.",
       microphoneError: "Mikrofona erişilemiyor. Lütfen tekrar deneyin.",
       transcriptionError: "Ses transkripsiyonu başarısız. ",
+      initializationError: "Widget başlatılamadı",
+      unauthorizedError: "Yetkisiz: Geçersiz widget ID",
+      networkError: "Ağ hatası: Sunucuya bağlanılamıyor. Lütfen bağlantınızı kontrol edin.",
       
       // Voice recording text
       startVoiceRecording: "Ses kaydını başlat",
@@ -129,6 +136,7 @@ if (typeof ChatWidget === 'undefined') {
       clearHistory: "Geçmişi temizle",
       copyCode: "Kodu kopyala",
       exampleQuestion: "Örnek soru: ",
+      exampleQuestions: "Örnek Sorular",
       
       // Date/time text
       lastModified: "Son Değiştirilme:",
@@ -936,6 +944,66 @@ if (typeof ChatWidget === 'undefined') {
           object-fit: contain;
           flex-shrink: 0;
         }
+
+        /* Shiny animation for action icons */
+        @keyframes shiny {
+          0% {
+            transform: translateX(-100%) translateY(-100%) rotate(45deg);
+          }
+          100% {
+            transform: translateX(100%) translateY(100%) rotate(45deg);
+          }
+        }
+
+        .action-icon-shiny {
+          position: relative;
+          overflow: hidden;
+          border-radius: 4px;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: 16px;
+          height: 16px;
+          flex-shrink: 0;
+        }
+
+        .action-icon-shiny img,
+        .action-icon-shiny svg {
+          position: relative;
+          z-index: 0;
+          display: block;
+          width: 16px;
+          height: 16px;
+        }
+
+        .action-icon-shiny::before {
+          content: "";
+          position: absolute;
+          top: -50%;
+          left: -50%;
+          width: 200%;
+          height: 200%;
+          background: linear-gradient(
+            45deg,
+            transparent 25%,
+            rgba(255, 255, 255, 0.7) 50%,
+            transparent 75%
+          );
+          animation: shiny 3s ease-in-out infinite;
+          pointer-events: none;
+          z-index: 1;
+          mix-blend-mode: screen;
+        }
+
+        /* Dark mode adjustment for shiny effect */
+        .chat-widget:not(.light-mode) .action-icon-shiny::before {
+          background: linear-gradient(
+            45deg,
+            transparent 25%,
+            rgba(255, 255, 255, 0.4) 50%,
+            transparent 75%
+          );
+        }
   
         .reference-question {
           flex: 1;
@@ -1297,41 +1365,171 @@ if (typeof ChatWidget === 'undefined') {
         width: 100%;
       }
 
+      /* Example Questions Section */
+      .example-questions-section {
+        margin-top: 24px;
+        margin-bottom: 8px;
+      }
+
+      .example-questions-title {
+        font-size: 11px;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--text-accent-color);
+        margin-bottom: 12px;
+        font-family: Inter, system-ui, -apple-system, sans-serif;
+      }
+
       .example-questions {
         display: flex;
         flex-wrap: wrap;
         row-gap: 8px;
         column-gap: 8px;
-        margin-y: 12px;
-        margin-x: 20px;
+        justify-content: flex-start;
       }
 
-      .example-questions .example-question {
+      .example-questions .shimmer-button {
+        flex: 0 1 auto;
+        min-width: min-content;
+        max-width: 100%;
+      }
+
+      .shimmer-button {
+        position: relative;
+        z-index: 0;
+        display: flex;
+        align-items: flex-start;
+        justify-content: flex-start;
+        overflow: hidden;
+        border-radius: 12px;
+        border: 1px solid var(--border-color);
+        padding: 8px 16px;
+        white-space: normal;
+        word-wrap: break-word;
+        word-break: break-word;
+        color: var(--text-primary);
         font-family: Inter, system-ui, -apple-system, sans-serif;
         font-size: 13px;
         font-weight: 400;
-        color: var(--text-primary);
-        background-color: #ffffff;
-        border: 1px solid var(--border-color);
-        border-radius: 6px;
-        padding: 8px 12px;
         cursor: pointer;
-        transition: all 0.2s ease;
+        transform: translateZ(0);
+        transition: all 0.2s ease-in-out;
+        background: var(--search-bar-bg);
         text-align: left;
+        line-height: 1.4;
+        min-width: 0;
         max-width: 100%;
-        white-space: normal;
-        word-wrap: break-word;
-        line-height: normal;
-        background-color: var(--search-bar-bg);
       }
 
-      .example-questions .example-question:hover {
+      /* Spark container */
+      .shimmer-button .spark-container {
+        position: absolute;
+        inset: -3px;
+        overflow: hidden;
+        z-index: -30;
+        filter: blur(1.5px);
+        border-radius: 15px;
+      }
+
+      /* Spark element */
+      .shimmer-button .spark {
+        position: absolute;
+        inset: -50%;
+        width: 200%;
+        height: 200%;
+        border-radius: 50%;
+        mask: none;
+        animation: spin-around 5s linear infinite;
+        transform-origin: center center;
+      }
+
+      /* Spark before - conic gradient */
+      .shimmer-button .spark::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        background: conic-gradient(
+          from 0deg,
+          transparent 0deg,
+          transparent 60deg,
+          var(--shimmer-color, rgba(239, 68, 68, 0.6)) 75deg,
+          var(--shimmer-color, rgba(239, 68, 68, 0.7)) 90deg,
+          var(--shimmer-color, rgba(239, 68, 68, 0.7)) 105deg,
+          var(--shimmer-color, rgba(239, 68, 68, 0.6)) 120deg,
+          transparent 135deg,
+          transparent 360deg
+        );
+      }
+
+      /* Highlight overlay */
+      .shimmer-button .highlight {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        border-radius: 12px;
+        padding: 4px 16px;
+        font-size: 13px;
+        font-weight: 500;
+        box-shadow: inset 0 -8px 10px rgba(0, 0, 0, 0.05);
+        transform: translateZ(0);
+        transition: all 0.2s ease-in-out;
+      }
+
+      .shimmer-button:hover {
+        background: var(--bg-secondary);
         border-color: var(--border-color);
-        background-color: var(--search-bar-bg);
       }
 
-      .example-questions .example-question:active {
-        transform: scale(0.98);
+      .shimmer-button:hover .highlight {
+        box-shadow: inset 0 -6px 10px rgba(0, 0, 0, 0.08);
+      }
+
+      .shimmer-button:active {
+        transform: translateY(1px) translateZ(0);
+      }
+
+      .shimmer-button:active .highlight {
+        box-shadow: inset 0 -10px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      /* Backdrop */
+      .shimmer-button .backdrop {
+        position: absolute;
+        inset: var(--cut, 0.05em);
+        z-index: -20;
+        border-radius: 12px;
+        background: var(--search-bar-bg);
+      }
+
+      /* Shimmer button text */
+      .shimmer-button .button-text {
+        position: relative;
+        z-index: 1;
+        width: 100%;
+        text-align: left;
+        word-wrap: break-word;
+        word-break: break-word;
+        white-space: normal;
+      }
+
+      /* Animations */
+      @keyframes spin-around {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* Shimmer color - reddish shimmer that works for both modes */
+      .shimmer-button {
+        --shimmer-color: ${this.lightMode ? 'rgba(239, 68, 68, 0.5)' : 'rgba(239, 68, 68, 0.6)'};
       }
 
   
@@ -1340,7 +1538,7 @@ if (typeof ChatWidget === 'undefined') {
         flex: 1;
         display: flex;
         align-items: center;
-        height: 56px;
+        height: 46px;
         border: 1px solid var(--border-color);
         border-radius: 12px;
         background: #FDFDFD;
@@ -1358,7 +1556,7 @@ if (typeof ChatWidget === 'undefined') {
         height: 100%;
         padding: 0 100px 0 16px;
         border: none;
-        font-size: 16px;
+        font-size: 14px;
         background: transparent;
         border-radius: 12px;
       }
@@ -1371,12 +1569,12 @@ if (typeof ChatWidget === 'undefined') {
         position: absolute;
         right: 8px;
         display: flex;
-        width: 40px;
-        height: 40px;
+        width: 34px;
+        height: 34px;
         justify-content: center;
         align-items: center;
         padding: 0;
-        border-radius: 12px;
+        border-radius: 10px;
         border: none;
         color: var(--button-passive-svg-color);
         cursor: pointer;
@@ -1493,6 +1691,17 @@ if (typeof ChatWidget === 'undefined') {
         height: 100%;
         padding: 0 24px;
         color: var(--text-primary);
+      }
+
+      .empty-state.error-state {
+        padding: 24px;
+      }
+
+      .empty-state.error-state h2 {
+        color: var(--error-red-color);
+        font-size: 16px;
+        font-weight: 600;
+        margin: 0 0 8px 0;
       }
   
       .sparkles {
@@ -1893,20 +2102,39 @@ if (typeof ChatWidget === 'undefined') {
       }, 5000);
       
       if (!response.ok) {
-        throw new Error('Failed to fetch default values');
+        // Create error with status code information
+        const error = new Error('Failed to fetch default values');
+        error.status = response.status;
+        error.statusText = response.statusText;
+        throw error;
       }
 
-      const data = await response.json();
+      const responseData = await response.json();
+      // Handle new API response structure with data.body wrapper
+      const data = responseData.data?.body || responseData;
+      
       // Only set values that weren't specified in config
-      this.mainColor = this.mainColor || data.colors.base_color;
+      this.mainColor = this.mainColor || data.colors?.base_color;
       this.logoUrl = this.logoUrl || data.icon_url;
       this.name = this.name || data.name;
       this.guruSlug = data.slug || ""; // Add guru slug
       this.voiceRecordingEnabled = data.voice_recording_enabled || false;
       this.textToSpeechEnabled = data.text_to_speech_enabled || false;
+      this.exampleQuestions = data.example_questions || [];
+      
+      // Clear any initialization error flag
+      this.initializationError = null;
 
     } catch (error) {
       console.error('Error fetching default values:', error);
+      
+      // Store error information for display
+      this.initializationError = {
+        message: error.message,
+        status: error.status,
+        statusText: error.statusText
+      };
+      
       // Fallback to hardcoded defaults if fetch fails
       this.mainColor = this.mainColor || "#0F9500";
       this.logoUrl = this.logoUrl || "";
@@ -1914,6 +2142,10 @@ if (typeof ChatWidget === 'undefined') {
       this.guruSlug = "";
       this.voiceRecordingEnabled = false;
       this.textToSpeechEnabled = false;
+      this.exampleQuestions = [];
+      
+      // Re-throw to allow init() to handle it
+      throw error;
     }
   }  
 
@@ -1960,12 +2192,12 @@ if (typeof ChatWidget === 'undefined') {
 
         // Validate and set base URL
         try {
-            const baseUrl = scriptTag.getAttribute('data-baseUrl');
+            const baseUrl = scriptTag.getAttribute('data-base-url');
             new URL(baseUrl); // Test if valid URL
             this.baseUrl = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
         } catch {
             this.baseUrl = defaultBaseUrl;
-            // console.warn("Invalid base URL provided, using default");
+            console.warn("Invalid base URL provided, using default");
         }
         // Validate and set button text
         this.buttonText = scriptTag.getAttribute('data-text') || this.t('askAI');
@@ -2076,6 +2308,7 @@ if (typeof ChatWidget === 'undefined') {
     this.isFirstQuestion = true;
     this.currentBingeId = null;
     this.previousQuestionSlug = null;
+    this.exampleQuestions = [];
     
     // Update button text with proper translation after language is set
     if (!this.buttonText || this.buttonText === "Ask AI") {
@@ -2211,6 +2444,11 @@ if (typeof ChatWidget === 'undefined') {
   }
 
   getInitialState() {
+    // Check for initialization error first
+    if (this.initializationError) {
+      return this.getErrorState(this.initializationError);
+    }
+    
     if (sessionStorage && sessionStorage.getItem("chatState")) {
       // We have existing chat state but are reinitializing due to a refresh or full page navigation
       return sessionStorage.getItem("chatState");
@@ -2221,11 +2459,76 @@ if (typeof ChatWidget === 'undefined') {
 
   getEmptyState() {
     // Define templates as instance properties using current mainColor
+    const exampleQuestionsHTML = this.exampleQuestions && this.exampleQuestions.length > 0
+      ? this.createExampleQuestionsHTML(this.exampleQuestions)
+      : '';
+    
     return `
       <div class='empty-state'>
         <div class='sparkles'>${this.getLargeSparkle()}</div>
         <h2>${this.t('emptyStateHeading', { name: this.name })}</h2>
         <p>${this.t('emptyStateDescription', { name: this.name })}</p>
+        ${exampleQuestionsHTML}
+      </div>
+    `;
+  }
+
+  createExampleQuestionsHTML(questions) {
+    if (!Array.isArray(questions) || questions.length === 0) return '';
+    
+    const buttonsHTML = questions.map((question, index) => {
+      const questionUuid = this.createUuid();
+      return `
+        <div class="hidden" id="${questionUuid}">${this.escapeHtml(question)}</div>
+        <button class="shimmer-button example-question" 
+                data-question-id="${questionUuid}"
+                aria-label="${this.t('exampleQuestion')} ${this.escapeHtml(question)}">
+          <div class="spark-container">
+            <div class="spark"></div>
+          </div>
+          <span class="button-text">${this.escapeHtml(question)}</span>
+          <div class="highlight"></div>
+          <div class="backdrop"></div>
+        </button>
+      `;
+    }).join('');
+    
+    return `
+      <div class="example-questions-section">
+        <div class="example-questions-title">${this.t('exampleQuestions') || 'Example Questions'}</div>
+        <div class="example-questions">
+          ${buttonsHTML}
+        </div>
+      </div>
+    `;
+  }
+
+  escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
+  getErrorState(error) {
+    // Determine error message based on status code
+    let errorMessage = this.t('initializationError');
+    if (error && error.status === 401) {
+      errorMessage = this.t('unauthorizedError');
+    } else if (error && error.status >= 500) {
+      errorMessage = this.t('networkError');
+    } else if (error && error.message) {
+      errorMessage = error.message;
+    }
+
+    return `
+      <div class='empty-state error-state'>
+        <div style="color: var(--error-red-color); margin-bottom: 16px;">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M3.31171 7.76149C6.23007 2.58716 7.68925 0 10 0C12.3107 0 13.7699 2.58716 16.6883 7.76149L17.0519 8.40626C19.4771 12.7061 20.6897 14.856 19.5937 16.428C18.4978 18 15.7864 18 10.3637 18H9.63634C4.21356 18 1.50217 18 0.406257 16.428C-0.689658 14.856 0.522912 12.7061 2.94805 8.40627L3.31171 7.76149ZM10 4.25C10.4142 4.25 10.75 4.58579 10.75 5V10C10.75 10.4142 10.4142 10.75 10 10.75C9.58579 10.75 9.25 10.4142 9.25 10V5C9.25 4.58579 9.58579 4.25 10 4.25ZM10 14C10.5523 14 11 13.5523 11 13C11 12.4477 10.5523 12 10 12C9.44771 12 9 12.4477 9 13C9 13.5523 9.44771 14 10 14Z" fill="currentColor"/>
+          </svg>
+        </div>
+        <h2 style="color: var(--error-red-color);">${errorMessage}</h2>
+        ${error && error.status ? `<p style="color: var(--text-accent-color); font-size: 12px; margin-top: 8px;">Status: ${error.status} ${error.statusText || ''}</p>` : ''}
       </div>
     `;
   }
@@ -3437,6 +3740,11 @@ if (typeof ChatWidget === 'undefined') {
   }
 
   validateAndSubmit() {
+    // Prevent submission if there's an initialization error
+    if (this.initializationError) {
+      return;
+    }
+    
     const questionInput = this.shadow.getElementById("questionInput");
     const question = questionInput.value.trim();
     let errorElement = this.shadow.querySelector(".search-error");
@@ -3451,7 +3759,7 @@ if (typeof ChatWidget === 'undefined') {
       searchWrapper.appendChild(errorElement);
     }
 
-    if (question.length < 10) {
+    if (question.length < 2) {
       errorElement.style.display = "block";
       inputContainer.style.paddingBottom = "24px"; // Add padding to input container
       errorElement.textContent = "* " + this.t('validationError');
@@ -3837,23 +4145,60 @@ if (typeof ChatWidget === 'undefined') {
                       ? ref.question.slice(0, 90) + "..."
                       : ref.question;
 
-                    // Create reference content safely to prevent XSS
-                    const refIcon = document.createElement('img');
+                    const isAction = ref.type === "ACTION";
                     
-                    // Check if this is a GitHub URL and use appropriate icon
-                    let iconURL;
-                    if (ref.link && this.isGitHubUrl(ref.link)) {
-                      iconURL = this.getGitHubIcon();
+                    // Create icon container
+                    let iconContainer;
+                    if (isAction) {
+                      // For action icons, create a wrapper with shiny effect
+                      iconContainer = document.createElement('div');
+                      iconContainer.className = 'action-icon-shiny';
+                      const actionIcon = this.createActionIcon();
+                      iconContainer.appendChild(actionIcon);
                     } else {
-                      // Sanitize icon URL and use safe default if sanitization fails
-                      const sanitizedIconURL = sanitizeURL(ref.icon);
-                      const defaultIconURL = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEzIDJMMTMgNkwxNyA2TDEzIDJaIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPHBhdGggZD0iTTEzIDZMMTMgMjJMNSAyMkw1IDJMMTMgMloiIHN0cm9rZT0iY3VycmVudENvbG9yIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgo8L3N2Zz4K';
-                      iconURL = sanitizedIconURL || defaultIconURL;
+                      // For regular icons, use img element
+                      const refIcon = document.createElement('img');
+                      refIcon.alt = 'Source icon';
+                      refIcon.className = 'reference-icon';
+                      
+                      // Check if this is a GitHub URL and use appropriate icon
+                      let iconURL;
+                      const defaultIcon = this.getDefaultWebsiteIcon();
+                      
+                      if (ref.link && this.isGitHubUrl(ref.link)) {
+                        iconURL = this.getGitHubIcon();
+                      } else {
+                        // Sanitize icon URL and use safe default if sanitization fails or empty
+                        const sanitizedIconURL = sanitizeURL(ref.icon);
+                        iconURL = sanitizedIconURL || defaultIcon;
+                      }
+                      
+                      // Only set up error handler if we're not already using the default icon
+                      if (iconURL !== defaultIcon) {
+                        // Set error handler BEFORE setting src to catch all errors including ORB
+                        refIcon.addEventListener('error', () => {
+                          // Fallback to default icon if image fails to load
+                          refIcon.src = defaultIcon;
+                        }, { once: true });
+                        
+                        // Also add a timeout fallback for cases where error event doesn't fire (e.g., ERR_BLOCKED_BY_ORB)
+                        const timeoutId = setTimeout(() => {
+                          // Check if image failed to load (naturalWidth will be 0 if not loaded)
+                          if (refIcon.naturalWidth === 0 && refIcon.src === iconURL) {
+                            refIcon.src = defaultIcon;
+                          }
+                        }, 1000); // 1 second timeout
+                        
+                        // Clear timeout if image loads successfully
+                        refIcon.addEventListener('load', () => {
+                          clearTimeout(timeoutId);
+                        }, { once: true });
+                      }
+                      
+                      // Set src after error handler is attached (if needed)
+                      refIcon.src = iconURL;
+                      iconContainer = refIcon;
                     }
-                    
-                    refIcon.src = iconURL;
-                    refIcon.alt = 'Source icon';
-                    refIcon.className = 'reference-icon';
                     
                     const refSpan = document.createElement('span');
                     refSpan.className = 'reference-question';
@@ -3863,7 +4208,7 @@ if (typeof ChatWidget === 'undefined') {
                     }
                     refSpan.textContent = displayedQuestion; // Use textContent to prevent XSS
                     
-                    referenceItem.appendChild(refIcon);
+                    referenceItem.appendChild(iconContainer);
                     referenceItem.appendChild(refSpan);
 
                     referencesContainer.appendChild(referenceItem);
@@ -4015,23 +4360,60 @@ if (typeof ChatWidget === 'undefined') {
                 ? ref.question.slice(0, 90) + "..."
                 : ref.question;
 
-              // Create reference content safely to prevent XSS
-              const refIcon = document.createElement('img');
+              const isAction = ref.type === "ACTION";
               
-              // Check if this is a GitHub URL and use appropriate icon
-              let iconURL;
-              if (ref.link && this.isGitHubUrl(ref.link)) {
-                iconURL = this.getGitHubIcon();
+              // Create icon container
+              let iconContainer;
+              if (isAction) {
+                // For action icons, create a wrapper with shiny effect
+                iconContainer = document.createElement('div');
+                iconContainer.className = 'action-icon-shiny';
+                const actionIcon = this.createActionIcon();
+                iconContainer.appendChild(actionIcon);
               } else {
-                // Sanitize icon URL and use safe default if sanitization fails
-                const sanitizedIconURL = sanitizeURL(ref.icon);
-                const defaultIconURL = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEzIDJMMTMgNkwxNyA2TDEzIDJaIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPHBhdGggZD0iTTEzIDZMMTMgMjJMNSAyMkw1IDJMMTMgMloiIHN0cm9rZT0iY3VycmVudENvbG9yIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgo8L3N2Zz4K';
-                iconURL = sanitizedIconURL || defaultIconURL;
+                // For regular icons, use img element
+                const refIcon = document.createElement('img');
+                refIcon.alt = 'Source icon';
+                refIcon.className = 'reference-icon';
+                
+                // Check if this is a GitHub URL and use appropriate icon
+                let iconURL;
+                const defaultIcon = this.getDefaultWebsiteIcon();
+                
+                if (ref.link && this.isGitHubUrl(ref.link)) {
+                  iconURL = this.getGitHubIcon();
+                } else {
+                  // Sanitize icon URL and use safe default if sanitization fails or empty
+                  const sanitizedIconURL = sanitizeURL(ref.icon);
+                  iconURL = sanitizedIconURL || defaultIcon;
+                }
+                
+                // Only set up error handler if we're not already using the default icon
+                if (iconURL !== defaultIcon) {
+                  // Set error handler BEFORE setting src to catch all errors including ORB
+                  refIcon.addEventListener('error', () => {
+                    // Fallback to default icon if image fails to load
+                    refIcon.src = defaultIcon;
+                  }, { once: true });
+                  
+                  // Also add a timeout fallback for cases where error event doesn't fire (e.g., ERR_BLOCKED_BY_ORB)
+                  const timeoutId = setTimeout(() => {
+                    // Check if image failed to load (naturalWidth will be 0 if not loaded)
+                    if (refIcon.naturalWidth === 0 && refIcon.src === iconURL) {
+                      refIcon.src = defaultIcon;
+                    }
+                  }, 1000); // 1 second timeout
+                  
+                  // Clear timeout if image loads successfully
+                  refIcon.addEventListener('load', () => {
+                    clearTimeout(timeoutId);
+                  }, { once: true });
+                }
+                
+                // Set src after error handler is attached (if needed)
+                refIcon.src = iconURL;
+                iconContainer = refIcon;
               }
-              
-              refIcon.src = iconURL;
-              refIcon.alt = 'Source icon';
-              refIcon.className = 'reference-icon';
               
               const refSpan = document.createElement('span');
               refSpan.className = 'reference-question';
@@ -4041,7 +4423,7 @@ if (typeof ChatWidget === 'undefined') {
               }
               refSpan.textContent = displayedQuestion; // Use textContent to prevent XSS
               
-              referenceItem.appendChild(refIcon);
+              referenceItem.appendChild(iconContainer);
               referenceItem.appendChild(refSpan);
 
               referencesContainer.appendChild(referenceItem);
@@ -4247,6 +4629,44 @@ if (typeof ChatWidget === 'undefined') {
     }
   }
 
+  // Get default placeholder icon for websites when icon is missing or fails to load
+  getDefaultWebsiteIcon() {
+    // Lucide link icon SVG - base64 encoded
+    // Light mode: gray-500 (#6B7280), Dark mode: gray-400 (#9CA3AF)
+    // Size adjusted to 16x16 to match reference-icon size
+    if (this.lightMode) {
+      return 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiM2QjcyODAiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cGF0aCBkPSJNMTAgMTNhNSA1IDAgMCAwIDcuNTQuNTRsMy0zYTUgNSAwIDAgMC03LjA3LTcuMDdsLTEuNzIgMS43MSIvPjxwYXRoIGQ9Ik0xNCAxMWE1IDUgMCAwIDAtNy41NC0uNTRsLTMgM2E1IDUgMCAwIDAgNy4wNyA3LjA3bDEuNzEtMS43MSIvPjwvc3ZnPg==';
+    } else {
+      return 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiM5Q0EzQUYiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cGF0aCBkPSJNMTAgMTNhNSA1IDAgMCAwIDcuNTQuNTRsMy0zYTUgNSAwIDAgMC03LjA3LTcuMDdsLTEuNzIgMS43MSIvPjxwYXRoIGQ9Ik0xNCAxMWE1IDUgMCAwIDAtNy41NC0uNTRsLTMgM2E1IDUgMCAwIDAgNy4wNyA3LjA3bDEuNzEtMS43MSIvPjwvc3ZnPg==';
+    }
+  }
+
+  // Create action icon SVG element (theme-compatible play icon)
+  createActionIcon() {
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('width', '16');
+    svg.setAttribute('height', '16');
+    svg.setAttribute('viewBox', '0 0 512 512');
+    svg.style.color = 'var(--text-accent-color)';
+    
+    const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    
+    // Outer circle ring (path creates a ring by using two circles)
+    const ringPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    ringPath.setAttribute('d', 'M256,0C114.609,0,0,114.609,0,256s114.609,256,256,256s256-114.609,256-256S397.391,0,256,0z M256,472c-119.297,0-216-96.703-216-216S136.703,40,256,40s216,96.703,216,216S375.297,472,256,472z');
+    ringPath.setAttribute('fill', 'currentColor');
+    g.appendChild(ringPath);
+    
+    // Play triangle
+    const polygon = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+    polygon.setAttribute('points', '192,336 352,256 192,176');
+    polygon.setAttribute('fill', 'currentColor');
+    g.appendChild(polygon);
+    
+    svg.appendChild(g);
+    return svg;
+  }
+
   // Modify existing askQuestion function to only handle display
   askQuestion(question) {
     const messagesContainer = this.shadow.querySelector(".chat-messages");
@@ -4437,7 +4857,13 @@ if (typeof ChatWidget === 'undefined') {
     this.handleEscape = this.handleEscape.bind(this);
     this.handleUnload = this.handleUnload.bind(this);
 
-    await this.fetchDefaultValues();
+    // Try to fetch default values, catch and store errors
+    try {
+      await this.fetchDefaultValues();
+    } catch (error) {
+      // Error is already stored in this.initializationError by fetchDefaultValues
+      console.error('Widget initialization error:', error);
+    }
 
     // Set primary color CSS variable
     document.documentElement.style.setProperty("--primary", this.mainColor);
@@ -4483,10 +4909,25 @@ if (typeof ChatWidget === 'undefined') {
     if (questionInput) {
       questionInput.addEventListener("keydown", this.handleKeyPress);
       this.initInputListeners();
+      
+      // Disable input if there's an initialization error
+      if (this.initializationError) {
+        questionInput.disabled = true;
+        questionInput.placeholder = this.t('initializationError');
+        questionInput.style.opacity = "0.5";
+        questionInput.style.cursor = "not-allowed";
+      }
     }
 
     if (submitButton) {
       submitButton.addEventListener("click", () => this.validateAndSubmit());
+      
+      // Disable submit button if there's an initialization error
+      if (this.initializationError) {
+        submitButton.disabled = true;
+        submitButton.style.opacity = "0.5";
+        submitButton.style.cursor = "not-allowed";
+      }
     }
 
     // Initialize voice recording functionality
@@ -4559,6 +5000,18 @@ if (typeof ChatWidget === 'undefined') {
       this.setChatPanelWidth(sessionStorage.getItem("chatWidth"));
       this.toggleChat();
     }
+    
+    // If there's an initialization error, open the chat window to show it
+    if (this.initializationError) {
+      // Wait a bit for the DOM to be ready
+      setTimeout(() => {
+        const chatWindow = this.shadow.getElementById("chatWindow");
+        if (chatWindow && !chatWindow.classList.contains("open")) {
+          this.toggleChat();
+        }
+      }, 100);
+    }
+    
     // If an in-page anchor was referenced, make sure we respect it rather than reset the scroll position.
     if (window.location.hash) {
       window.location.href = window.location.hash;
@@ -4739,6 +5192,19 @@ if (typeof ChatWidget === 'undefined') {
     this.currentBingeId = null;
     this.previousQuestionSlug = null;
 
+    // Re-attach event listeners for example questions
+    this.shadow.querySelectorAll(".example-question").forEach((button) => {
+      const questionContainerId = button.getAttribute("data-question-id");
+      let question = "";
+      if (questionContainerId) {
+        const questionContainerDiv = this.shadow.getElementById(questionContainerId);
+        if (questionContainerDiv) {
+          question = questionContainerDiv.textContent || questionContainerDiv.innerText;
+        }
+      }
+      this.addExampleQuestionEventListener(button, question);
+    });
+
     // Hide the edit button
     const editButton = this.shadow.querySelector(".edit-button");
     if (editButton) {
@@ -4761,7 +5227,7 @@ if (typeof ChatWidget === 'undefined') {
 
     questionInput.addEventListener("input", () => {
       const length = questionInput.value.trim().length;
-      submitButton.classList.toggle("active", length >= 10);
+      submitButton.classList.toggle("active", length >= 2);
 
       // Hide error message when typing
       const errorElement = this.shadow.querySelector(".search-error");
@@ -4902,7 +5368,7 @@ if (typeof ChatWidget === 'undefined') {
     if (!Array.isArray(questions) || questions.length === 0) return null;
 
     const container = document.createElement("div");
-    container.className = "example-questions flex flex-wrap gap-2";
+    container.className = "example-questions";
 
     questions.forEach((question) => {
       const questionUuid = this.createUuid();
@@ -4912,12 +5378,37 @@ if (typeof ChatWidget === 'undefined') {
       exampleQuestionContainer.id = questionUuid;
       exampleQuestionContainer.textContent = question; // Use textContent to prevent HTML rendering
       container.appendChild(exampleQuestionContainer);
-      // Create button
+      
+      // Create shimmer button
       const button = document.createElement("button");
-      button.className = "example-question";
-      button.textContent = question;
+      button.className = "shimmer-button example-question";
       button.setAttribute("aria-label", `${this.t('exampleQuestion')} ${question}`);
       button.setAttribute("data-question-id", questionUuid);
+      
+      // Create spark container
+      const sparkContainer = document.createElement("div");
+      sparkContainer.className = "spark-container";
+      const spark = document.createElement("div");
+      spark.className = "spark";
+      sparkContainer.appendChild(spark);
+      button.appendChild(sparkContainer);
+      
+      // Create button text
+      const buttonText = document.createElement("span");
+      buttonText.className = "button-text";
+      buttonText.textContent = question;
+      button.appendChild(buttonText);
+      
+      // Create highlight overlay
+      const highlight = document.createElement("div");
+      highlight.className = "highlight";
+      button.appendChild(highlight);
+      
+      // Create backdrop
+      const backdrop = document.createElement("div");
+      backdrop.className = "backdrop";
+      button.appendChild(backdrop);
+      
       this.addExampleQuestionEventListener(button, question);
       container.appendChild(button);
     });
