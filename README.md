@@ -45,7 +45,7 @@ The only thing you need to do is to add the widget.js to your website as follows
 | data-icon-url | string | URL to your company/product logo | Fetched from the Gurubase.io |
 | data-name | string | Your company/product name | Fetched from the Gurubase.io |
 | data-light-mode | string | Whether to use light mode. Possible values are `"auto"`, `"light"`, `"dark"` | "auto" |
-| data-baseUrl | string | URL to your Gurubase backend. **Only for self-hosted Gurubase.** | Gurubase Cloud |
+| data-base-url | string | URL to your Gurubase backend. **Only for self-hosted Gurubase.** | Gurubase Cloud |
 | data-tooltip | string | Tooltip text | null |
 | data-tooltip-side | string | Tooltip side. 8 possible values: "top", "bottom", "left", "right", "top left", "top right", "bottom left", "bottom right" | "left" |
 | data-language | string | Language to use ("tr" and "en" supported) | "en" (english) |
@@ -53,11 +53,11 @@ The only thing you need to do is to add the widget.js to your website as follows
 
 
 > [!NOTE]
-> If you're using self-hosted Gurubase, you must set the backend URL using the `data-baseUrl` attribute. The default backend URL of Self-hosted Gurubase is `http://localhost:8029/api/`.
+> If you're using self-hosted Gurubase, you must set the backend URL using the `data-base-url` attribute. The default backend URL of Self-hosted Gurubase is `http://localhost:8029/api/`.
 > ```html
 > <script async src="https://widget.gurubase.io/widget.latest.min.js" 
 >     data-widget-id="YOUR_WIDGET_ID"
->     data-baseUrl="http://localhost:8029/api/"
+>     data-base-url="http://localhost:8029/api/"
 >     id="guru-widget-id">
 > </script>
 > ```
