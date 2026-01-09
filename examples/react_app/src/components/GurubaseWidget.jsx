@@ -53,7 +53,7 @@ function GurubaseWidget({
         script.setAttribute('data-light-mode', lightMode);
       }
       if (baseUrl) {
-        script.setAttribute('data-baseUrl', baseUrl);
+        script.setAttribute('data-base-url', baseUrl);
       }
 
       script.setAttribute('data-language', 'tr');
