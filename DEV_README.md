@@ -29,6 +29,7 @@ The Android Studio emulator provides a more reliable and reusable testing enviro
 
 To enable the on-screen keyboard in the Android Studio emulator:
 
+0. Emulate the device (from "More Actions" click "Virtual Device Manager")
 1. Open the emulated device's Settings
 2. Navigate to: **Settings → System → Keyboard → On-screen keyboard**
 3. Select **Gboard** (click on the name, not the toggle)
