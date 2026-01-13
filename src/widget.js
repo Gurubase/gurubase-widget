@@ -721,20 +721,27 @@ if (typeof ChatWidget === 'undefined') {
           scrollbar-color: ${this.lightMode ? '#D1D5DB' : '#52525b'} transparent;
         }
   
-        .message {
-          padding: 40px 0;
+        /* Common message styles - for all message types */
+        .message-base {
+          padding: 8px 0px 24px 0px;
           position: relative;
+          font-size: 14px;
+          line-height: 1.6;
           color: var(--text-primary);
         }
-  
-        .first-message {
+
+        .message-base:first-child,
+        .message-base.first-message {
           padding-top: 0;
+        }
+
+        /* Type-based variations */
+        .message-error .message-content {
+          color: var(--error-red-color);
         }
   
         .user-text {
-          text-align: left;
-          font-size: 14px;
-          line-height: 1.5;
+          margin: 0;
         }
   
         .message-divider {
@@ -1725,42 +1732,43 @@ if (typeof ChatWidget === 'undefined') {
       }
   
       .user-message {
-        justify-content: flex-end;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
       }
   
-      .user-bubble {
-        background: var(--primary);
-        color: white;
-        padding: 8px 12px;
-        border-radius: 12px;
-        display: inline-block;
+      .user-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 8px;
+      }
+
+      .user-icon {
+        width: 20px;
+        height: 20px;
+        color: var(--text-primary);
+        opacity: 0.7;
+      }
+
+      .user-label {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--text-primary);
+        opacity: 0.7;
+        line-height: 20px;
       }
   
       .bot-message {
         display: flex;
-        justify-content: flex-start;
-        align-items: flex-start;
-      }
-  
-      .bot-logo {
-        margin-right: 8px;
+        flex-direction: column;
       }
   
       .bot-logo img {
-        width: 24px;
-        height: 24px;
+        width: 32px;
+        height: 32px;
       }
-  
-      .user-bubble {
-        background: var(--primary);
-        color: white;
-        padding: 12px 16px;
-        border-radius: 12px;
-        display: inline-block;
-        max-width: 85%;
-        margin-left: auto;
-      }
-  
+
       .bot-message .markdown-content {
         color: var(--text-primary);
         line-height: 1.6;
@@ -1769,13 +1777,21 @@ if (typeof ChatWidget === 'undefined') {
       .message-wrapper {
         display: flex;
         flex-direction: column;
-        gap: 16px;
         max-width: 100%;
       }
   
       .bot-logo {
         display: flex;
         align-items: center;
+        gap: 8px;
+      }
+
+      .bot-name {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--text-primary);
+        opacity: 0.7;
+        line-height: 20px;
       }
   
       .logo-circle {
@@ -1790,27 +1806,14 @@ if (typeof ChatWidget === 'undefined') {
   
       .logo-container {
         position: relative;
-        width: 24px;
-        height: 24px;
+        width: 20px;
+        height: 20px;
       }
   
       .bot-icon {
         width: 24px;
         height: 24px;
         color: #111111;
-      }
-  
-      .sparkle-badge {
-        position: absolute;
-        bottom: -4px;
-        right: -4px;
-        width: 16px;
-        height: 16px;
-        background: #FF9500;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
       }
   
       /* First, add this style for the error message */
@@ -1871,10 +1874,10 @@ if (typeof ChatWidget === 'undefined') {
       }
   
       .error-container {
-        margin-top: 16px;
         display: flex;
-        align-items: flex-start;
+        align-items: center;
         gap: 12px;
+        padding-top: 8px;
       }
   
       .error-cross-container {
@@ -2467,13 +2470,6 @@ if (typeof ChatWidget === 'undefined') {
     `;
   }
 
-  getSmallSparkle() {
-    return `
-      <svg width="9" height="9" viewBox="0 0 9 9" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M4.5 1C4.5 1 5.5 3.5 8 4.5C5.5 5.5 4.5 8 4.5 8C4.5 8 3.5 5.5 1 4.5C3.5 3.5 4.5 1 4.5 1Z" fill="white"/>
-      </svg>
-    `;
-  }
 
   getLargeSparkle() {
     return `<svg width="40" height="41" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -3826,11 +3822,9 @@ if (typeof ChatWidget === 'undefined') {
   getBotLogo() {
     return `<div class="bot-logo">
         <div class="logo-container">
-          ${this.getLogo(16, 16)}
-          <div class="sparkle-badge" style="background-color: ${this.mainColor};">
-            ${this.getSmallSparkle()}
-          </div>
+          ${this.getLogo(20, 20)}
         </div>
+        <span class="bot-name">${this.name} Guru</span>
       </div>`;
   }
 
@@ -3937,10 +3931,10 @@ if (typeof ChatWidget === 'undefined') {
 
     const messagesContainer = this.shadow.querySelector(".chat-messages");
     const loadingMessage = document.createElement("div");
-    loadingMessage.className = "message";
+    loadingMessage.className = "message-base";
 
     // Add check for first message and include divider if not first
-    const isFirstMessage = !messagesContainer.querySelector(".message");
+    const isFirstMessage = !messagesContainer.querySelector(".message-base");
     loadingMessage.innerHTML = `
       ${!isFirstMessage ? '<div class="message-divider"></div>' : ""}
       ${this.getBotLogo()}
@@ -4095,15 +4089,13 @@ if (typeof ChatWidget === 'undefined') {
       let finalResponse = "";
       // Create bot message container
       const botMessage = document.createElement("div");
-      const isFirstMessage = !messagesContainer.querySelector(".message");
-      botMessage.className = "message bot-message";
+      const isFirstMessage = !messagesContainer.querySelector(".message-base");
+      botMessage.className = "message-base bot-message";
       botMessage.innerHTML = `
         ${!isFirstMessage ? '<div class="message-divider"></div>' : ""}
-        <div class="message-wrapper">
-          ${this.getBotLogo()}
-          <div class="message-content">
-            <div id="bot-response" class="markdown-content"></div>
-          </div>
+        ${this.getBotLogo()}
+        <div class="message-content">
+          <div id="bot-response" class="markdown-content"></div>
         </div>
       `;
       messagesContainer.appendChild(botMessage);
@@ -4554,14 +4546,13 @@ if (typeof ChatWidget === 'undefined') {
       loadingMessage.remove();
 
       const errorMessage = document.createElement("div");
-      errorMessage.className = "message";
+      errorMessage.className = "message-base message-error";
       errorMessage.innerHTML = `
-      ${this.getBotLogo()}
-      </div>
       ${!isFirstMessage ? '<div class="message-divider"></div>' : ""}
+      ${this.getBotLogo()}
       <div class="message-content">
-        <div class="error-container" style="display: flex; align-items: center; gap: 12px;">
-          <div style="display: flex; align-items: center; justify-content: center; width: 24px; height: 24px;">
+        <div class="error-container">
+          <div class="error-cross-container">
             <svg width="20" height="18" viewBox="0 0 20 18" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path fill-rule="evenodd" clip-rule="evenodd" d="M3.31171 7.76149C6.23007 2.58716 7.68925 0 10 0C12.3107 0 13.7699 2.58716 16.6883 7.76149L17.0519 8.40626C19.4771 12.7061 20.6897 14.856 19.5937 16.428C18.4978 18 15.7864 18 10.3637 18H9.63634C4.21356 18 1.50217 18 0.406257 16.428C-0.689658 14.856 0.522912 12.7061 2.94805 8.40627L3.31171 7.76149ZM10 4.25C10.4142 4.25 10.75 4.58579 10.75 5V10C10.75 10.4142 10.4142 10.75 10 10.75C9.58579 10.75 9.25 10.4142 9.25 10V5C9.25 4.58579 9.58579 4.25 10 4.25ZM10 14C10.5523 14 11 13.5523 11 13C11 12.4477 10.5523 12 10 12C9.44771 12 9 12.4477 9 13C9 13.5523 9.44771 14 10 14Z" fill="#F8AA1C"/>
             </svg>
@@ -4710,11 +4701,11 @@ if (typeof ChatWidget === 'undefined') {
   // Modify existing askQuestion function to only handle display
   askQuestion(question) {
     const messagesContainer = this.shadow.querySelector(".chat-messages");
-    const isFirstMessage = !messagesContainer.querySelector(".message");
+    const isFirstMessage = !messagesContainer.querySelector(".message-base");
 
     // Add user message
     const userMessage = document.createElement("div");
-    userMessage.className = `message user-message${isFirstMessage ? " first-message" : ""}`;
+    userMessage.className = `message-base user-message${isFirstMessage ? " first-message" : ""}`;
     
     // Create the structure without innerHTML to avoid HTML rendering
     if (!isFirstMessage) {
@@ -4726,11 +4717,24 @@ if (typeof ChatWidget === 'undefined') {
     const messageContent = document.createElement("div");
     messageContent.className = "message-content";
     messageContent.style.width = "100%";
-    
+
+    // User header with icon and label
+    const userHeader = document.createElement("div");
+    userHeader.className = "user-header";
+    userHeader.innerHTML = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="user-icon">
+        <path d="M18 20a6 6 0 0 0-12 0"/>
+        <circle cx="12" cy="10" r="4"/>
+        <circle cx="12" cy="12" r="10"/>
+      </svg>
+      <span class="user-label">You</span>
+    `;
+
     const userText = document.createElement("p");
     userText.className = "user-text";
     userText.textContent = question; // Use textContent to prevent HTML rendering
-    
+
+    messageContent.appendChild(userHeader);
     messageContent.appendChild(userText);
     userMessage.appendChild(messageContent);
     
