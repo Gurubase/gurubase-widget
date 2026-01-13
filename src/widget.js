@@ -5474,7 +5474,13 @@ if (typeof ChatWidget === 'undefined') {
 
   handleVisualViewportChange() {
     if (!window.visualViewport) return;
-    
+
+    // Ignore pinch zoom - only handle keyboard changes
+    // When pinch zooming, scale changes from 1
+    if (window.visualViewport.scale !== 1) {
+      return;
+    }
+
     const chatWindow = this.shadow.getElementById("chatWindow");
     const inputContainer = this.shadow.querySelector(".chat-input-container");
     const messagesContainer = this.shadow.querySelector(".chat-messages");
