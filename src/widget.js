@@ -5499,8 +5499,11 @@ if (typeof ChatWidget === 'undefined') {
     
     // Calculate the keyboard height
     const keyboardHeight = window.innerHeight - window.visualViewport.height;
-    
-    if (keyboardHeight > 0) {
+
+    // Only treat as keyboard if height difference is significant (> 100px)
+    // This prevents false positives from browser zoom which causes small height differences (e.g., 0.5px on Firefox)
+    // Firefox does not do zooming by scale, it does by viewport width and height
+    if (keyboardHeight > 100) {
         // Keyboard is shown
         if (!isSafari) {
             // For Android, use a different approach
