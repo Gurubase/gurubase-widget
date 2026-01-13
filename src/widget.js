@@ -4853,11 +4853,16 @@ if (typeof ChatWidget === 'undefined') {
     
     // Prevent scroll propagation for both mouse wheel and touch events
     chatMessages.addEventListener('wheel', (event) => {
+      // Allow pinch zoom (ctrlKey is true for trackpad pinch gestures on macOS)
+      if (event.ctrlKey) {
+        return;
+      }
+
       const { scrollTop, scrollHeight, clientHeight } = chatMessages;
       const threshold = 1;
-      
+
       if (
-        (scrollTop <= 0 && event.deltaY < 0) || 
+        (scrollTop <= 0 && event.deltaY < 0) ||
         (Math.abs(scrollHeight - scrollTop - clientHeight) <= threshold && event.deltaY > 0)
       ) {
         event.preventDefault();
