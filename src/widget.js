@@ -4853,11 +4853,16 @@ if (typeof ChatWidget === 'undefined') {
     
     // Prevent scroll propagation for both mouse wheel and touch events
     chatMessages.addEventListener('wheel', (event) => {
+      // Allow pinch zoom (ctrlKey is true for trackpad pinch gestures on macOS)
+      if (event.ctrlKey) {
+        return;
+      }
+
       const { scrollTop, scrollHeight, clientHeight } = chatMessages;
       const threshold = 1;
-      
+
       if (
-        (scrollTop <= 0 && event.deltaY < 0) || 
+        (scrollTop <= 0 && event.deltaY < 0) ||
         (Math.abs(scrollHeight - scrollTop - clientHeight) <= threshold && event.deltaY > 0)
       ) {
         event.preventDefault();
@@ -5474,7 +5479,13 @@ if (typeof ChatWidget === 'undefined') {
 
   handleVisualViewportChange() {
     if (!window.visualViewport) return;
-    
+
+    // Ignore pinch zoom - only handle keyboard changes
+    // When pinch zooming, scale changes from 1
+    if (window.visualViewport.scale !== 1) {
+      return;
+    }
+
     const chatWindow = this.shadow.getElementById("chatWindow");
     const inputContainer = this.shadow.querySelector(".chat-input-container");
     const messagesContainer = this.shadow.querySelector(".chat-messages");
@@ -5488,8 +5499,11 @@ if (typeof ChatWidget === 'undefined') {
     
     // Calculate the keyboard height
     const keyboardHeight = window.innerHeight - window.visualViewport.height;
-    
-    if (keyboardHeight > 0) {
+
+    // Only treat as keyboard if height difference is significant (> 100px)
+    // This prevents false positives from browser zoom which causes small height differences (e.g., 0.5px on Firefox)
+    // Firefox does not do zooming by scale, it does by viewport width and height
+    if (keyboardHeight > 100) {
         // Keyboard is shown
         if (!isSafari) {
             // For Android, use a different approach
