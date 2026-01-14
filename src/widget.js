@@ -3407,8 +3407,8 @@ if (typeof ChatWidget === 'undefined') {
         
         upvoteButton.classList.toggle("selected", selectedVote === 'upvote');
         downvoteButton.classList.toggle("selected", selectedVote === 'downvote');
-        upvoteButton.disabled = isSubmitting || selectedVote !== null;
-        downvoteButton.disabled = isSubmitting || selectedVote !== null;
+        upvoteButton.disabled = isSubmitting;
+        downvoteButton.disabled = isSubmitting;
       };
 
       // Update vote state in DOM
@@ -3420,8 +3420,7 @@ if (typeof ChatWidget === 'undefined') {
 
       // Handle vote submission
       const handleVote = async (voteType) => {
-        const currentVote = upvoteButton.getAttribute('data-user-vote');
-        if (isSubmitting || currentVote) return;
+        if (isSubmitting) return;
         
         if (voteType === 'downvote') {
           setVoteState('downvote');
@@ -4147,7 +4146,8 @@ if (typeof ChatWidget === 'undefined') {
                 const questionData = data ? {
                   slug: data.slug,
                   bingeId: this.currentBingeId,
-                  userVote: data.user_vote || null
+                  userVote: data.user_vote || null,
+                  canReceiveFeedback: data.can_receive_feedback || false
                 } : null;
                 const buttons = this.createResponseButtons(data.content, questionData, data.trust_score);
                 botResponseElement.appendChild(buttons);
@@ -4362,7 +4362,8 @@ if (typeof ChatWidget === 'undefined') {
           const questionData = data ? {
             slug: data.slug,
             bingeId: this.currentBingeId,
-            userVote: data.user_vote || null
+            userVote: data.user_vote || null,
+            canReceiveFeedback: data.can_receive_feedback || false
           } : null;
           const buttons = this.createResponseButtons(data.content, questionData, data.trust_score);
           messageContent.appendChild(buttons);
@@ -5759,64 +5760,67 @@ if (typeof ChatWidget === 'undefined') {
       leftContainer.appendChild(textToSpeechButton);
     }
 
-    // Always add vote buttons - use questionData if available
-    const voteContainer = document.createElement("div");
-    voteContainer.className = "vote-container";
-    voteContainer.style.display = "flex";
-    voteContainer.style.flexDirection = "column";
-    voteContainer.style.gap = "8px";
+    // Add vote buttons only if can_receive_feedback is true
+    const canReceiveFeedback = questionData ? questionData.canReceiveFeedback : false;
+    if (canReceiveFeedback) {
+      const voteContainer = document.createElement("div");
+      voteContainer.className = "vote-container";
+      voteContainer.style.display = "flex";
+      voteContainer.style.flexDirection = "column";
+      voteContainer.style.gap = "8px";
 
-    // Get question data or use defaults
-    const slug = questionData ? questionData.slug : '';
-    const bingeId = questionData ? questionData.bingeId : '';
-    const userVote = questionData ? questionData.userVote : null;
+      // Get question data or use defaults
+      const slug = questionData ? questionData.slug : '';
+      const bingeId = questionData ? questionData.bingeId : '';
+      const userVote = questionData ? questionData.userVote : null;
 
-    // Create upvote button
-    const upvoteButton = document.createElement("button");
-    upvoteButton.className = `vote-button upvote ${userVote === 'upvote' ? 'selected' : ''}`;
-    upvoteButton.setAttribute('data-slug', slug);
-    upvoteButton.setAttribute('data-binge-id', bingeId || '');
-    upvoteButton.setAttribute('data-user-vote', userVote || '');
-    upvoteButton.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z" stroke="var(--response-button-color)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M7 10v12" stroke="var(--response-button-color)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>`;
-    upvoteButton.disabled = !slug || userVote !== null;
+      // Create upvote button
+      const upvoteButton = document.createElement("button");
+      upvoteButton.className = `vote-button upvote ${userVote === 'upvote' ? 'selected' : ''}`;
+      upvoteButton.setAttribute('data-slug', slug);
+      upvoteButton.setAttribute('data-binge-id', bingeId || '');
+      upvoteButton.setAttribute('data-user-vote', userVote || '');
+      upvoteButton.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z" stroke="var(--response-button-color)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M7 10v12" stroke="var(--response-button-color)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>`;
+      upvoteButton.disabled = !slug;
 
-    // Create downvote button
-    const downvoteButton = document.createElement("button");
-    downvoteButton.className = `vote-button downvote ${userVote === 'downvote' ? 'selected' : ''}`;
-    downvoteButton.setAttribute('data-slug', slug);
-    downvoteButton.setAttribute('data-binge-id', bingeId || '');
-    downvoteButton.setAttribute('data-user-vote', userVote || '');
-    downvoteButton.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M9 18.12 10 14H4.17a2 2 0 0 1-1.92-2.56l2.33-8A2 2 0 0 1 6.5 2H20a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.76a2 2 0 0 0-1.79 1.11L12 22a3.13 3.13 0 0 1-3-3.88Z" stroke="var(--response-button-color)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M17 14V2" stroke="var(--response-button-color)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>`;
-    downvoteButton.disabled = !slug || userVote !== null;
+      // Create downvote button
+      const downvoteButton = document.createElement("button");
+      downvoteButton.className = `vote-button downvote ${userVote === 'downvote' ? 'selected' : ''}`;
+      downvoteButton.setAttribute('data-slug', slug);
+      downvoteButton.setAttribute('data-binge-id', bingeId || '');
+      downvoteButton.setAttribute('data-user-vote', userVote || '');
+      downvoteButton.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M9 18.12 10 14H4.17a2 2 0 0 1-1.92-2.56l2.33-8A2 2 0 0 1 6.5 2H20a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.76a2 2 0 0 0-1.79 1.11L12 22a3.13 3.13 0 0 1-3-3.88Z" stroke="var(--response-button-color)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M17 14V2" stroke="var(--response-button-color)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>`;
+      downvoteButton.disabled = !slug;
 
-    // Create feedback form
-    const feedbackForm = document.createElement("div");
-    feedbackForm.className = "vote-feedback-form";
-    feedbackForm.innerHTML = `
-      <textarea placeholder="${this.t('feedbackPlaceholder')}" maxlength="200"></textarea>
-      <div class="feedback-char-count">0/200</div>
-      <div class="feedback-actions">
-        <button type="button" class="feedback-button cancel">${this.t('cancel')}</button>
-        <button type="button" class="feedback-button submit">${this.t('submit')}</button>
-      </div>
-    `;
+      // Create feedback form
+      const feedbackForm = document.createElement("div");
+      feedbackForm.className = "vote-feedback-form";
+      feedbackForm.innerHTML = `
+        <textarea placeholder="${this.t('feedbackPlaceholder')}" maxlength="200"></textarea>
+        <div class="feedback-char-count">0/200</div>
+        <div class="feedback-actions">
+          <button type="button" class="feedback-button cancel">${this.t('cancel')}</button>
+          <button type="button" class="feedback-button submit">${this.t('submit')}</button>
+        </div>
+      `;
 
-    // Create buttons container
-    const buttonsContainer = document.createElement("div");
-    buttonsContainer.style.display = "flex";
-    buttonsContainer.style.gap = "8px";
-    buttonsContainer.style.alignItems = "center";
-    buttonsContainer.style.height = "16px"; // Match copy button height
+      // Create buttons container
+      const buttonsContainer = document.createElement("div");
+      buttonsContainer.style.display = "flex";
+      buttonsContainer.style.gap = "8px";
+      buttonsContainer.style.alignItems = "center";
+      buttonsContainer.style.height = "16px"; // Match copy button height
 
-    buttonsContainer.appendChild(upvoteButton);
-    buttonsContainer.appendChild(downvoteButton);
-    voteContainer.appendChild(buttonsContainer);
-    voteContainer.appendChild(feedbackForm);
-    leftContainer.appendChild(voteContainer);
+      buttonsContainer.appendChild(upvoteButton);
+      buttonsContainer.appendChild(downvoteButton);
+      voteContainer.appendChild(buttonsContainer);
+      voteContainer.appendChild(feedbackForm);
+      leftContainer.appendChild(voteContainer);
+    }
     buttonContainer.appendChild(leftContainer);
 
     // Add trust score on the right side if it exists
