@@ -4,5 +4,5 @@ dist/
 .DS_Store
 package-lock.json
 server.py
-*.txt
-*.py
+# *.txt
+# *.py
