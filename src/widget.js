@@ -526,11 +526,10 @@ if (typeof ChatWidget === 'undefined') {
       } 
 
         :root {
-          --primary: #4f46e5;
-          --background: #ffffff;
-          --text: #111111;
-          --chat-button-hover-bg: #f3f4f6; /* Default hover color */
-          --chat-button-active-bg: #e5e7eb; /* Default active color */
+          --gurubase-primary: #4f46e5;
+          --gurubase-background: #ffffff;
+          --gurubase-chat-button-hover-bg: #f3f4f6; /* Default hover color */
+          --gurubase-chat-button-active-bg: #e5e7eb; /* Default active color */
         }
 
         .search-bar:-webkit-autofill,
@@ -589,7 +588,7 @@ if (typeof ChatWidget === 'undefined') {
         }
 
         .chat-button:active {
-          background-color: var(--chat-button-active-bg);
+          background-color: var(--gurubase-chat-button-active-bg);
           transform: scale(0.95);
         }
   
@@ -601,7 +600,7 @@ if (typeof ChatWidget === 'undefined') {
           min-width: 400px;
           max-width: 800px;
           height: 100vh;
-          background: var(--background);
+          background: var(--gurubase-background);
           box-shadow: -4px 0 24px rgba(0, 0, 0, 0.1);
           display: none;
           flex-direction: column;
@@ -766,7 +765,7 @@ if (typeof ChatWidget === 'undefined') {
           display: flex;
           align-items: center;
           justify-content: center;
-          color: var(--primary);
+          color: var(--gurubase-primary);
         }
   
         .message-content {
@@ -1554,7 +1553,7 @@ if (typeof ChatWidget === 'undefined') {
       }
   
       .search-wrapper:focus-within {
-        border-color: var(--primary);
+        border-color: var(--gurubase-primary);
         box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1);
       }
   
@@ -1590,7 +1589,7 @@ if (typeof ChatWidget === 'undefined') {
       }
   
       .submit-button.active {
-        background-color: var(--primary);
+        background-color: var(--gurubase-primary);
         color: white;
       }
   
@@ -4915,8 +4914,8 @@ if (typeof ChatWidget === 'undefined') {
       console.error('Widget initialization error:', error);
     }
 
-    // Set primary color CSS variable
-    document.documentElement.style.setProperty("--primary", this.mainColor);
+    // Set primary color CSS variable (namespaced to avoid conflicts with host page styles)
+    document.documentElement.style.setProperty("--gurubase-primary", this.mainColor);
 
     // Then inject HTML and styles
     const hljsThemeName = this.lightMode ? 'atom-one-light' : 'atom-one-dark';
@@ -4941,11 +4940,11 @@ if (typeof ChatWidget === 'undefined') {
 
     // Set hover and active colors
     chatButton.style.setProperty(
-      "--chat-button-hover-bg",
+      "--gurubase-chat-button-hover-bg",
       this.darkenColor(this.mainColor, 0.1)
     );
     chatButton.style.setProperty(
-      "--chat-button-active-bg",
+      "--gurubase-chat-button-active-bg",
       this.darkenColor(this.mainColor, 0.2)
     );
 
@@ -5478,8 +5477,8 @@ if (typeof ChatWidget === 'undefined') {
   handleViewportHeight() {
     // First we get the viewport height and we multiply it by 1% to get a value for a vh unit
     let vh = window.innerHeight * 0.01;
-    // Then we set the value in the --vh custom property to the root of the document
-    document.documentElement.style.setProperty('--vh', `${vh}px`);
+    // Then we set the value in the --gurubase-vh custom property to the root of the document
+    document.documentElement.style.setProperty('--gurubase-vh', `${vh}px`);
   }
 
   handleVisualViewportChange() {
