@@ -2125,13 +2125,30 @@ if (typeof ChatWidget === 'undefined') {
     }
   }
 
+  // Helper method to get common headers for API requests
+  // Includes auth token for preview mode if available
+  getRequestHeaders(contentType = null) {
+    const headers = {
+      Authorization: this.widgetId,
+      origin: window.location.href
+    };
+    
+    // Add auth token for preview mode (bypasses domain validation)
+    if (this.authToken) {
+      headers['X-Auth-Token'] = `Bearer ${this.authToken}`;
+    }
+    
+    if (contentType) {
+      headers['Content-Type'] = contentType;
+    }
+    
+    return headers;
+  }
+
   async fetchDefaultValues() {
     try {
       const response = await this.fetchWithTimeout(this.guruUrl, {
-        headers: {
-          Authorization: this.widgetId,
-          origin: window.location.href
-        }
+        headers: this.getRequestHeaders()
       }, 5000);
       
       if (!response.ok) {
@@ -2222,6 +2239,9 @@ if (typeof ChatWidget === 'undefined') {
             throw new Error("Widget ID is required");
         }
         this.widgetId = widgetId;
+
+        // Read auth token for preview mode (bypasses domain validation)
+        this.authToken = scriptTag.getAttribute('data-auth-token') || null;
 
         // Validate and set base URL
         try {
@@ -2339,6 +2359,7 @@ if (typeof ChatWidget === 'undefined') {
         this.logoUrl = null;
         this.name = null;
         this.windowMode = 'sidebar';
+        this.authToken = null;
     }
 
     this.askUrl = this.baseUrl + "/widget/ask/";
@@ -3050,11 +3071,7 @@ if (typeof ChatWidget === 'undefined') {
       // Get the stream response
       const response = await this.fetchWithTimeout(this.textToSpeechUrl, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: this.widgetId,
-          origin: window.location.href
-        },
+        headers: this.getRequestHeaders("application/json"),
         body: JSON.stringify({ text: cleanedText }),
         signal: audioState.abortController.signal
       }, 20000);
@@ -3175,11 +3192,7 @@ if (typeof ChatWidget === 'undefined') {
       // Fetch the complete audio as a blob (non-streaming)
       const response = await this.fetchWithTimeout(this.textToSpeechUrl, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: this.widgetId,
-          origin: window.location.href
-        },
+        headers: this.getRequestHeaders("application/json"),
         body: JSON.stringify({ text: cleanedText }),
         signal: audioState.abortController.signal
       }, 20000);
@@ -4000,11 +4013,7 @@ if (typeof ChatWidget === 'undefined') {
         try {
           const bingeResponse = await this.fetchWithTimeout(this.bingeUrl, {
             method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: this.widgetId,
-              origin: window.location.href
-            },
+            headers: this.getRequestHeaders("application/json"),
             body: JSON.stringify({
               question,
               root_slug: this.previousQuestionSlug
@@ -4025,11 +4034,7 @@ if (typeof ChatWidget === 'undefined') {
 
       const response = await this.fetchWithTimeout(this.askUrl, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: this.widgetId,
-          origin: window.location.href
-        },
+        headers: this.getRequestHeaders("application/json"),
         body: JSON.stringify(
           this.prepareRequestBody(
             question,
@@ -4122,11 +4127,7 @@ if (typeof ChatWidget === 'undefined') {
             try {
               const response = await this.fetchWithTimeout(this.askUrl, {
                 method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                  Authorization: this.widgetId,
-                  origin: window.location.href
-                },
+                headers: this.getRequestHeaders("application/json"),
                 body: JSON.stringify(
                   this.prepareRequestBody(
                     question,
@@ -5359,11 +5360,7 @@ if (typeof ChatWidget === 'undefined') {
       const endpoint = `${this.baseUrl}/${this.guruSlug}/follow_up/examples/`;
       const response = await this.fetchWithTimeout(endpoint, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: this.widgetId,
-          origin: window.location.href
-        },
+        headers: this.getRequestHeaders("application/json"),
         body: JSON.stringify({
           binge_id: bingeId,
           question_slug: slug,
@@ -5388,11 +5385,7 @@ if (typeof ChatWidget === 'undefined') {
     try {
       const response = await this.fetchWithTimeout(`${this.baseUrl}/${this.guruSlug}/record_vote/`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: this.widgetId,
-          origin: window.location.href
-        },
+        headers: this.getRequestHeaders("application/json"),
         body: JSON.stringify({
           content_slug: contentSlug,
           binge_id: bingeId === 'initial' ? null : bingeId,
