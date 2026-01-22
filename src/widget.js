@@ -4300,7 +4300,7 @@ if (typeof ChatWidget === 'undefined') {
           // Only update display if we've found and stripped the header
           if (headerFound) {
             // Sanitize the markdown-parsed content to prevent XSS
-            const parsedContent = marked.parse(bufferedContent);
+            const parsedContent = window.marked.parse(bufferedContent);
             botResponseElement.innerHTML = sanitizeHTML(parsedContent);
             // Add target="_blank" to all links
             botResponseElement.querySelectorAll('a').forEach(link => {
@@ -4348,7 +4348,7 @@ if (typeof ChatWidget === 'undefined') {
           }
 
           // Sanitize the markdown-parsed content to prevent XSS
-          const parsedContent = marked.parse(displayContent);
+          const parsedContent = window.marked.parse(displayContent);
           markdownContent.innerHTML = sanitizeHTML(parsedContent);
           // Add target="_blank" to all links
           markdownContent.querySelectorAll('a').forEach(link => {
