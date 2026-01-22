@@ -4300,7 +4300,7 @@ if (typeof ChatWidget === 'undefined') {
           // Only update display if we've found and stripped the header
           if (headerFound) {
             // Sanitize the markdown-parsed content to prevent XSS
-            const parsedContent = window.marked.parse(bufferedContent);
+            const parsedContent = window.marked ? window.marked.parse(bufferedContent) : bufferedContent;
             botResponseElement.innerHTML = sanitizeHTML(parsedContent);
             // Add target="_blank" to all links
             botResponseElement.querySelectorAll('a').forEach(link => {
@@ -4348,7 +4348,7 @@ if (typeof ChatWidget === 'undefined') {
           }
 
           // Sanitize the markdown-parsed content to prevent XSS
-          const parsedContent = window.marked.parse(displayContent);
+          const parsedContent = window.marked ? window.marked.parse(displayContent) : displayContent;
           markdownContent.innerHTML = sanitizeHTML(parsedContent);
           // Add target="_blank" to all links
           markdownContent.querySelectorAll('a').forEach(link => {
@@ -5894,18 +5894,48 @@ if (typeof ChatWidget === 'undefined') {
 }
 }
 
-function loadScript(url) {
+function loadMarked() {
     return new Promise((resolve, reject) => {
-      // Check if marked is already loaded
-      if (window.marked) {
+      // Check if marked is already loaded (check both window and globalThis)
+      const existingMarked = window.marked || (typeof globalThis !== 'undefined' && globalThis.marked);
+      if (existingMarked) {
+        window.marked = existingMarked;
         resolve();
         return;
       }
 
+      // Temporarily disable AMD to ensure marked sets window.marked
+      const originalDefine = window.define;
+      if (typeof window.define === 'function' && window.define.amd) {
+        window.define = undefined;
+      }
+
       const script = document.createElement('script');
-      script.src = url;
-      script.onload = resolve;
-      script.onerror = () => reject(new Error(`Failed to load script: ${url}`));
+      script.src = 'https://cdn.jsdelivr.net/npm/marked/marked.min.js';
+      script.onload = () => {
+        // Restore AMD define
+        if (originalDefine) {
+          window.define = originalDefine;
+        }
+        
+        // Check various ways marked might be exposed
+        const loadedMarked = window.marked || 
+                            (typeof globalThis !== 'undefined' && globalThis.marked) ||
+                            (typeof self !== 'undefined' && self.marked);
+        if (loadedMarked) {
+          window.marked = loadedMarked;
+          resolve();
+        } else {
+          reject(new Error('marked loaded but not available on window'));
+        }
+      };
+      script.onerror = () => {
+        // Restore AMD define on error too
+        if (originalDefine) {
+          window.define = originalDefine;
+        }
+        reject(new Error('Failed to load marked.js'));
+      };
       document.head.appendChild(script);
     });
   }
@@ -6007,7 +6037,7 @@ function loadScript(url) {
 
   // Load required libraries before initializing the widget
   Promise.all([
-    loadScript('https://cdn.jsdelivr.net/npm/marked/marked.min.js'),
+    loadMarked(),
     loadDOMPurify()
   ])
     .then(() => {
