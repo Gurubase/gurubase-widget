@@ -420,7 +420,7 @@ if (typeof ChatWidget === 'undefined') {
     .chat-widget {
       /* Add these properties */
       position: fixed;
-      z-index: 9999;
+      z-index: 2147483647;
       pointer-events: none; /* Allow clicks to pass through the container */
     }
 
